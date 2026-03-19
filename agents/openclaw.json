@@ -1,0 +1,110 @@
+{
+  "plugins": {
+    "enabled": true,
+    "allow": ["telegram"],
+    "entries": { "telegram": { "enabled": true } }
+  },
+  "gateway": {
+    "mode": "local",
+    "bind": "lan",
+    "port": 18789,
+    "auth": { "mode": "token", "token": "${OPENCLAW_GATEWAY_TOKEN}" },
+    "controlUi": {
+      "allowedOrigins": ["https://mamba.opclaworch.online"],
+      "dangerouslyDisableDeviceAuth": true
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "google/gemini-3.1-pro",
+        "fallbacks": ["google/gemini-2.5-pro"]
+      },
+      "thinkingDefault": "low",
+      "subagents": {
+        "maxSpawnDepth": 1,
+        "maxChildrenPerAgent": 3
+      }
+    },
+    "list": [
+      {
+        "id": "estratega",
+        "name": "Estratega",
+        "default": true,
+        "workspace": "~/.openclaw/workspace/estratega",
+        "agentDir": "~/.openclaw/agents/estratega/agent",
+        "identity": {
+          "name": "Estratega",
+          "emoji": "🎯"
+        },
+        "subagents": {
+          "allowAgents": ["pm", "admin"]
+        }
+      },
+      {
+        "id": "pm",
+        "name": "PM",
+        "workspace": "~/.openclaw/workspace/pm",
+        "agentDir": "~/.openclaw/agents/pm/agent",
+        "skills": ["healthcheck", "skill-creator", "tmux", "weather", "mcporter"],
+        "identity": {
+          "name": "PM",
+          "emoji": "📋"
+        },
+        "subagents": {
+          "allowAgents": ["estratega", "admin"]
+        }
+      },
+      {
+        "id": "admin",
+        "name": "Admin",
+        "workspace": "~/.openclaw/workspace/admin",
+        "agentDir": "~/.openclaw/agents/admin/agent",
+        "identity": {
+          "name": "Admin",
+          "emoji": "💰"
+        },
+        "subagents": {
+          "allowAgents": ["pm", "estratega"]
+        }
+      }
+    ]
+  },
+  "channels": {
+    "telegram": {
+      "dmPolicy": "pairing",
+      "accounts": {
+        "estratega": {
+          "name": "Estratega Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_ESTRATEGA}"
+        },
+        "pm": {
+          "name": "PM Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_PM}"
+        },
+        "admin": {
+          "name": "Admin Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_ADMIN}"
+        }
+      }
+    }
+  },
+  "bindings": [
+    { "agentId": "estratega", "match": { "channel": "telegram", "accountId": "estratega" } },
+    { "agentId": "pm", "match": { "channel": "telegram", "accountId": "pm" } },
+    { "agentId": "admin", "match": { "channel": "telegram", "accountId": "admin" } }
+  ],
+  "session": { "mainKey": "main" },
+  "messages": { "queue": { "debounceMs": 500 } },
+  "skills": {
+    "entries": {
+      "gog": {
+        "enabled": true,
+        "env": {
+          "GOG_KEYRING_PASSWORD": "${GOG_KEYRING_PASSWORD}",
+          "GOG_ACCOUNT": "ia@mambanegramkt.com"
+        }
+      }
+    }
+  }
+}
