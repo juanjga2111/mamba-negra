@@ -100,7 +100,7 @@ Para asignar personas en el campo "Asignado por" (tipo people), necesitas el use
 
 | Nombre | Email | Notion User ID |
 |--------|-------|----------------|
-| María Camila Skinner | m.skinner@mambanegramkt.com | `06d7928a-8a67-443f-9328-7a0becfce023` |
+| Maria Camila Skinner | m.skinner@mambanegramkt.com | `06d7928a-8a67-443f-9328-7a0becfce023` |
 | Mariana Monroy | m.monroy@mambanegramkt.com | `31ed872b-594c-815e-80a4-0002189b3a38` |
 | Laura Criales | l.criales@mambanegramkt.com | `31ed872b-594c-8180-9f4c-00020e2d7794` |
 | Laura Isabel Zapata | l.zapata@mambanegramkt.com | `229d872b-594c-81d6-8b82-00024031f023` |
@@ -179,3 +179,195 @@ Puedes consultar a otros agentes con `sessions_send`:
 - **Admin** — estado de contratos, pagos pendientes, montos facturados
 
 Usa `sessions_send` solo para preguntas puntuales. Si la consulta requiere conversacion extendida, deriva al usuario al bot correspondiente.
+
+---
+
+## WORKFLOWS FRECUENTES
+
+Estos son los flujos paso a paso para los casos de uso mas pedidos por el equipo. Seguir estos patrones garantiza respuestas completas y consistentes.
+
+### Workflow 1: Status de campana por marca
+
+Cuando pregunten: "Como va la campana de [MARCA]?" o "Status de [MARCA]"
+
+**Pasos:**
+
+1. **Identificar el CM responsable** — consultar el directorio del equipo en AGENTS.md. Si no sabes cual CM lleva la marca, buscar en los tableros TRAFICO de cada CM relevante.
+
+2. **Consultar el tablero TRAFICO del CM**, filtrado por marca:
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_TRAFICO_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
+```
+
+3. **Consultar el tablero SOLICITUD del CM** para ver requests pendientes:
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_SOLICITUD_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
+```
+
+4. **Consolidar la informacion**:
+   - Agrupar tareas por estado: Sin empezar / En curso / Listo
+   - Identificar tareas vencidas (fecha limite < hoy)
+   - Identificar tareas de alta prioridad pendientes
+
+5. **Presentar respuesta** con: fase actual, pendientes por influencer, riesgos, proximo hito.
+
+---
+
+### Workflow 2: Carga de trabajo cross-CM
+
+Cuando pregunten: "Como van los CMs?", "Quien tiene mas carga?", o CG pida status general.
+
+**Pasos:**
+
+1. **Consultar los 9 tableros TRAFICO** (uno por CM), filtrando tareas activas:
+```bash
+# Creative
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-81f1-aa3e-000bd49f95d3", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Mar
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-817a-91e0-000bbe2f663a", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Juan G
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-814c-9c3a-000b5f26f191", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Aleja
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-81be-acd0-000b834ee4a4", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Isa
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-8127-a10d-000b93d3de86", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# C.G
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31a82aed-93c7-8146-bf1b-000b372363d2", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Cami
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8148-bd5e-000bb15e8796", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Lau Criales
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8109-bbb7-000bb6590ee6", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+# Lau Reyes
+mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8151-b2af-000b490e6b8d", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+```
+
+2. **Contar por CM**: tareas activas, tareas de alta prioridad, tareas vencidas.
+
+3. **Presentar tabla resumen**:
+```
+CM            | Activas | Alta prioridad | Vencidas
+--------------+---------+----------------+---------
+Cami          | 12      | 3              | 1
+Juan G        | 8       | 2              | 0
+Lau Criales   | 15      | 4              | 2
+...
+```
+
+4. **Destacar riesgos**: CMs con tareas vencidas o carga desproporcionada.
+
+---
+
+### Workflow 3: Reporting — consolidar metricas
+
+Cuando pregunten: "Genera el reporte de [MARCA]", "Dame las metricas de [CAMPANA]"
+
+**Pasos:**
+
+1. **Buscar el sheet de metricas de la campana en Drive**:
+```bash
+gog drive search "reporte [MARCA]" --max 5
+```
+O buscar por nombre mas especifico:
+```bash
+gog drive search "metricas [MARCA] [AÑO]" --max 5
+```
+
+2. **Leer las metricas del sheet** (si encontrado en Google Sheets):
+```bash
+gog sheets get <sheetId> "Metricas!A1:Z50" --json
+```
+
+3. **Consolidar por influencer**. Para cada influencer de la campana, extraer:
+   - Alcance (Reach)
+   - Impresiones
+   - Engagement Rate (ER)
+   - CPM (si disponible)
+   - Sentimiento (si disponible)
+
+4. **Calcular totales de campana**: sumar metricas numericas, promediar tasas (ER, CPM).
+
+5. **Comparar vs estimados** (si hay sheet de propuesta):
+```bash
+gog drive search "propuesta [MARCA]" --max 5
+```
+Leer estimados y calcular delta por metrica.
+
+6. **Generar resumen narrativo**: metricas clave, que funciono, que no, recomendaciones para la proxima campana.
+
+---
+
+### Workflow 4: Status de contenidos por creador
+
+Cuando pregunten: "Como van los contenidos de [MARCA]?", "Status de videos de [CAMPANA]"
+
+**Pasos:**
+
+1. **Consultar el tablero TRAFICO del CM** que lleva la marca, filtrado por marca:
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_TRAFICO_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
+```
+
+2. **Analizar el estado de cada tarea** para determinar la fase del contenido. Mapear el campo "Estado" de Notion a fases de contenido:
+   - "Sin empezar" → pendiente de iniciar
+   - "En curso" → en produccion (grabando / editando / en revision)
+   - "Listo" → aprobado o publicado
+
+3. **Complementar con contexto** de la descripcion de cada tarea si tiene detalle adicional sobre la fase exacta.
+
+4. **Presentar por influencer/creador**:
+```
+Influencer       | Contenido         | Estado
+-----------------+-------------------+------------------
+@creador1        | Video Instagram   | En revision por cliente
+@creador2        | Reel + Story      | En grabacion (deadline viernes)
+@creador3        | TikTok x2         | Pendiente brief creativo
+```
+
+5. **Identificar riesgos**: contenidos que no han arrancado con deadline cercano, o en revision por mas de 48h.
+
+---
+
+### Workflow 5: Comparacion real vs estimado
+
+Cuando pregunten: "Compara real vs estimado de [MARCA]", "Como nos fue vs la propuesta?"
+
+**Pasos:**
+
+1. **Buscar el documento de propuesta/estimados**:
+```bash
+gog drive search "propuesta [MARCA]" --max 5
+```
+
+2. **Leer los estimados**:
+```bash
+gog sheets get <sheetId> "Estimados!A1:F20" --json
+```
+
+3. **Buscar el reporte de resultados reales**:
+```bash
+gog drive search "reporte [MARCA]" --max 5
+```
+
+4. **Leer los reales**:
+```bash
+gog sheets get <sheetId> "Resultados!A1:F20" --json
+```
+
+5. **Calcular delta por metrica**:
+```
+Metrica      | Estimado  | Real      | Delta    | Evaluacion
+-------------+-----------+-----------+----------+------------
+Alcance      | 500,000   | 620,000   | +24%     | Supero
+Impresiones  | 800,000   | 750,000   | -6%      | Cumplio (margen aceptable)
+ER           | 3.5%      | 2.1%      | -40%     | Por debajo
+CPM          | $15,000   | $12,000   | -20%     | Mejor de lo esperado
+```
+
+6. **Generar evaluacion**: que metricas superaron, cuales quedaron por debajo, posibles razones, recomendaciones.
+
+---
+
+## NOTAS
+
+- **Version**: V3 — Actualizado 26-Mar-2026 (post-discovery, workflows frecuentes agregados)
+- **Cambios V2 → V3**: Agregados 5 workflows paso a paso para los casos de uso validados con el equipo (status por marca, carga cross-CM, reporting, status de contenidos, real vs estimado)

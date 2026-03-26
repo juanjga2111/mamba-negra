@@ -1,9 +1,9 @@
 # AI Maturity Assessment — Mamba Negra Latam
 
-**Version**: V1 (17-Mar-2026)
-**Estado**: Estimaciones iniciales — validar con Carlos y el equipo en Semana 1
+**Version**: V2 (26-Mar-2026) — Baseline validado con discovery real
+**Estado**: Baseline confirmado con encuesta a 5 miembros del equipo + documentos de Strategy team
 
-> **IMPORTANTE**: Los valores de este assessment son estimaciones basadas en el conocimiento actual del proyecto. Deben validarse con el equipo durante la primera semana de discovery.
+> **ACTUALIZADO 26-Mar-2026**: Baseline validado con data real de encuesta Discovery + Baseline (5 respuestas, 24-25 Mar) y Strategy Team WorkFlow (documento oficial de la estratega). Ver `adoption/DISCOVERY-FINDINGS.md` para analisis completo.
 
 ---
 
@@ -23,22 +23,24 @@
 
 ### Tabla Resumen
 
-| Dimension | Actual | Target 3m | Target 6m | Target 12m |
-|-----------|--------|-----------|-----------|------------|
+| Dimension | Baseline (26-Mar) | Target 3m | Target 6m | Target 12m |
+|-----------|-------------------|-----------|-----------|------------|
 | Estrategia | 2 | 3 | 4 | 4 |
 | Operacion | 1 | 3 | 4 | 5 |
-| Contenido | 2 | 2 | 3 | 4 |
+| Contenido | 2.5 | 3 | 3.5 | 4 |
 | Reporting | 1 | 3 | 4 | 4-5 |
-| Cultura | 2 | 3 | 3 | 4 |
+| Cultura | 2.5 | 3 | 3.5 | 4 |
 
 ---
 
 ### Dimension 1: Estrategia
 
-**Actual: 2 (Asistido)**
-- Algunos miembros usan ChatGPT/Gemini para redactar textos o buscar ideas
-- Los criterios de seleccion de influencers dependen del "ojo clinico" de cada CM
-- No hay framework estandarizado por vertical
+**Baseline: 2 (Asistido)** — Confirmado 26-Mar-2026
+- Strategy team usa Perplexity Pro sistematicamente para investigacion (Answer The Public, Google Trends, Reddit, TikTok)
+- Strategy team tiene banco de prompts organizado en Notion
+- CMs usan ChatGPT/Gemini ad-hoc para copies e ideas creativas
+- Criterios de evaluacion de influencers varian por CM (solo CG tiene ER minimo fijo: 1%)
+- 4 metodologias de campana documentadas (RAYO/ARCO/PRISMA/MAREA) pero no integradas con IA
 
 **Target 3m: 3 (Integrado)**
 - Estratega bot operativo y siendo usado por el equipo
@@ -57,10 +59,12 @@
 
 ### Dimension 2: Operacion
 
-**Actual: 1 (Manual)**
-- Tracking en Notion pero actualizado manualmente
-- Coordinacion via WhatsApp
+**Baseline: 1 (Manual)** — Confirmado 26-Mar-2026
+- Notion existe pero solo 2/5 CMs lo usan activamente (Juan Guillermo, Laura)
+- Coordinacion 100% via WhatsApp + reuniones presenciales
 - Sin alertas automaticas de atrasos
+- CMs reportan no saber que hacen los otros CMs ("no sabemos que hace el otro" — CG, Juan Guillermo)
+- Tiempos promedio: scouting ~2 dias, reporte ~1 dia, >8h/semana en tareas repetitivas
 
 **Target 3m: 3 (Integrado)**
 - PM bot gestionando cronogramas via Notion
@@ -82,10 +86,13 @@
 
 ### Dimension 3: Contenido
 
-**Actual: 2 (Asistido)**
-- Se usa IA para redactar textos puntuales
-- Reportes se arman manualmente desde cero cada vez
-- No hay templates ni benchmarks automatizados
+**Baseline: 2.5 (Asistido+)** — Ajustado al alza 26-Mar-2026
+- 5/5 usan IA para copies y textos (3 diariamente)
+- Strategy team tiene banco de prompts organizado por herramienta y tarea en Notion
+- Strategy team usa principios sistematicos de prompt engineering (contexto, audiencia, punto de vista experto, region, seguimiento)
+- Reportes se arman manualmente (60-80% copy-paste para 3/5)
+- Strategic Thinkings siguen estructura consistente (Target > Insight > Concepto > Propositions)
+- No hay templates automatizados ni benchmarks, pero si templates manuales reutilizados
 
 **Target 3m: 2 (se mantiene)**
 - Foco en Meses 1-3 esta en operacion y estrategia, contenido avanza despues
@@ -105,10 +112,14 @@
 
 ### Dimension 4: Reporting
 
-**Actual: 1 (Manual)**
-- Reportes se arman en Excel/Docs al final de la campana
-- Data se recolecta manualmente de cada red social
+**Baseline: 1 (Manual)** — Confirmado 26-Mar-2026
+- Reportes se arman en Excel/Sheets al final de la campana (4-8h promedio)
+- Composicion: 60-80% copy-paste de metricas, poco analisis propio (3/5 reportan)
+- Data recolectada manualmente de cada red social + pedir a cada influencer (10 dias post-publicacion)
+- Metricas rastreadas: Alcance, Impresiones, ER (5/5), CPM (3/5), Sentiment (3/5)
+- Graficacion del informe final delegada a equipo de diseno (cuello de botella adicional)
 - No hay alertas de performance durante campana
+- Responder "como va la campana" toma 5-30 minutos (buscar en multiples fuentes)
 
 **Target 3m: 3 (Integrado)**
 - PM bot consolida datos de Notion + Modash
@@ -130,10 +141,13 @@
 
 ### Dimension 5: Cultura
 
-**Actual: 2 (Asistido)**
-- Algunos usan ChatGPT/Gemini por iniciativa propia
-- No hay nada sistematizado ni integrado a procesos formales
-- IA se percibe como "herramienta extra" no como parte del flujo
+**Baseline: 2.5 (Asistido+)** — Ajustado al alza 26-Mar-2026
+- **100% del equipo** usa IA (no "algunos"): 3/5 diariamente, 2/5 varias veces por semana
+- Comodidad promedio con IA: **3.8/5** (Juan Guillermo: 5, Tatiana y Camila: 4, CG y Laura: 3)
+- **5/5 ven IA como "herramienta del dia a dia"** (nadie la ve como amenaza o distraccion)
+- Strategy team tiene enfoque sistematico: banco de prompts, principios de prompt engineering
+- Sin embargo, no hay nada integrado formalmente al proceso de campana — el uso es por iniciativa propia
+- **Zero resistencia cultural** — la barrera no es adopcion, es integracion
 
 **Target 3m: 3 (Integrado)**
 - 80% del equipo usa agentes semanalmente
@@ -155,9 +169,9 @@
 
 | Cuando | Que hacer | Quien |
 |--------|-----------|-------|
-| Semana 1 | Validar assessment actual con el equipo | Juan Jose + equipo |
+| Semana 1 | ~~Validar assessment actual con el equipo~~ COMPLETADO 26-Mar-2026 via encuesta | Juan Jose + equipo |
 | Mes 3 | Primer re-assessment (3m vs baseline) | Juan Jose + Carlos |
 | Mes 6 | Segundo re-assessment | Juan Jose + Carlos |
 | Mes 12 | Assessment final | Juan Jose + Carlos + equipo completo |
 
-> PENDIENTE VALIDACION: Validar todos los niveles actuales con Carlos y el equipo en Semana 1. Los valores pueden cambiar segun la realidad del equipo.
+> VALIDADO 26-Mar-2026: Baseline confirmado con encuesta a 5 miembros del equipo + documentos de Strategy team. Contenido y Cultura ajustados al alza (de 2 a 2.5). Promedio real: 1.8 (vs 1.6 estimado). Pendiente: validar con Carlos.

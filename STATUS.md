@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 17 Marzo 2026 (post-review session)
+**Ultima actualizacion**: 26 Marzo 2026 (discovery + baseline completado)
 
 ---
 
@@ -271,14 +271,16 @@
 | Archivo | Estado | Notas |
 |---------|--------|-------|
 | campaign-framework.md | V1 | 9 fases del ciclo de campana |
-| campaign-process.md | V1 | Flujo operacional |
-| influencer-scoring.md | V1 | Criterios cuanti/cuali, pendiente umbrales reales |
+| campaign-process.md | V1 | Flujo operacional — pendiente actualizar con 2 flujos reales (Strategy + CM) |
+| influencer-scoring.md | V1 | Criterios cuanti/cuali — pendiente actualizar con criterios reales de encuesta |
 | modash-playbook.md | V1 | Playbook completo de Modash |
-| README.md | Actualizado | Indice del knowledge base |
+| **strategy-workflow.pdf** | **NUEVO** | Flujo Strategy team: 12 pasos, RAYO/ARCO/PRISMA/MAREA, metodologia investigacion, banco de prompts |
+| README.md | V1.1 | Indice actualizado con nuevos archivos |
 | verticals/ (5 archivos) | V1 | consumo-masivo, belleza, inmobiliario, calzado, servicios |
+| **campaign-samples/** (3 archivos) | **NUEVO** | Manimoto Chocolate, Detodito Proteina (strategic thinkings), Acetaminofen MK (brief) |
 | Research/ (4 PDFs) | Referencia | Papers de IA en agencias, KPIs, agentic enterprise |
 
-**Veredicto**: 10 archivos + 4 PDFs. Knowledge base V1 completo. Pendiente enriquecer con data real en discovery.
+**Veredicto**: 14 archivos + 4 PDFs + 3 campaign samples. Knowledge base enriquecido con documentos reales del equipo de Strategy (26-Mar-2026).
 
 ### Capa 3: Adopcion (`adoption/`)
 | Archivo | Estado | Notas |
@@ -287,21 +289,23 @@
 | TRAINING-PLAN.md | Creado | Plan de capacitacion diferenciado |
 | ADOPTION-METRICS.md | Creado | Metricas de adopcion y senales de alarma |
 | PROCESS-REORG.md | Creado | Rediseno de procesos con IA |
+| **DISCOVERY-FINDINGS.md** | **NUEVO** | Analisis consolidado: encuesta (5 resp) + docs Strategy + baseline validado |
 | workshops/discovery-sessions.md | Creado | Guia de discovery (migrado de FASE1A-DISCOVERY.md) |
 
-**Veredicto**: 5 archivos. Framework de adopcion completo. Pendiente ejecutar con el equipo.
+**Veredicto**: 6 archivos. Discovery COMPLETADO (26-Mar-2026). Baseline validado. Pendiente ejecutar workshops con el equipo.
 
 ### Capa 4: Agentes (`agents/`)
 | Archivo | Estado | Notas |
 |---------|--------|-------|
 | openclaw.json | Desplegado | 3 agentes, Gemini 3.1 Pro, Telegram plugin, gog skill |
 | .env.example | Actualizado | 3 bot tokens documentados con bot handles y fechas |
-| workspaces/estratega/ | 3 archivos | AGENTS.md V1, SOUL.md V0, USER.md V0 |
-| workspaces/pm/ | 7 archivos | AGENTS.md V1.1, SOUL.md V1.1, USER.md, IDENTITY.md, TOOLS.md V2, MEMORY.md, HEARTBEAT.md |
-| workspaces/admin/ | 3 archivos | AGENTS.md V1, SOUL.md V1.1 (actualizado en review), USER.md V1 |
+| **HANDOFF-PROTOCOL.md** | **NUEVO** | Protocolo de handoff entre agentes: flujo de campana, tabla de handoffs, patron de uso por rol, onboarding plan |
+| workspaces/estratega/ | 3 archivos | **AGENTS.md V2** (RAYO/ARCO/PRISMA/MAREA, Strategic Thinking, scoring real, research methodology), **SOUL.md V1**, USER.md |
+| workspaces/pm/ | 7 archivos | **AGENTS.md V2** (baseline real, team directory, 3 use cases, dream questions), SOUL.md V1.1, USER.md, IDENTITY.md, **TOOLS.md V3** (5 workflows frecuentes), MEMORY.md, HEARTBEAT.md |
+| workspaces/admin/ | 3 archivos | AGENTS.md V1, SOUL.md V1.1, USER.md V1 |
 | n8n-workflows/README.md | Placeholder | Vacio — workflows planeados para Fase 1C |
 
-**Veredicto**: Config correcta, coincide con VM desplegada. PM es el agente mas completo. Admin SOUL.md actualizado a V1.1. Pendiente desplegar Admin SOUL.md V1.1 a VM.
+**Veredicto**: Estratega y PM listos para onboarding (V2 con data real de discovery). HANDOFF-PROTOCOL creado. **Pendiente**: desplegar V2 a la VM via SCP + restart gateway.
 
 ### Capa 5: Medicion (`measurement/`)
 | Archivo | Estado | Notas |
@@ -360,16 +364,29 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 ## PENDIENTES INMEDIATOS
 
 ### P0 — Transformacion IA (Semana 1)
-- [ ] **Discovery Session 1**: Diagnostico operacional con equipo (ver `my-toolkit/templates/discovery-session-guide.md`)
-- [ ] **Recolectar baseline**: Encuesta de 15 min a cada CM (ver `measurement/BASELINE.md`)
+- [x] **Discovery Session 1**: Encuesta Discovery + Baseline aplicada (5 respuestas: CG, Tatiana, Camila, Juan Guillermo, Laura) — 24-25 Mar 2026
+- [x] **Recolectar baseline**: Tiempos reales documentados (scouting ~2d, reporte ~1d, repetitivas ~8h/sem) — 26 Mar 2026
+- [x] **AI Maturity baseline validado**: Promedio real 1.8 (Contenido y Cultura ajustados a 2.5) — 26 Mar 2026
+- [x] **Documentos de Strategy team**: Workflow 12 pasos + 4 metodologias + 2 strategic thinkings + 1 brief — 26 Mar 2026
+- [x] **Analisis consolidado**: `adoption/DISCOVERY-FINDINGS.md` creado con hallazgos completos — 26 Mar 2026
 - [ ] **Validar con Carlos**: Vision, Roadmap, AI Maturity Assessment (ver `strategy/`)
 - [ ] **Validar con CMs**: Perfiles por vertical y modash-playbook (ver `knowledge/verticals/`)
 
-### P0 — Tecnico (Critico)
+### P0 — Tecnico (Pre-Onboarding)
 - [x] Agregar regla no-mostrar-razonamiento a SOUL.md de Admin (17-Mar-2026, review session)
+- [ ] **Configurar gog (Drive) para Estratega en openclaw.json** — decision 26-Mar
+- [ ] **Copiar knowledge/ a workspace/estratega/knowledge/ en VM** — decision 26-Mar
+- [ ] **SCP todos los workspaces V2 a la VM** + restart gateway
 - [ ] Probar sessions_send entre agentes — pendiente re-test
-- [ ] Migrar gateway de nohup a systemd estable
+- [ ] **Test E2E**: mandar preguntas tipo Noraver a cada bot y verificar respuestas V2
 - [ ] Desplegar SOUL.md V1.1 de Admin a la VM (pendiente SCP)
+- [ ] Migrar gateway de nohup a systemd estable
+
+### P1 — Modash MCP Server (post-onboarding)
+- [ ] MNL tiene API key de Modash (confirmado 26-Mar)
+- [ ] Construir MCP server para Modash (search, profile metrics, audience, brand safety)
+- [ ] Configurar en openclaw.json para Estratega
+- [ ] Prioridad: despues de onboarding exitoso
 
 ### P1 — Alta Prioridad
 - [ ] **Workshop 1**: Onboarding PM Bot con equipo (Semana 3) — ver `adoption/TRAINING-PLAN.md`
@@ -399,8 +416,8 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [x] PM conectado a Notion real de MNL (19 DBs) + Google Workspace
 - [x] Reestructurar repo en 7 capas de transformacion — 17-Mar-2026
 - [x] Crear knowledge base V1: Modash playbook + 5 verticales + scoring
-- [ ] Discovery sessions con equipo (Semana 1)
-- [ ] Recolectar baseline de metricas (Semana 1)
+- [x] Discovery via encuesta + documentos estratega (24-26 Mar 2026)
+- [x] Recolectar baseline de metricas via encuesta (24-25 Mar 2026)
 - [ ] Validar vision + roadmap con Carlos (Semana 2)
 - [ ] Workshop 1: Onboarding PM Bot (Semana 3)
 
@@ -501,4 +518,4 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ---
 
-**Estado general (17-Mar-2026, post-review)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas — todas las capas creadas y revisadas. 3 bots Telegram operativos en produccion. PM con Notion (19 DBs) + Google Workspace. Knowledge base V1 completo (10 archivos + 4 PDFs research). Toolkit del AI Strategy Lead operativo (metodologia + 3 agentes + 1 skill + 6 templates). Admin SOUL.md actualizado a V1.1 (pendiente deploy a VM). **Proximo paso**: Discovery sessions con equipo (Semana 1) + validar vision/roadmap con Carlos.
+**Estado general (26-Mar-2026, post-discovery + agent consolidation)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **DISCOVERY COMPLETADO + AGENTES CONSOLIDADOS**: Estratega V2 (RAYO/ARCO/PRISMA/MAREA, Strategic Thinking, scoring real), PM V2 (baseline real, 5 workflows, team directory), HANDOFF-PROTOCOL creado, PROCESS-AI-MAP V2 con datos reales. NotebookLM con audio + briefing doc para Carlos. **Pendiente critico**: desplegar V2 a VM + restart gateway. **Proximo paso**: Onboarding equipo MNL (Semana 3).

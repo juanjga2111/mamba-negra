@@ -32,6 +32,14 @@ Esta carpeta cumple **doble proposito**:
   - The Future of Strategic Measurement: Enhancing KPIs with AI (PDF)
 - Se enriquece conforme avance la investigacion
 
+### Flujo Estrategico
+- **strategy-workflow.pdf** — Flujo de trabajo del equipo de Strategy (12 pasos, 4 tipos de campana: RAYO/ARCO/PRISMA/MAREA, metodologia de investigacion, banco de prompts). Documento oficial de la estratega.
+
+### Ejemplos de Campanas Reales (`campaign-samples/`)
+- **strategic-thinking-manimoto-chocolate.docx** — Strategic thinking completo para campana Manimoto Chocolate
+- **strategic-thinking-detodito-proteina.docx** — Strategic thinking para Detodito Proteina (Brief GoFilms, Feb 2026)
+- **brief-acetaminofen-mk-rd.pdf** — Brief de creadores de contenido para Acetaminofen MK (Republica Dominicana, $16.36M COP, TikTok)
+
 ### Referencia
 - **MANUAL MAESTRO - CM MNL.pdf** — Manual operativo del Community Manager de MNL
 
@@ -54,4 +62,4 @@ El objetivo es mantener este directorio **preciso y accionable**. Documentos de 
 
 ---
 
-**Estado**: V1 — Enriquecido con input de Carlos (17-Mar-2026), pendiente validacion con CMs asignados
+**Estado**: V1.1 — Agregados strategy-workflow.pdf + 3 ejemplos de campanas reales (26-Mar-2026)

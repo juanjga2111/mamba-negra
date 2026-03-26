@@ -38,7 +38,7 @@
           "emoji": "🎯"
         },
         "subagents": {
-          "allowAgents": ["pm", "admin"]
+          "allowAgents": ["pm", "admin", "prometeo"]
         }
       },
       {
@@ -52,7 +52,7 @@
           "emoji": "📋"
         },
         "subagents": {
-          "allowAgents": ["estratega", "admin"]
+          "allowAgents": ["estratega", "admin", "prometeo"]
         }
       },
       {
@@ -65,7 +65,24 @@
           "emoji": "💰"
         },
         "subagents": {
-          "allowAgents": ["pm", "estratega"]
+          "allowAgents": ["pm", "estratega", "prometeo"]
+        }
+      },
+      {
+        "id": "prometeo",
+        "name": "Prometeo",
+        "workspace": "~/.openclaw/workspace/prometeo",
+        "agentDir": "~/.openclaw/agents/prometeo/agent",
+        "model": {
+          "primary": "github-copilot/gemini-3.1-pro-preview",
+          "fallbacks": ["google/gemini-2.5-pro"]
+        },
+        "identity": {
+          "name": "Prometeo",
+          "emoji": "🔥"
+        },
+        "subagents": {
+          "allowAgents": ["estratega", "pm", "admin"]
         }
       }
     ]
@@ -85,6 +102,10 @@
         "admin": {
           "name": "Admin Mamba Negra",
           "botToken": "${TELEGRAM_BOT_TOKEN_ADMIN}"
+        },
+        "prometeo": {
+          "name": "Prometeo Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_PROMETEO}"
         }
       }
     }
@@ -92,7 +113,8 @@
   "bindings": [
     { "agentId": "estratega", "match": { "channel": "telegram", "accountId": "estratega" } },
     { "agentId": "pm", "match": { "channel": "telegram", "accountId": "pm" } },
-    { "agentId": "admin", "match": { "channel": "telegram", "accountId": "admin" } }
+    { "agentId": "admin", "match": { "channel": "telegram", "accountId": "admin" } },
+    { "agentId": "prometeo", "match": { "channel": "telegram", "accountId": "prometeo" } }
   ],
   "session": { "mainKey": "main" },
   "messages": { "queue": { "debounceMs": 500 } },
