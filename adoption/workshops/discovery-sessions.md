@@ -155,17 +155,19 @@ Evaluar con el equipo donde esta MNL en cada dimension. Usar escala 1-5 del desi
 
 ---
 
-## CHECKLIST DE SALIDA DE FASE 1A
+## CHECKLIST DE SALIDA DE FASE 1A — COMPLETADO (26-Mar-2026)
 
-- [ ] 2-3 sesiones discovery completadas
-- [ ] 3 briefs historicos recibidos
-- [ ] Acceso a Google Sheet master de proyectos configurado
-- [ ] `knowledge/campaign-process.md` documentado con flujo real
-- [ ] `knowledge/influencer-scoring.md` con umbrales y criterios del equipo
-- [ ] `AGENTS.md` enriquecido con frameworks propios
-- [ ] `SOUL.md` ajustado con tono validado
-- [ ] `USER.md` con perfiles del equipo
-- [ ] Decision final sobre LLM a usar (Gemini vs OpenAI API)
-- [ ] 2-3 casos de uso prioritarios identificados para Fase 1C
+- [x] Discovery completado: encuesta (5 respuestas) + docs Strategy team + 2 strategic thinkings + 1 brief
+- [x] 3 briefs/docs historicos recibidos (Manimoto Chocolate, Detodito Proteina, Acetaminofen MK)
+- [x] Google Sheets configurados (Gantt, Discovery, Feedback, Form Briefs)
+- [x] `knowledge/campaign-process.md` documentado con flujo real (2 flujos paralelos: Strategy 12 pasos + CM 18 pasos)
+- [x] `knowledge/influencer-scoring.md` con umbrales y criterios del equipo
+- [x] `AGENTS.md` enriquecido con frameworks propios (4 metodologias: RAYO/ARCO/PRISMA/MAREA)
+- [x] `SOUL.md` ajustado con tono validado
+- [x] `USER.md` con perfiles del equipo
+- [x] Decision final sobre LLM: Google Gemini (3.1-pro para Estratega, 3-flash para PM/Admin)
+- [x] Casos de uso prioritarios: scouting criterios, brief-to-strategy, feedback videos, reportes VP
+- [x] Resultados consolidados en `adoption/DISCOVERY-FINDINGS.md`
 
-**Proximo paso**: Fase 1B — Despliegue de infraestructura (VM GCP, OpenClaw Gateway, MCP Drive, bot Telegram).
+**Fases completadas**: 1A (Discovery) → 1B (Infraestructura: VM + OpenClaw + 4 bots) → Agentes V3.1 desplegados.
+**Proximo paso**: Onboarding grupal del equipo (Modulos 1 + 2 del TRAINING-PLAN.md).

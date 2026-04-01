@@ -367,7 +367,68 @@ CPM          | $15,000   | $12,000   | -20%     | Mejor de lo esperado
 
 ---
 
+### Workflow 6: Feedback de videos por influencer
+
+Cuando te envien feedback de ajustes de videos, o te pregunten el estado de los videos de una campana.
+
+**IMPORTANTE**: El Feedback Index es tu directorio central. SIEMPRE consultalo primero para obtener el Sheet ID de la campana. NO memorices Sheet IDs — siempre lee el Index.
+
+**Feedback Index ID**: `1i2ZiPau3dZF1WZJdwmd3F4nO_676_7Npx1KBQRruQO0`
+
+**Estructura del Index** (columnas A-E):
+- A: Campana | B: Marca | C: Sheet ID | D: Estado | E: Fecha Creacion
+
+**Estructura de cada Sheet de campana** (columnas A-H):
+- A: Influencer | B: Contenido | C: Estado | D: Ajustes Pendientes | E: Fuente | F: Fecha Registro | G: Ultima Actualizacion | H: Notas
+
+**Estados validos**: `Sin Ajustes` | `Con Ajustes Pendientes` | `Ajustes Aplicados` | `Aprobado`
+
+**Carpeta en Drive**: `Content FeedBack` (folder ID: `1qKtpII3ngIRurQx8Gnk-_XxNhjyMDDJc`)
+
+**Pasos para REGISTRAR feedback:**
+
+1. Parsear el mensaje: identificar campana, influencer, ajustes, y fuente (quien manda el feedback)
+2. Consultar el Index para obtener el Sheet ID:
+```bash
+gog sheets get 1i2ZiPau3dZF1WZJdwmd3F4nO_676_7Npx1KBQRruQO0 "Sheet1!A:E" --json
+```
+3. Si la campana NO existe en el Index: crear un nuevo Sheet en la carpeta Content FeedBack, estructurar las columnas, y registrar en el Index
+4. Leer el Sheet de la campana para verificar si el influencer ya tiene fila:
+```bash
+gog sheets get <SHEET_ID> "Sheet1!A:H" --json
+```
+5. Si el influencer ya existe: actualizar la fila (agregar ajustes, cambiar estado a "Con Ajustes Pendientes", actualizar fecha)
+6. Si es nuevo: agregar fila nueva:
+```bash
+gog sheets append <SHEET_ID> "Sheet1!A:H" --values-json '[["Altafulla", "Video IG Reel", "Con Ajustes Pendientes", "1. Quitar color rojo\n2. Agregar textos legales", "Cliente PepsiCo", "2026-03-29", "2026-03-29", ""]]' --insert INSERT_ROWS
+```
+7. Confirmar al usuario lo que registraste
+
+**Pasos para CONSULTAR estado:**
+
+1. Consultar el Index para obtener el Sheet ID
+2. Leer todo el Sheet de la campana:
+```bash
+gog sheets get <SHEET_ID> "Sheet1!A:H" --json
+```
+3. Agrupar por estado y presentar por influencer:
+   - Con Ajustes Pendientes: listar ajustes de cada uno
+   - Ajustes Aplicados: indicar que estan pendientes de aprobacion
+   - Aprobado: marcar como listos
+
+**Pasos para ACTUALIZAR estado:**
+
+1. Consultar el Index → obtener Sheet ID
+2. Leer el Sheet → encontrar la fila del influencer
+3. Actualizar la columna C (Estado) y G (Ultima Actualizacion):
+```bash
+gog sheets update <SHEET_ID> "Sheet1!C<ROW>:C<ROW>" --values-json '[["Ajustes Aplicados"]]' --input USER_ENTERED
+gog sheets update <SHEET_ID> "Sheet1!G<ROW>:G<ROW>" --values-json '[["2026-03-29"]]' --input USER_ENTERED
+```
+
+---
+
 ## NOTAS
 
-- **Version**: V3 — Actualizado 26-Mar-2026 (post-discovery, workflows frecuentes agregados)
-- **Cambios V2 → V3**: Agregados 5 workflows paso a paso para los casos de uso validados con el equipo (status por marca, carga cross-CM, reporting, status de contenidos, real vs estimado)
+- **Version**: V4 — Actualizado 29-Mar-2026 (Workflow 6: feedback de videos)
+- **Cambios V3 → V4**: Agregado Workflow 6 para tracking de feedback de videos por influencer con Google Sheets. Index-first pattern (siempre consultar Feedback Index antes de operar).

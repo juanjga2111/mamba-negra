@@ -33,6 +33,7 @@
         "default": true,
         "workspace": "~/.openclaw/workspace/estratega",
         "agentDir": "~/.openclaw/agents/estratega/agent",
+        "skills": ["mcporter"],
         "identity": {
           "name": "Estratega",
           "emoji": "🎯"
@@ -46,6 +47,11 @@
         "name": "PM",
         "workspace": "~/.openclaw/workspace/pm",
         "agentDir": "~/.openclaw/agents/pm/agent",
+        "model": {
+          "primary": "google/gemini-3-flash",
+          "fallbacks": ["google/gemini-2.5-flash"]
+        },
+        "thinkingDefault": "off",
         "skills": ["healthcheck", "skill-creator", "tmux", "weather", "mcporter"],
         "identity": {
           "name": "PM",
@@ -60,6 +66,10 @@
         "name": "Admin",
         "workspace": "~/.openclaw/workspace/admin",
         "agentDir": "~/.openclaw/agents/admin/agent",
+        "model": {
+          "primary": "google/gemini-3-flash",
+          "fallbacks": ["google/gemini-2.5-flash"]
+        },
         "identity": {
           "name": "Admin",
           "emoji": "💰"

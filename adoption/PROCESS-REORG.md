@@ -57,8 +57,8 @@ Cada una de las 9 fases del ciclo de campana pasa por estos 6 pasos:
 
 | # | Fase | Paso 1: Documentar | Paso 2: Fricciones | Paso 3-6: Rediseno+ | Agente Principal |
 |---|------|--------------------|--------------------|-----------------------|-----------------|
-| 1 | Recepcion del Brief | Parcial | Pendiente | Pendiente | Estratega |
-| 2 | Construccion Estrategica | Parcial | Pendiente | Pendiente | Estratega |
+| 1 | Recepcion del Brief | **Documentado** | **Fricciones ID** | **Implementado** (Google Form → Sheet → Estratega bot) | Estratega |
+| 2 | Construccion Estrategica | **Documentado** | **Fricciones ID** | **Implementado** (skill brief-to-strategy, 8 pasos guiados) | Estratega |
 | 3 | Cronograma Gantt | Parcial | Pendiente | Pendiente | PM |
 | 4 | **Scouting + Negociacion** | **Documentado** | **Fricciones ID** | Pendiente | Estratega + Modash |
 | 5 | Aprobaciones Internas | Parcial | Pendiente | Pendiente | PM |
@@ -86,9 +86,10 @@ Cada una de las 9 fases del ciclo de campana pasa por estos 6 pasos:
 
 ### Proximos pasos para Fase 4
 1. Validar perfiles por vertical con CMs asignados
-2. Implementar checklist pre-Modash en flujo del Estratega bot
-3. Configurar scoring en Estratega cuando tenga tools
-4. Medir: creditos desperdiciados antes vs despues
+2. [x] Checklist pre-Modash implementado en Estratega V3.1 (criterios de scouting con copy comercial nivel senior)
+3. [x] Estratega tiene tools configurados (gog + Notion + Tavily + Google Form briefs)
+4. **BLOQUEADOR**: API de influencers sin acceso (Modash 0 creditos, Influencers Club requiere plan pago)
+5. Medir: creditos desperdiciados antes vs despues (cuando API activa)
 
 ---
 
@@ -136,7 +137,7 @@ Las fases 1-3 y 5-9 necesitan discovery mas profundo. Preguntas clave por fase:
 - Reutilizan insights de campanas pasadas?
 - Como se comparten learnings entre CMs?
 
-> PENDIENTE: Estas preguntas se usan en las sesiones de discovery (Semana 1). Los resultados alimentan el Paso 2 (Fricciones) de cada fase.
+> COMPLETADO: Discovery sessions realizadas 24-26 Mar 2026 (5 respuestas). Resultados en `adoption/DISCOVERY-FINDINGS.md`. Fases 1, 2 y 4 tienen fricciones identificadas. Estas preguntas sirven para profundizar en las fases restantes.
 
 ---
 

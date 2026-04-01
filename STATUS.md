@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 26 Marzo 2026 (discovery + baseline completado)
+**Ultima actualizacion**: 30 Marzo 2026 (memoria activada + brand voice + skill brief-to-strategy + video feedback + modelos optimizados)
 
 ---
 
@@ -57,7 +57,7 @@
 ### Software instalado en VM
 - Node.js v22.22.1 (via fnm)
 - npm 10.9.4
-- OpenClaw **2026.3.13** (instalacion nativa, sin Docker)
+- OpenClaw **2026.3.28** (instalacion nativa, sin Docker) — actualizado 30-Mar-2026
 - Caddy v2.11.2 (reverse proxy HTTPS)
 - gog v0.12.0 (Google Workspace CLI — Drive, Sheets, Docs)
 - mcporter v0.7.3 (MCP server manager)
@@ -81,8 +81,9 @@
 ### Arquitectura
 - **Patron**: 3 bots independientes + sessions_send (sincrono) entre ellos
 - **Framework compartido**: `knowledge/campaign-framework.md` (9 fases del ciclo de campana)
-- **LLM**: `google/gemini-3.1-pro` con fallback a `google/gemini-2.5-pro`
-- **Thinking**: Nivel `low` (piensa internamente, no muestra razonamiento)
+- **LLM por defecto**: `google/gemini-3.1-pro` con fallback a `google/gemini-2.5-pro`
+- **LLM PM y Admin**: `google/gemini-3-flash` con fallback a `google/gemini-2.5-flash` (optimizado 30-Mar-2026)
+- **Thinking**: Nivel `low` global. PM tiene `thinkingDefault: off` (requiere v2026.3.28+)
 - **MCP/Skills PM**: Notion (mcporter), Google Drive/Sheets/Docs (gog v0.12.0)
 - **MCP Estratega/Admin**: Pendiente — configurar segun funciones de cada agente
 - **Dashboard**: https://mamba.opclaworch.online
@@ -113,13 +114,16 @@
 - **Workspace repo**: `workspaces/estratega/` (AGENTS.md V1, SOUL.md V1)
 - **Workspace VM**: `~/.openclaw/workspace/estratega/`
 - **sessions_send a**: PM, Admin
+- **Google Sheets (gog)**: Lee briefs de campana del Google Form via Sheet `1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw`
+- **Skills**: brief-to-strategy (con input desde Google Form Sheet), competitor-analysis
+- **Tools**: gog (Drive/Sheets/Docs), Notion (mcporter), Tavily Search (mcporter), sessions_send
 
 ### Agente 2: PM — Project Manager (SETUP COMPLETO 16-Mar-2026)
 
 - **Rol**: Asistente IA de gestion de proyectos
 - **Bot Telegram**: @PMMambabot
 - **Fases**: 3 (Gantt), 4 (Tracking), 5 (Aprobaciones), 6 (Ejecucion), 8 (Reporte)
-- **Workspace repo**: `workspaces/pm/` (7 archivos: AGENTS.md V1.1, SOUL.md V1.1, USER.md, IDENTITY.md, TOOLS.md, MEMORY.md, HEARTBEAT.md)
+- **Workspace repo**: `workspaces/pm/` (7 archivos: AGENTS.md V3, SOUL.md V1.2, USER.md, IDENTITY.md, TOOLS.md V4, MEMORY.md, HEARTBEAT.md)
 - **Workspace VM**: `~/.openclaw/workspace/pm/`
 - **sessions_send a**: Estratega, Admin
 - **Notion MCP**: Configurado via mcporter — workspace personal Juan Jose (temporal)
@@ -158,9 +162,12 @@
 ├── openclaw.json.bak      # Backup del doctor
 ├── workspace/
 │   ├── estratega/
-│   │   ├── AGENTS.md      # V1 — asistente IA estrategia digital
+│   │   ├── AGENTS.md      # V3.1 — scouting senior + brand voice + memoria
 │   │   ├── SOUL.md        # V1 — con regla no-mostrar-razonamiento
-│   │   └── USER.md
+│   │   ├── USER.md
+│   │   ├── TOOLS.md       # V2 — gog + Notion + Tavily + Google Form Brief Sheet
+│   │   ├── MEMORY.md      # Semilla de memoria
+│   │   └── skills/        # brief-to-strategy (con input Form Sheet), competitor-analysis
 │   ├── pm/
 │   │   ├── AGENTS.md      # V1.1 — con gestion de memoria
 │   │   ├── SOUL.md        # V1.1 — regla no-razonamiento
@@ -224,6 +231,7 @@
 29. [x] Abrir puertos 80/443 en firewall GCP
 30. [x] Dashboard web accesible y funcional
 31. [x] Actualizar OpenClaw a v2026.3.13
+    [x] Actualizar OpenClaw a v2026.3.28 (30-Mar-2026)
 
 **Setup PM completo (16-Mar-2026)**:
 
@@ -251,6 +259,34 @@
 50. [x] Test E2E: PM crea tarea en SOLICITUD Creative con asignacion a persona — FUNCIONAL
 51. [x] Crear PM-VALUE-ANALYSIS.md (5 funciones de valor, metricas, roadmap)
 
+**Video Feedback Tracker (30-Mar-2026)**:
+
+52. [x] Disenar sistema de feedback de videos (design doc: `docs/plans/2026-03-29-video-feedback-tracker-design.md`)
+53. [x] Crear carpeta "Content FeedBack" en Drive (folder ID: `1qKtpII3ngIRurQx8Gnk-_XxNhjyMDDJc`)
+54. [x] Crear Feedback Index MNL (Sheet ID: `1i2ZiPau3dZF1WZJdwmd3F4nO_676_7Npx1KBQRruQO0`)
+55. [x] Crear Sheet "Feedback - PepsiCo Copa Sabores" (Sheet ID: `1DkBsfzXYCPR4oACD3KxR-Q6aA7buEt3BL9oWVZPSmWk`)
+56. [x] Actualizar AGENTS.md PM V3: dominio 8 (Gestion Feedback Videos) + caso de uso 4
+57. [x] Actualizar TOOLS.md PM V4: Workflow 6 (feedback videos, Index-first pattern)
+58. [x] Actualizar SOUL.md PM V1.2: instruccion reforzada anti-thinking en texto
+59. [x] Deploy a VM + restart gateway — PM Bot responde correctamente
+60. [x] Test E2E: feedback registrado y consultado por Telegram — FUNCIONAL
+
+**Optimizacion de modelos (30-Mar-2026)**:
+
+61. [x] PM y Admin: modelo cambiado a `google/gemini-3-flash` (ahorro API)
+62. [x] PM: thinkingDefault set to `off` (requiere OpenClaw >= 2026.3.28)
+63. [x] AGENTS.md PM: instruccion de minimizar tool calls agregada
+64. [ ] Pendiente: configurar timezone Colombia (UTC-5) para todos los agentes
+
+**Tavily + Competitor Analysis + Google Form Briefs (30-Mar-2026)**:
+
+65. [x] Registrar Tavily MCP en mcporter.json (search, extract, map, crawl — 1,000 creditos/mes gratis)
+66. [x] Crear skill `competitor-analysis` para Estratega (Tavily + SWOT + 5 pasos)
+67. [x] Actualizar TOOLS.md Estratega V2: Tavily + Google Form briefs (Sheet ID, mapeo 29 cols, 3 comandos gog)
+68. [x] Actualizar brief-to-strategy SKILL.md: nuevo input "revisa el ultimo brief del formulario" (listar A:D → leer fila)
+69. [x] Deploy TOOLS.md + SKILL.md + competitor-analysis a VM + restart gateway
+70. [ ] Pendiente: test E2E — enviar "Revisa el ultimo brief del formulario" al Estratega por Telegram
+
 ---
 
 ## INVENTARIO DE 7 CAPAS (Post-Review 17-Mar-2026)
@@ -274,13 +310,15 @@
 | campaign-process.md | V1 | Flujo operacional — pendiente actualizar con 2 flujos reales (Strategy + CM) |
 | influencer-scoring.md | V1 | Criterios cuanti/cuali — pendiente actualizar con criterios reales de encuesta |
 | modash-playbook.md | V1 | Playbook completo de Modash |
-| **strategy-workflow.pdf** | **NUEVO** | Flujo Strategy team: 12 pasos, RAYO/ARCO/PRISMA/MAREA, metodologia investigacion, banco de prompts |
+| strategy-workflow.pdf | Creado | Flujo Strategy team: 12 pasos, RAYO/ARCO/PRISMA/MAREA, metodologia investigacion, banco de prompts |
 | README.md | V1.1 | Indice actualizado con nuevos archivos |
 | verticals/ (5 archivos) | V1 | consumo-masivo, belleza, inmobiliario, calzado, servicios |
-| **campaign-samples/** (3 archivos) | **NUEVO** | Manimoto Chocolate, Detodito Proteina (strategic thinkings), Acetaminofen MK (brief) |
+| campaign-samples/ (3 archivos) | Creado | Manimoto Chocolate, Detodito Proteina (strategic thinkings), Acetaminofen MK (brief) |
+| **brands/_template.md** | **NUEVO** | Template de brand voice profile (29-Mar-2026) |
+| **brands/ejemplo-farmaceutico-otc.md** | **NUEVO** | Ejemplo: Noraver Gripa — personalidad, tono, do's/don'ts, tipo de influencer |
 | Research/ (4 PDFs) | Referencia | Papers de IA en agencias, KPIs, agentic enterprise |
 
-**Veredicto**: 14 archivos + 4 PDFs + 3 campaign samples. Knowledge base enriquecido con documentos reales del equipo de Strategy (26-Mar-2026).
+**Veredicto**: 16 archivos + 4 PDFs + 3 campaign samples. Brand voice profiles agregados (29-Mar-2026).
 
 ### Capa 3: Adopcion (`adoption/`)
 | Archivo | Estado | Notas |
@@ -297,15 +335,18 @@
 ### Capa 4: Agentes (`agents/`)
 | Archivo | Estado | Notas |
 |---------|--------|-------|
-| openclaw.json | Desplegado | 3 agentes, Gemini 3.1 Pro, Telegram plugin, gog skill |
-| .env.example | Actualizado | 3 bot tokens documentados con bot handles y fechas |
-| **HANDOFF-PROTOCOL.md** | **NUEVO** | Protocolo de handoff entre agentes: flujo de campana, tabla de handoffs, patron de uso por rol, onboarding plan |
-| workspaces/estratega/ | 3 archivos | **AGENTS.md V2** (RAYO/ARCO/PRISMA/MAREA, Strategic Thinking, scoring real, research methodology), **SOUL.md V1**, USER.md |
-| workspaces/pm/ | 7 archivos | **AGENTS.md V2** (baseline real, team directory, 3 use cases, dream questions), SOUL.md V1.1, USER.md, IDENTITY.md, **TOOLS.md V3** (5 workflows frecuentes), MEMORY.md, HEARTBEAT.md |
-| workspaces/admin/ | 3 archivos | AGENTS.md V1, SOUL.md V1.1, USER.md V1 |
+| openclaw.json | Desplegado | 4 agentes, memorySearch + memoryFlush activos (30-Mar), modelos optimizados |
+| .env.example | Actualizado | 4 bot tokens documentados con bot handles y fechas |
+| HANDOFF-PROTOCOL.md | Creado | Protocolo de handoff entre agentes: flujo de campana, tabla de handoffs |
+| ONBOARDING-NORAVER.md | Creado | Caso practico onboarding con Noraver Gripa (script para Semana 4) |
+| workspaces/estratega/ | 6+ archivos | **AGENTS.md V3.1** (scouting senior + brand voice + memoria), SOUL.md V1, USER.md, **TOOLS.md V2** (gog + Notion + Tavily + Google Form briefs), MEMORY.md, **skills/** (brief-to-strategy, competitor-analysis) |
+| workspaces/pm/ | 7 archivos | **AGENTS.md V3** (reportes VP + feedback videos), **SOUL.md V1.2**, USER.md, IDENTITY.md, **TOOLS.md V4**, MEMORY.md, HEARTBEAT.md |
+| workspaces/admin/ | 4 archivos | **AGENTS.md V2** (flujo de caja + memoria), SOUL.md V1.1, USER.md, **MEMORY.md** (nuevo) |
+| workspaces/prometeo/ | 7 archivos | AGENTS.md V1, SOUL.md, USER.md, IDENTITY.md, TOOLS.md, MEMORY.md, HEARTBEAT.md |
+| mcp-servers/modash-mcp/ | Construido | MCP server Modash (7 tools), Node.js. NO desplegado (API tiene 0 creditos) |
 | n8n-workflows/README.md | Placeholder | Vacio — workflows planeados para Fase 1C |
 
-**Veredicto**: Estratega y PM listos para onboarding (V2 con data real de discovery). HANDOFF-PROTOCOL creado. **Pendiente**: desplegar V2 a la VM via SCP + restart gateway.
+**Veredicto**: Estratega V3.1 (3 skills + Tavily + Google Form briefs), PM V3 (6 workflows + feedback videos), Admin V2 (memoria). **memorySearch activo**. Tavily MCP activo (1,000/mes gratis). Modash MCP construido, evaluando Influencers Club como alternativa.
 
 ### Capa 5: Medicion (`measurement/`)
 | Archivo | Estado | Notas |
@@ -374,19 +415,27 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ### P0 — Tecnico (Pre-Onboarding)
 - [x] Agregar regla no-mostrar-razonamiento a SOUL.md de Admin (17-Mar-2026, review session)
-- [ ] **Configurar gog (Drive) para Estratega en openclaw.json** — decision 26-Mar
+- [x] Configurar gog (Drive) para Estratega en openclaw.json — ya configurado
 - [ ] **Copiar knowledge/ a workspace/estratega/knowledge/ en VM** — decision 26-Mar
-- [ ] **SCP todos los workspaces V2 a la VM** + restart gateway
+- [x] **SCP todos los workspaces V3 a la VM** + restart gateway — 29-Mar-2026
 - [ ] Probar sessions_send entre agentes — pendiente re-test
-- [ ] **Test E2E**: mandar preguntas tipo Noraver a cada bot y verificar respuestas V2
-- [ ] Desplegar SOUL.md V1.1 de Admin a la VM (pendiente SCP)
+- [ ] **Test E2E**: mandar preguntas tipo Noraver a cada bot y verificar respuestas V3
+- [x] Desplegar SOUL.md V1.1 de Admin a la VM — incluido en deploy V3 29-Mar
 - [ ] Migrar gateway de nohup a systemd estable
 
-### P1 — Modash MCP Server (post-onboarding)
-- [ ] MNL tiene API key de Modash (confirmado 26-Mar)
-- [ ] Construir MCP server para Modash (search, profile metrics, audience, brand safety)
-- [ ] Configurar en openclaw.json para Estratega
-- [ ] Prioridad: despues de onboarding exitoso
+### P1 — API de Influencers (Modash o Influencers Club)
+- [x] MNL tiene API key de Modash (confirmado 26-Mar)
+- [x] Construir MCP server para Modash — 7 tools — 29-Mar-2026
+- [ ] **BLOQUEADOR**: Modash API key tiene 0 creditos. Modash cuesta ~$16k USD/ano
+- [ ] **Evaluando alternativa**: Influencers Club (~$249/mes). Free tier no da acceso API (403). Requiere plan pago para endpoints.
+- [ ] Decision pendiente: Modash (activar creditos) vs Influencers Club (plan pago) vs otra alternativa
+- [ ] Cuando se defina: desplegar MCP a VM + registrar en mcporter + actualizar Estratega TOOLS.md
+
+### P1 — Pendientes de Carlos (sesion 29-Mar-2026)
+- [ ] **Google Sheet flujo de caja**: Carlos lo esta construyendo. Pedirle Sheet ID para conectar al Admin Bot via gog
+- [x] **Scouting nivel senior**: Prompt del Estratega V3 incorpora copy comercial con data — desplegado 29-Mar
+- [x] **Reportes para VPs**: Prompt del PM V3 incorpora framework 4 bloques analisis senior — desplegado 29-Mar
+- [ ] **Creditos Modash**: Pedirle a Carlos/equipo que contacten soporte Modash para activar API
 
 ### P1 — Alta Prioridad
 - [ ] **Workshop 1**: Onboarding PM Bot con equipo (Semana 3) — ver `adoption/TRAINING-PLAN.md`
@@ -397,10 +446,15 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] Reactivar device auth en dashboard
 
 ### P2 — Mejoras
-- [ ] Activar memorySearch en openclaw.json
+- [x] Activar memorySearch en openclaw.json — provider: gemini, activo 30-Mar-2026
+- [x] Activar memoryFlush (compaction) — guarda automaticamente antes de compactar
+- [x] Crear MEMORY.md para Estratega y Admin — semillas de memoria desplegadas
+- [x] Protocolo de memoria en AGENTS.md de Estratega y Admin — instrucciones de guardar/buscar
 - [ ] Agregar variables de entorno de optimizacion al servicio
 - [ ] Implementar pipeline de aprobaciones (Funcion 3 — PM-VALUE-ANALYSIS.md)
 - [ ] Implementar scoring de salud de campana (Funcion 4 — PM-VALUE-ANALYSIS.md)
+- [ ] Evaluar Honcho (memoria por usuario) para Fase 2 cuando equipo completo use los bots
+- [ ] Configurar timezone Colombia (UTC-5) para todos los agentes
 
 ---
 
@@ -421,11 +475,12 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] Validar vision + roadmap con Carlos (Semana 2)
 - [ ] Workshop 1: Onboarding PM Bot (Semana 3)
 
-**Mes 2 — Adopcion + Agentes V2**
+**Mes 2 — Adopcion + Agentes V3**
 - [ ] Shadow mode: equipo usa agentes en paralelo a proceso normal
-- [ ] Workshop 2: Modash + IA (cuando Estratega tenga tools)
-- [ ] Agentes V2 con feedback incorporado
-- [ ] Configurar MCP para Estratega y Admin
+- [ ] Workshop 2: Modash + IA (cuando Estratega tenga Modash MCP activo)
+- [x] Agentes V3 con directivas de Carlos incorporadas (scouting senior, reportes VP, flujo caja) — 29-Mar-2026
+- [x] Modash MCP server construido (7 tools) — 29-Mar. Pendiente: creditos API
+- [ ] Configurar MCP Modash para Estratega (cuando creditos activos) y gog para Admin
 
 **Mes 3 — Consolidacion + Primera Medicion**
 - [ ] Primer reporte asistido por IA
@@ -463,10 +518,20 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## NOTAS TECNICAS
 
-### LLM Configurado
-- **Primary**: `google/gemini-3.1-pro`
-- **Fallback**: `google/gemini-2.5-pro`
-- **Thinking**: `low` (razonamiento interno, no mostrado al usuario)
+### LLM Configurado (actualizado 30-Mar-2026)
+- **Estratega**: `google/gemini-3.1-pro` (thinking: low)
+- **PM**: `google/gemini-3-flash` (thinking: off) — optimizado para velocidad y costo
+- **Admin**: `google/gemini-3-flash` — optimizado para velocidad y costo
+- **Prometeo**: `github-copilot/gemini-3.1-pro-preview`
+- **Fallbacks**: gemini-2.5-pro (Estratega), gemini-2.5-flash (PM/Admin)
+
+### Sistema de Memoria (activado 30-Mar-2026)
+- **memorySearch**: provider "gemini" (embeddings via GEMINI_API_KEY existente, free tier)
+- **memoryFlush**: activo, softThresholdTokens 6000, prompt en espanol
+- **MEMORY.md**: Estratega, PM, Admin, Prometeo (los 4 agentes)
+- **Busqueda**: hibrida (vector + keywords), temporal decay 30 dias, MEMORY.md inmune a decay
+- **Backend**: builtin (SQLite por agente)
+- **Evaluacion futura**: Honcho (memoria por usuario) para Fase 2
 
 ### Proceso de despliegue (para referencia futura)
 1. Editar archivos localmente en `clients/mamba-negra/`
@@ -518,4 +583,79 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ---
 
-**Estado general (26-Mar-2026, post-discovery + agent consolidation)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **DISCOVERY COMPLETADO + AGENTES CONSOLIDADOS**: Estratega V2 (RAYO/ARCO/PRISMA/MAREA, Strategic Thinking, scoring real), PM V2 (baseline real, 5 workflows, team directory), HANDOFF-PROTOCOL creado, PROCESS-AI-MAP V2 con datos reales. NotebookLM con audio + briefing doc para Carlos. **Pendiente critico**: desplegar V2 a VM + restart gateway. **Proximo paso**: Onboarding equipo MNL (Semana 3).
+## SESSION LOG (29-Mar-2026) — Directivas de Carlos + Deploy V3 + Modash MCP
+
+### Contexto
+Sesion de planeacion con Carlos (29-Mar). Carlos se define como "retador": pone la vision AI FIRST, nosotros traducimos a tareas tecnicas.
+
+### 3 Requerimientos de Carlos
+1. **Scouting Nivel Senior** (Estratega): Leer toda la estrategia, entregar shortlist con copy comercial justificado con data real por cada perfil
+2. **Reportes para VPs** (PM): Insights de altisimo nivel cuanti+cuali, explicar POR QUE funciono un formato, recomendaciones directas
+3. **Flujo de Caja** (Admin): Conectar Google Sheet maestro de flujo de caja semanal (Carlos lo esta construyendo)
+
+### Cambios realizados
+1. **Estratega AGENTS.md V2 → V3**: Nueva seccion "Scouting Nivel Senior — Copy Comercial con Data" con proceso obligatorio, formato de copy por perfil, tabla resumen
+2. **PM AGENTS.md V2 → V3**: Caso 2 reescrito como "Reportes para VPs — Nivel Analista Senior" con 4 bloques: Executive Summary, Performance con analisis causal, Analisis por Formato/Plataforma, Recomendaciones accionables
+3. **Admin AGENTS.md V1 → V2**: Nueva seccion "Flujo de Caja Semanal" con formato de respuesta. Pendiente Sheet ID de Carlos
+4. **Deploy a VM**: SCP de los 3 AGENTS.md + restart gateway. Verificado con grep Version
+5. **Modash MCP Server construido**: 7 tools (account_info, search_instagram, search_tiktok, profile_report, ai_text_search, lookalikes, locations). Node.js + MCP SDK. En `agents/mcp-servers/modash-mcp/`
+6. **Modash API verificada**: Token valido pero cuenta con 0 creditos. MNL debe contactar soporte Modash
+
+---
+
+---
+
+## SESSION LOG (29-30 Mar 2026, continuacion) — Brand Voice + Skill + Memoria + Modash MCP
+
+### Cambios realizados (continuacion de sesion 29-Mar)
+1. **Modash MCP Server construido**: 7 tools (account_info, search_instagram, search_tiktok, profile_report, ai_text_search, lookalikes, locations). Node.js + MCP SDK. API key verificada pero 0 creditos — MNL debe contactar soporte Modash.
+2. **Brand voice profiles**: Template + ejemplo (Noraver Gripa) en `knowledge/brands/`. Desplegados a VM.
+3. **Skill `brief-to-strategy`**: Flujo de 8 pasos incluyendo co-creacion de voz de marca con Mar. En `estratega/skills/brief-to-strategy/SKILL.md`. Desplegado a VM.
+4. **Estratega AGENTS.md V3 → V3.1**: Seccion "Perfiles de Voz de Marca" + "Gestion de Memoria". MEMORY.md creado.
+5. **Admin AGENTS.md V2**: Seccion "Gestion de Memoria" agregada. MEMORY.md creado.
+6. **memorySearch activado** en openclaw.json: provider "gemini", builtin SQLite. Todos los agentes pueden buscar semanticamente en sus logs.
+7. **memoryFlush activado**: antes de compaction, el agente guarda automaticamente a memory/YYYY-MM-DD.md.
+8. **Gateway reiniciado** para tomar config de memoria.
+
+### Investigacion realizada
+- Modash API v1.5.0: 60+ endpoints documentados (Discovery, AI Search, Raw API)
+- OpenClaw skills ecosystem: 13,729 skills en ClawHub, evaluacion de relevancia para MNL
+- OpenClaw memory system: 3 backends (builtin, QMD, Honcho), configuracion documentada
+
+---
+
+---
+
+## SESSION LOG (30-Mar-2026, sesion 2) — Tavily + Competitor Analysis + Google Form Briefs
+
+### Cambios realizados
+1. **Tavily MCP registrado** en mcporter.json: `tavily-search`, `tavily-extract`, `tavily-map`, `tavily-crawl`. API key: tvly-dev-*. Free tier: 1,000 creditos/mes.
+2. **Skill `competitor-analysis`** creado: combina Tavily (busqueda web) con estructura SWOT. 5 pasos: definir alcance → buscar con Tavily → integrar datos manuales → estructurar (panorama + SWOT + gaps + recomendaciones) → conectar con campana.
+3. **TOOLS.md Estratega V2**: Seccion Tavily agregada + seccion Google Form briefs (Sheet ID: `1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw`, 29 columnas A-AC).
+4. **Skill `brief-to-strategy` actualizado**: Nuevo path "revisa el ultimo brief del formulario" — lee Google Form Sheet, lista primero (A:D), luego fila especifica (A<N>:AC<N>).
+5. **Investigacion Influencers Club**: Alternativa a Modash (~$249/mes vs ~$16k/ano). Free tier no da acceso API (403). Evaluacion en curso.
+
+### MCP Servers activos en mcporter.json (VM)
+| Server | Tools | Estado |
+|--------|-------|--------|
+| Notion | search, query, create, read pages/DBs | Activo |
+| Tavily | search, extract, map, crawl | Activo (1,000 creditos/mes gratis) |
+
+### Skills del Estratega (3 activos)
+| Skill | Trigger | Descripcion |
+|-------|---------|-------------|
+| `brief-to-strategy` | Brief nuevo, "arranca propuesta" | 8 pasos: brief → brand voice → metodologia → Strategic Thinking → contenido → scouting |
+| `competitor-analysis` | "Analiza competencia de [marca]" | Tavily search + estructura SWOT + gaps + recomendaciones |
+| `mcporter` | Infraestructura MCP | Puente a Notion y Tavily |
+
+### Fuentes de briefs del Estratega
+| Fuente | Como accede |
+|--------|-------------|
+| Google Form → Sheet | `gog sheets get 1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw` (29 columnas) |
+| Google Drive | `gog drive search "[marca] brief"` |
+| Notion | `mcporter call notion.API-post-search` |
+| Chat directo | El usuario pega el brief en Telegram |
+
+---
+
+**Estado general (30-Mar-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **SISTEMA LISTO PARA ONBOARDING**: Estratega V3.1 (3 skills: brief-to-strategy + competitor-analysis + mcporter, Tavily + Notion + gog, Google Form briefs, brand voice, memoria). PM V3 (reportes VP + feedback videos + 6 workflows Notion/Sheets). Admin V2 (flujo de caja + memoria). **memorySearch activo** (provider: gemini). Modash MCP construido pero bloqueado (0 creditos, evaluando Influencers Club como alternativa). **Bloqueadores**: (1) API de influencers (Modash o Influencers Club), (2) Sheet flujo de caja de Carlos. **Proximo paso**: Onboarding equipo MNL + activar API de influencers + recibir Sheet de Carlos.
