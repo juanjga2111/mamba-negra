@@ -57,7 +57,7 @@
 ### Software instalado en VM
 - Node.js v22.22.1 (via fnm)
 - npm 10.9.4
-- OpenClaw **2026.3.28** (instalacion nativa, sin Docker) — actualizado 30-Mar-2026
+- OpenClaw **2026.4.1** (instalacion nativa, sin Docker) — auto-actualizado ~1-Abr-2026. **BREAKING CHANGE**: `tools.exec.security` default cambio a `allowlist`. Fix aplicado: `security: "full"`, `ask: "off"`
 - Caddy v2.11.2 (reverse proxy HTTPS)
 - gog v0.12.0 (Google Workspace CLI — Drive, Sheets, Docs)
 - mcporter v0.7.3 (MCP server manager)
