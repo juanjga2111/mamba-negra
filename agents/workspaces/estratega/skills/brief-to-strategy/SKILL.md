@@ -1,17 +1,25 @@
 ---
 name: brief-to-strategy
-description: Activa cuando compartan un brief de cliente, pidan armar una propuesta estrategica, iniciar el pensamiento estrategico de una campana, o digan "arranca propuesta". Guia el flujo completo de brief a Strategic Thinking.
+description: Activa cuando compartan un brief de cliente, pidan armar una propuesta estrategica, iniciar el pensamiento estrategico de una campana, o digan "arranca propuesta". Coordina el flujo completo de brief a entrega final en 12 pasos, despachando trabajo a agentes especializados.
 ---
 
-# Brief-to-Strategy — Flujo Completo
+# Brief-to-Strategy — Flujo Orquestado de 12 Pasos
 
-Este skill guia el proceso de transformar un brief de cliente en una propuesta estrategica completa. Sigue los pasos en orden. NO te saltes pasos. Cada paso requiere respuesta del equipo antes de avanzar al siguiente.
+Este skill guia el proceso de transformar un brief de cliente en una propuesta estrategica completa, **coordinando agentes especializados** en cada fase.
+
+**ANTES DE EMPEZAR**: Lee `knowledge/campaign-framework.md` para tener el contexto completo del proceso, las metodologias y la metodologia de investigacion.
+
+El flujo es una guia, no una camisa de fuerza — hay proyectos que comprimiran pasos, otros que los expandiran. Lo esencial es respetar la logica: investigar antes de concluir, construir sobre verdades humanas, y alinear internamente antes de entregar.
 
 ---
 
-## PASO 1: RECIBIR Y ANALIZAR EL BRIEF
+## FASE 1: ANALISIS INICIAL (Orquestador ejecuta directamente)
 
-### Si te pegan el brief en el chat:
+### PASO 01: RECEPCION DEL BRIEF
+
+Momento de alineacion inicial. Aqui se entiende el encargo del cliente, sus expectativas y los plazos.
+
+#### Si te pegan el brief en el chat:
 Leelo completo y extrae:
 - Marca y producto
 - Objetivo de la campana (awareness, conversion, brand building, lanzamiento)
@@ -22,34 +30,24 @@ Leelo completo y extrae:
 - Cantidad de influencers (si lo mencionan)
 - Restricciones o mandatorios
 
-### Si te dicen "busca el brief en Drive":
-Usa gog para buscarlo:
+#### Si te dicen "busca el brief en Drive":
 ```bash
 gog drive search "[nombre marca] brief" --max 5
 ```
-Lee el documento y extrae lo mismo.
 
-### Si te dicen "busca en Notion":
-```bash
-mcporter call notion.API-post-search --args '{"query": "[nombre marca] brief"}'
-```
-
-### Si te dicen "revisa el ultimo brief del formulario" o "revisa el brief de [marca]":
-1. Primero lista los briefs disponibles (solo timestamp + email + marca, ahorra tokens):
+#### Si te dicen "revisa el ultimo brief del formulario" o "revisa el brief de [marca]":
+1. Lista los briefs disponibles (solo timestamp + email + marca):
 ```bash
 gog sheets get 1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw 'A:D' --json
 ```
-2. Identifica la fila correcta (la ultima, o la que coincida con la marca que piden).
+2. Identifica la fila correcta.
 3. Lee esa fila completa (reemplaza N con el numero de fila):
 ```bash
 gog sheets get 1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw 'A<N>:AC<N>' --json
 ```
-4. Extrae los campos del brief normalmente y continua con el Paso 1.
 
-**IMPORTANTE**: No leas todas las filas completas de una vez. Primero lista (A:D), luego lee solo la fila que necesitas (A<N>:AC<N>). Esto ahorra tokens.
-
-### Entregable del Paso 1:
-Presenta un **resumen ejecutivo del brief** en este formato:
+#### Entregable del Paso 01:
+Presenta un **resumen ejecutivo del brief**:
 
 ```
 BRIEF — [MARCA]
@@ -62,310 +60,235 @@ Influencers: [cantidad o "no especificado"]
 Restricciones: [do's y don'ts mencionados]
 ```
 
-Luego identifica **info faltante para el contra-brief** — lo que necesitamos pedirle al cliente. Minimo evalua si falta:
-1. Target especifico (edad, genero, ubicacion, NSE, momento de consumo)
-2. Plataformas priorizadas
-3. Tipo de contenido (organico, pauta, UGC)
-4. Do's y Don'ts regulatorios del producto
-5. KPIs esperados
-6. Referencias de campanas anteriores de la marca
-7. Exclusividad (pueden los creadores trabajar con competidores?)
+Luego identifica **info faltante para el contra-brief**.
 
-**Pregunta al equipo**: "Este es mi resumen del brief. Falta algo? Listo para armar el checklist de contra-brief?"
+**Pregunta al equipo**: "Este es mi resumen del brief. Falta algo? Listo para avanzar?"
 
 ---
 
-## PASO 2: VOZ DE MARCA — VERIFICAR O CO-CREAR
+### PASO 02: IDENTIFICACION DE RETOS Y OBJETIVO
 
-### Buscar perfil existente:
-Busca en knowledge/brands/ si ya existe un perfil para esta marca. Si tienes acceso a Drive:
-```bash
-gog drive search "brand voice [marca]" --max 5
+Mapea con claridad el **problema real del cliente**, separando sintomas de causas.
+
+#### Entregable:
+```
+RETOS ESTRATEGICOS — [MARCA]
+
+Problema del cliente (lo que pide): [1-2 lineas]
+Problema real (lo que necesita): [1-2 lineas]
+
+Reto 1: [reto de ejecucion estrategica, no del cliente]
+Reto 2: [reto de ejecucion estrategica]
+
+Objetivo norte: [el norte que guia la campana]
 ```
 
-### Si EXISTE perfil de voz:
-Presenta un resumen rapido:
-```
-VOZ DE MARCA — [MARCA]
-Personalidad: [3 adjetivos]
-Tono: [registro]
-Audiencia core: [1 linea]
-Do's y Don'ts clave: [los mas importantes]
-```
+**IMPORTANTE**: Los retos son de EJECUCION ESTRATEGICA de Mamba Negra como agencia. Enfocate en: como traducir el problema en contenido relevante, como lograr conexion real con la audiencia, como usar influencers mas alla de lo superficial.
 
-**Pregunta a Mar**: "Este es el perfil de voz que tenemos para [marca]. Sigue vigente para esta campana o hay algo que ajustar?"
+#### Guia de calidad (Banco de Prompts MNL):
 
-Si Mar confirma, avanza al Paso 3. Si hay ajustes, actualiza y confirma de nuevo.
+**Para retos**: Identifica tensiones estrategicas reales, no sintomas. Para cada reto explica que esta pasando realmente (mas alla de lo evidente), por que es un problema para la marca, y que lo hace dificil de resolver. Evita cosas obvias. Output esperado: retos con filo (tensiones), no listas de sintomas.
 
-### Si NO existe perfil de voz:
-Dile a Mar: "No tenemos perfil de voz para [marca]. Voy a proponer uno basado en lo que dice el brief. Necesito que lo valides."
+**Para objetivo**: Construye un objetivo que vaya mas alla de "posicionar" o "dar a conocer". Debe responder al problema real del cliente, integrar el rol de los influencers como medio principal, y tener una intencion estrategica clara (que cambio queremos generar en la audiencia). Si ya tienes insights y retos, el objetivo debe conectar los tres niveles: problema del cliente + verdad del consumidor + solucion desde influencer marketing.
 
-Genera un borrador basado en el brief, extrayendo:
-- Personalidad probable de la marca (por el tono del brief, la categoria, el target)
-- Audiencia descrita
-- Restricciones mencionadas
-- Tipo de contenido que piden
-
-Presenta el borrador usando la estructura del template (personalidad, tono, frases SI/NO, audiencia, look & feel, do's/don'ts).
-
-**Pregunta a Mar**: "Este es mi borrador de voz de marca para [marca]. Que ajustarias? Hay algo del tono que yo no pueda saber solo con el brief?"
-
-Incorpora el feedback de Mar y confirma el perfil final antes de avanzar.
+**Pregunta al equipo**: "Estos son los retos que identifico. Se alinean con lo que ven ustedes?"
 
 ---
 
-## PASO 3: RECOMENDAR METODOLOGIA
+### PASO 03: SESION DE EXPLORACION DE IDEAS (10 min)
 
-Evalua el brief contra los 4 tipos de campana:
+Detecta oportunidades y comunica al equipo que tipo de influencers imaginas para la campana.
 
-| Factor | RAYO | ARCO | PRISMA | MAREA |
-|--------|------|------|--------|-------|
-| Timeline < 2 semanas | Si | No | No | No |
-| Narrativa en fases | No | Si | Opcional | No |
-| Alto volumen de influencers | No | Opcional | Si | Si |
-| Presupuesto limitado | Si | Depende | No | No |
-| Awareness masivo | No | Depende | Si | Si |
-| Presencia sostenida | No | No | No | Si |
+#### Entregable:
+- 3-5 direcciones iniciales de como podria verse la campana
+- Tipo de influencers que imaginas (tier, nicho, tono, plataforma)
+- Angulos iniciales a explorar en la investigacion
 
-Presenta tu recomendacion con la justificacion:
-
+Si necesitas un dato rapido para fundamentar alguna direccion, usa `sessions_send` a Research:
 ```
-METODOLOGIA RECOMENDADA: [RAYO/ARCO/PRISMA/MAREA]
-Por que: [2-3 razones basadas en el brief]
-Alternativa: [si hay otra viable, mencionala]
-Fases sugeridas: [si es ARCO o PRISMA, define las fases]
+sessions_send("research", "Dato rapido: cual es el tamano del mercado de [categoria] en Colombia? Hay alguna tendencia relevante reciente?")
 ```
 
-**Pregunta a Mar**: "Te hace sentido esta metodologia o ves otra opcion?"
+**Pregunta al equipo**: "Estas son mis primeras direcciones. Alguna les resuena mas? Hay algo que ya tengan en mente?"
 
 ---
 
-## PASO 4: INVESTIGACION (SPARRING CON MAR)
+## FASE 2: DESPACHO A ESPECIALISTAS (Orquestador coordina)
 
-Mar hace su propia investigacion en Perplexity, Google Trends, Answer The Public. Tu rol aqui es **sparring partner**, no investigador principal.
+### PASO 04: INVESTIGACION — sessions_spawn → Research Agent
 
-### Cuando Mar te comparta hallazgos de su investigacion:
-1. Analiza lo que encontro — identifica patrones, tensiones culturales, oportunidades
-2. Conecta con el brief y el target — que hallazgos son mas relevantes para ESTA campana
-3. Sugiere angulos a profundizar — "Esto es interesante, te sugiero explorar [X] porque [razon]"
-4. Aporta contexto de campanas similares si hay en Drive
+Lanza Research Agent para la investigacion profunda. Opcionalmente, lanza Influencer Analyst en paralelo para explorar perfiles disponibles.
 
-### Cuando Mar te pida ayuda directa:
-Apoya con lo que tienes disponible:
-- Buscar campanas pasadas similares en Drive
-- Consultar MAMBA FRIENDS en Notion para influencers con historial en la categoria
-- Analizar tendencias basado en lo que Mar te comparta
+#### Spawn Research:
+```
+sessions_spawn("research", "Investiga la marca [MARCA] en el mercado [CATEGORIA] de Colombia. Contexto del brief: [resumen ejecutivo del paso 01]. Retos identificados: [del paso 02]. Direcciones iniciales: [del paso 03]. Necesito: Hard Data (papers, reportes, estudios de mercado) + Social Data (tendencias, conversaciones en redes, percepcion). Enfocate en: [angulos especificos que surgieron en paso 03].")
+```
 
-**NO pretendas investigar en internet** — si necesitas datos que no tienes, dile a Mar que lo busque en Perplexity y te comparta los hallazgos.
+#### Spawn Influencer (opcional, en paralelo):
+```
+sessions_spawn("influencer", "Explora que perfiles de influencers hay disponibles para una campana de [MARCA]. Categoria: [categoria]. Target: [descripcion]. Plataformas: [IG/TikTok]. Tipo imaginado: [del paso 03]. NO armes shortlist final todavia — solo un mapeo inicial de que hay en el mercado.")
+```
+
+**Reportar al equipo**: "Lance Research para la investigacion profunda y Influencer para un mapeo inicial de perfiles. Cuando terminen, sigo con Creative."
+
+**Espera resultados de Research antes de avanzar a Paso 05.**
 
 ---
 
-## PASO 5: CONSTRUIR EL STRATEGIC THINKING
+### PASO 05-09: CREATIVIDAD — sessions_spawn → Creative Strategist
 
-Guia la construccion paso a paso. Para cada seccion, propone un borrador y espera validacion de Mar.
+Con los hallazgos de Research, lanza Creative Strategist para los pasos creativos.
 
-### 5.1 — Marca
-- Marca principal y apellido de marca (si aplica)
-- Contexto de la marca en el mercado colombiano
-
-### 5.2 — Target
-- Demografico: edad, genero, ubicacion, NSE
-- Psicografico: estilo de vida, valores, intereses
-- Momento de consumo: cuando y donde
-
-**Usa el perfil de voz** del Paso 2 para alinear el target con la audiencia core de la marca.
-
-### 5.3 — Fuente de Volumen
-- De donde vienen los clientes potenciales
-- A quien le "quitamos" atencion o consumidores
-
-### 5.4 — Insight
-Propone 3-4 opciones de insight con analisis de pros/cons para cada una:
-
+#### Spawn Creative:
 ```
-OPCION 1: "[insight]"
-- Fortaleza: [por que conecta]
-- Riesgo: [posible problema]
+sessions_spawn("creative", "Construye propuesta creativa completa para [MARCA].
 
-OPCION 2: "[insight]"
-...
+Brief resumido: [del paso 01]
+Retos identificados: [del paso 02]
+Direcciones iniciales: [del paso 03]
+Research completo: [pegar hallazgos clave de Research]
 
-OPCION NUEVA (del bot): "[insight que Mar no considero]"
-- Fortaleza: ...
+Necesito que ejecutes:
+- Paso 05: Hallazgo del insight (3-4 opciones en lenguaje coloquial)
+- Paso 06: Identificativo de marca (2-3 propuestas)
+- Paso 07: Construccion del concepto (minimo 3 proposiciones)
+- Paso 08: Definicion de metodologia (RAYO/ARCO/PRISMA/MAREA con justificacion)
+- Paso 09: Ideas de contenido por fase (con referencias visuales si es posible)
+
+Brand voice: [si existe perfil, incluir resumen. Si no, mencionar que no hay y que proponga uno.]")
 ```
 
-**Pregunta a Mar**: "Cual te conecta mas? Quieres que profundice alguno?"
+**Reportar al equipo**: "Lance Creative con todo el research. Esta trabajando en insight, concepto, metodologia e ideas de contenido."
 
-### 5.5 — Beneficios
-- Mandatorios (lo que el cliente exige comunicar)
-- Diferenciales (lo que realmente distingue y puede ser eje creativo)
-
-### 5.6 — Look & Feel
-Alinear con el **perfil de voz de marca** del Paso 2:
-- Estetica visual coherente con la personalidad de marca
-- Tipo de produccion sugerido
-- Referentes de contenido
-
-### 5.7 — Producto / Portafolio
-- Productos a destacar con prioridades
-
-### 5.8 — Proposiciones
-Genera minimo 3 proposiciones (angulos estrategicos):
-
-```
-PROPOSICION 1: "[nombre/concepto]"
-- Concepto: [explicacion]
-- Tono: [como se siente]
-- Tipo de contenido: [formatos sugeridos]
-- Por que funciona: [conexion con insight + target + marca]
-
-PROPOSICION 2: ...
-PROPOSICION 3: ...
-```
-
-**Pregunta a Mar**: "Cual resuena mas? Quieres que desarrolle alguna mas a fondo?"
+Si Creative necesita datos adicionales durante su trabajo, usara `sessions_send` a Research internamente.
 
 ---
 
-## PASO 6: IDEAS DE CONTENIDO POR FASE
+## FASE 3: SINTESIS Y ENTREGA (Orquestador ejecuta directamente)
 
-Una vez Mar elija el concepto y la metodologia tenga fases definidas, genera ideas de contenido para cada fase:
+### PASO 10: ENTREGA PARCIAL — Orquestador compila
 
+Sintetiza los resultados de Research + Creative + Influencer (si se lanzo) en un entregable consolidado.
+
+**NO pegues los outputs crudos de los workers**. Sintetiza, conecta y presenta con estructura.
+
+#### Entregable:
 ```
-FASE 1: [nombre de la fase] (Semana X-Y)
-- Idea A: "[titulo/concepto del contenido]" — formato [Reel/TikTok/Story/Carousel]
-- Idea B: ...
-- Idea C: ...
+STRATEGIC THINKING — [MARCA] — Resumen para alineacion
 
-FASE 2: [nombre de la fase] (Semana X-Y)
-- Idea D: ...
+Retos: [resumen, del paso 02]
+Research clave: [sintesis de hallazgos de Research — 3-5 puntos]
+Insight: "[el propuesto por Creative]"
+Identificativo: [el propuesto por Creative]
+Concepto: "[proposicion elegida por Creative]"
+Metodologia: [RAYO/ARCO/PRISMA/MAREA — justificacion de Creative]
+Fases: [resumen con timeline]
+Ideas de contenido: [resumen por fase]
+Perfiles disponibles: [si Influencer mapeo, resumen de lo que hay]
 ```
 
-Para cada idea, alinear con:
-- El insight elegido
-- La voz de marca del Paso 2
-- Los do's y don'ts regulatorios
-- El tipo de influencer ideal (del perfil de voz)
+**Pregunta**: "Estamos alineados para avanzar? Algo que ajustar?"
 
 ---
 
-## PASO 7: CRITERIOS DE SCOUTING
+### PASO 11: FEEDBACK Y CORRECCIONES — Orquestador gestiona
 
-Con la estrategia definida, genera los criterios de busqueda para el CM:
+Incorpora los ajustes derivados de la revision del equipo.
 
-```
-CRITERIOS DE SCOUTING — [MARCA]
+- Si el feedback afecta la investigacion → re-spawn Research con la nueva direccion
+- Si el feedback afecta el concepto/insight → re-spawn Creative con los ajustes
+- Si el feedback afecta perfiles de influencers → re-spawn Influencer con nuevos criterios
+- Si es un ajuste menor → hazlo tu directamente
 
-Filtros Modash:
-- Plataforma: [IG / TikTok / ambas]
-- Pais: Colombia
-- Seguidores: [rango]
-- Engagement Rate: minimo [X]%
-- Audiencia: [X]% Colombia, [X]% edad target, [X]% genero target
-
-Tipo de contenido:
-- [estilo alineado con la voz de marca]
-
-Background check:
-- [competidores especificos a verificar]
-- [categorias rechazadas]
-
-Nota para el CM: Cuando tengas candidatos, mandamelos y te los evaluo con copy comercial.
-```
+El proceso no termina hasta que el equipo este alineado.
 
 ---
 
-## PASO 8: GUARDAR EN DRIVE + ACTUALIZAR INDEX
+### PASO 12: ENTREGA FINAL + GUARDAR EN DRIVE
 
-### Campaign Strategy Index
-- **Sheet ID**: `1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c`
+Cierre formal. Documento completo, alineado y listo para el cliente.
+
+#### Guardar en Drive y actualizar Index
+
+- **Campaign Strategy Index Sheet**: `1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c`
 - **Carpeta Campanas**: `1YFzhxdq0cZ2b6nIOpLrrtY6rxONGK63Z`
-- **Columnas**: A=Campana, B=Marca, C=Folder ID, D=Estado General, E=Brief, F=Brand Voice, G=Metodologia, H=Strategic Thinking, I=Criterios Scouting, J=Shortlist, K=Propuesta, L=Ultima Actualizacion
 
-### Al completar cada paso, guarda un Google Doc y actualiza el Index
-
-**8.1 — Verificar si la campana ya existe en el Index:**
+**12.1 — Verificar si la campana ya existe en el Index:**
 ```bash
 gog sheets get 1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c "Sheet1!A:L" --json
 ```
 
-**8.2 — Buscar la carpeta de la campana en Drive:**
-```bash
-gog drive search "trashed=false and '1YFzhxdq0cZ2b6nIOpLrrtY6rxONGK63Z' in parents and name='[MARCA]'" --max 5
-```
-Si la carpeta ya existe (como Noraver, Fruco, etc.), usa ese Folder ID. Si no existe, necesitarias que alguien la cree en Drive.
-
-**8.3 — Crear Google Doc con las conclusiones del paso completado:**
-
-Usa `gog docs create` para crear un documento con el contenido del paso. Nombra los docs asi:
-- `01-Brief-Analysis — [MARCA]`
-- `02-Brand-Voice — [MARCA]`
-- `03-Strategic-Thinking — [MARCA]`
-- `04-Criterios-Scouting — [MARCA]`
-- `05-Ideas-Contenido — [MARCA]`
-
+**12.2 — Crear Google Docs con las conclusiones:**
 ```bash
 gog docs create "01-Brief-Analysis — [MARCA]"
+gog docs append <docId> "contenido"
 ```
-Luego escribe el contenido:
+
+Nombrar docs: `01-Brief-Analysis`, `02-Retos`, `03-Strategic-Thinking`, `04-Criterios-Scouting`, `05-Ideas-Contenido`
+
+**12.3 — Actualizar el Index Sheet:**
 ```bash
-gog docs append <docId> "contenido del analisis"
+gog sheets append 1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c "Sheet1!A:L" --values-json '[["[CAMPANA]","[MARCA]","[FOLDER_ID]","Entregada","Done","Done","Done","Done","Done","","","2026-04-02"]]' --insert INSERT_ROWS
 ```
 
-**8.4 — Actualizar el Index Sheet:**
-
-Si es campana nueva (no existe en el Index), agregar fila:
-```bash
-gog sheets append 1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c "Sheet1!A:L" --values-json '[["[CAMPANA]","[MARCA]","[FOLDER_ID]","En estrategia","Done","Pendiente","","","","","","2026-03-31"]]' --insert INSERT_ROWS
+#### Resumen final:
 ```
-
-Si ya existe, actualizar las columnas correspondientes:
-```bash
-gog sheets update 1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c "Sheet1!E<ROW>:E<ROW>" --values-json '[["Done"]]' --input USER_ENTERED
-gog sheets update 1NFwQYJXqrODqTUvjzd9rGxBgZoN1k1YogzqUDo9iH4c "Sheet1!L<ROW>:L<ROW>" --values-json '[["2026-03-31"]]' --input USER_ENTERED
-```
-
-### Valores validos por columna
-
-| Columna | Valores |
-|---------|---------|
-| E-K (pasos) | `Pendiente` / `En progreso` / `Done` |
-| D (Estado General) | `Brief recibido` / `En estrategia` / `Scouting` / `Propuesta` / `Entregada` |
-
-### Resumen final al usuario
-
-Despues de guardar, presenta:
-
-```
-STRATEGIC THINKING — [MARCA] — Resumen
+STRATEGIC THINKING — [MARCA] — Entrega Final
 
 Metodologia: [RAYO/ARCO/PRISMA/MAREA]
 Insight: "[el elegido]"
+Identificativo: [el elegido]
 Concepto: "[proposicion elegida]"
-Voz de marca: [3 adjetivos]
-Fases: [resumen de fases con timeline]
-Criterios de scouting: [resumen 1 linea]
+Fases: [resumen con timeline]
+Criterios de scouting: [resumen]
 
-Documentos guardados en Drive:
-- 01-Brief-Analysis: [link o "guardado"]
-- 02-Brand-Voice: [link o "guardado"]
-- ...
-
-Index actualizado: [MARCA] — Estado: [estado actual]
+Documentos en Drive: [links]
+Index actualizado: [estado]
 
 Proximos pasos:
-1. [siguiente accion]
-2. [siguiente accion]
+1. [siguiente accion — ej: "Influencer arma shortlist final"]
+2. [siguiente accion — ej: "PM crea cronograma"]
 ```
+
+---
+
+## PASO EXTRA: CRITERIOS DE SCOUTING
+
+Cuando el equipo necesite bajar la estrategia a criterios de busqueda para el CM, spawna Influencer Analyst:
+
+```
+sessions_spawn("influencer", "Arma shortlist final para [MARCA]. Estrategia completa: [pegar resumen del paso 10]. Insight: [insight]. Concepto: [concepto]. Plataformas: [IG/TikTok]. Target: [descripcion]. Necesito: shortlist con copy comercial por perfil (directiva Carlos) + criterios de scouting para CMs + tabla resumen.")
+```
+
+---
+
+## PASO EXTRA: VOZ DE MARCA — VERIFICAR O CO-CREAR
+
+Ejecutar cuando se necesite definir la voz de marca (puede ir entre el paso 01 y 04):
+
+### Buscar perfil existente:
+```bash
+gog drive search "brand voice [marca]" --max 5
+```
+
+### Si NO existe perfil de voz:
+Dile a Mar: "No tenemos perfil de voz para [marca]. Voy a proponer uno basado en el brief."
+
+Genera un borrador: personalidad (3 adjetivos), tono, frases SI/NO, audiencia core, look & feel, do's/don'ts.
+
+**Pregunta a Mar**: "Que ajustarias? Hay algo del tono que yo no pueda saber solo con el brief?"
 
 ---
 
 ## REGLAS DEL FLUJO
 
 1. **No te saltes pasos** — cada paso depende del anterior
-2. **Espera validacion** — no avances al siguiente paso sin que Mar o el equipo confirmen
-3. **Usa la voz de marca** — todo lo que generes (insights, proposiciones, ideas de contenido) debe estar alineado con el perfil del Paso 2
-4. **Mar decide** — tu propones, ella elige. No impongas opciones
-5. **Si falta info, pregunta** — no inventes datos. Si no tienes algo, di que falta
-6. **Guarda en Drive despues de cada paso mayor** — no esperes al final. Brief analizado → guarda Doc + actualiza Index. Brand voice definida → guarda Doc + actualiza Index.
-7. **Consulta el Index antes de empezar** — si alguien ya trabajo en esta campana, lee los docs existentes antes de proponer algo nuevo
+2. **Espera validacion** — no avances sin que Mar o el equipo confirmen
+3. **Research antes de Creative** — no spawnes Creative sin tener investigacion
+4. **Mar decide** — tu propones y coordinas, ella elige. No impongas opciones
+5. **Si falta info, pregunta** — no inventes datos
+6. **Guarda en Drive despues del paso 12** — documenta la entrega completa
+7. **Consulta el Index antes de empezar** — si alguien ya trabajo en esta campana, lee los docs existentes
+8. **Lee knowledge/campaign-framework.md** — es tu fuente de verdad para el proceso completo
+9. **Siempre da contexto a los workers** — incluye brief, retos y lo que necesitas en cada spawn
+10. **Sintetiza, no copies** — cuando reportes resultados de workers, extrae lo importante

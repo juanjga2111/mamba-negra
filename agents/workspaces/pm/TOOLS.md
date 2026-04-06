@@ -2,61 +2,42 @@
 
 ## Google Workspace (gog)
 
-Tienes acceso a Drive, Sheets y Docs de Mamba Negra via la herramienta `gog`.
+Cuenta: ia@mambanegramkt.com — Servicios: drive, sheets, docs
 
-- **Cuenta**: ia@mambanegramkt.com
-- **Servicios**: drive, sheets, docs
+### Sintaxis rapida
 
-### Comandos frecuentes
-
-**Drive** — buscar archivos:
+**Drive — buscar:**
 ```bash
 gog drive search "brief pepsi" --max 10
 ```
 
-**Sheets** — leer datos de un sheet:
+**Sheets — leer:**
 ```bash
 gog sheets get <sheetId> "Tab!A1:D10" --json
 ```
 
-**Sheets** — escribir datos:
+**Sheets — escribir:**
 ```bash
 gog sheets update <sheetId> "Tab!A1:B2" --values-json '[["A","B"],["1","2"]]' --input USER_ENTERED
 ```
 
-**Sheets** — agregar filas:
+**Sheets — agregar filas:**
 ```bash
 gog sheets append <sheetId> "Tab!A:C" --values-json '[["x","y","z"]]' --insert INSERT_ROWS
 ```
 
-**Docs** — leer un documento:
+**Docs — leer:**
 ```bash
 gog docs cat <docId>
 ```
 
-### Cuando usar Drive
-- Buscar briefs de clientes o campanas
-- Acceder a cronogramas, contratos, reportes
-- Verificar que las carpetas de campana esten completas
-
-### Cuando usar Sheets
-- Consultar el sheet master de proyectos/campanas
-- Actualizar estado de tareas o tracking
-- Leer datos de KPIs o metricas
-
 ---
 
-## Notion (MCP via mcporter)
+## Notion (mcporter)
 
-Tienes acceso al workspace de Notion de Mamba Negra Latam.
+Workspace de Mamba Negra Latam. Todos los comandos: `mcporter call notion.<tool> --args '<JSON>'`.
 
-### IMPORTANTE — Sintaxis de mcporter
-
-Todos los comandos Notion se ejecutan con `mcporter call notion.<tool>`. Los argumentos se pasan con `--args` y un JSON string. **NO inventes parametros** — usa exactamente los ejemplos de abajo.
-
-### Bases de datos disponibles (IDs verificados)
-
-#### Tableros de TRAFICO (tareas de ejecucion por CM)
+### Tableros TRAFICO (tareas de ejecucion por CM)
 
 | CM | Database ID |
 |----|-------------|
@@ -70,18 +51,7 @@ Todos los comandos Notion se ejecutan con `mcporter call notion.<tool>`. Los arg
 | Lau Criales | `31982aed-93c7-8109-bbb7-000bb6590ee6` |
 | Lau Reyes | `31982aed-93c7-8151-b2af-000b490e6b8d` |
 
-**Campos en TRAFICO y SOLICITUD**:
-- Tarea (title)
-- Estado (status) — valores: "Sin empezar", "En curso", "Listo"
-- Marca (multi_select)
-- Prioridad (select) — valores: "Alta", "Media", "Baja"
-- Fecha limite (date)
-- Asignado por (people) — **requiere user ID de Notion, ver directorio abajo**
-- Descripcion (rich_text)
-- Canva (url)
-- Excel (url)
-
-#### Tableros de SOLICITUD (requests por CM)
+### Tableros SOLICITUD (requests por CM)
 
 | CM | Database ID |
 |----|-------------|
@@ -94,341 +64,126 @@ Todos los comandos Notion se ejecutan con `mcporter call notion.<tool>`. Los arg
 | Lau Criales | `31982aed-93c7-81d1-bb55-000b21cbec20` |
 | Lau Reyes | `31982aed-93c7-81e1-af7a-000bfe0a1041` |
 
-#### Directorio del equipo (Notion user IDs)
+### Campos en TRAFICO y SOLICITUD
 
-Para asignar personas en el campo "Asignado por" (tipo people), necesitas el user ID:
+- Tarea (title), Estado (status: "Sin empezar"/"En curso"/"Listo"), Marca (multi_select), Prioridad (select: "Alta"/"Media"/"Baja"), Fecha limite (date), Asignado por (people), Descripcion (rich_text), Canva (url), Excel (url)
 
-| Nombre | Email | Notion User ID |
-|--------|-------|----------------|
-| Maria Camila Skinner | m.skinner@mambanegramkt.com | `06d7928a-8a67-443f-9328-7a0becfce023` |
-| Mariana Monroy | m.monroy@mambanegramkt.com | `31ed872b-594c-815e-80a4-0002189b3a38` |
-| Laura Criales | l.criales@mambanegramkt.com | `31ed872b-594c-8180-9f4c-00020e2d7794` |
-| Laura Isabel Zapata | l.zapata@mambanegramkt.com | `229d872b-594c-81d6-8b82-00024031f023` |
-| Camila Benavides | c.benavides@mambanegramkt.com | `22cd872b-594c-81a8-ab14-00021e335d5c` |
-| Carlos Gonzalez | c.gonzalez@mambanegramkt.com | `232d872b-594c-81b1-95be-000261e92d5e` |
-| Juan Guillermo Mejia | j.mejia@mambanegramkt.com | `31bd872b-594c-8192-b7cd-0002552fd140` |
-| ia ia (bot PM) | ia@mambanegramkt.com | `321d872b-594c-81ed-a9cf-00024f9eaca8` |
+### Directorio del equipo (Notion user IDs)
 
-**Ejemplo — crear tarea asignada a Laura Criales en SOLICITUD Creative:**
+| Nombre | Notion User ID |
+|--------|----------------|
+| Maria Camila Skinner | `06d7928a-8a67-443f-9328-7a0becfce023` |
+| Mariana Monroy | `31ed872b-594c-815e-80a4-0002189b3a38` |
+| Laura Criales | `31ed872b-594c-8180-9f4c-00020e2d7794` |
+| Laura Isabel Zapata | `229d872b-594c-81d6-8b82-00024031f023` |
+| Camila Benavides | `22cd872b-594c-81a8-ab14-00021e335d5c` |
+| Carlos Gonzalez | `232d872b-594c-81b1-95be-000261e92d5e` |
+| Juan Guillermo Mejia | `31bd872b-594c-8192-b7cd-0002552fd140` |
+| ia ia (bot PM) | `321d872b-594c-81ed-a9cf-00024f9eaca8` |
+
+### Otras bases de datos
+
+| Nombre | Database ID |
+|--------|-------------|
+| Calendario | `31982aed-93c7-80a2-ad8b-000b5a3e9db8` |
+| MAMBA FRIENDS | `31982aed-93c7-80a3-b89d-000b2186b049` |
+
+Pagina raiz MNL (accesible por la integracion): `f9aa451a-eae8-8272-9423-81419cc00592`
+Pagina raiz legacy (NO accesible): `31982aed-93c7-8008-82a9-dab06e04aae3`
+
+### Crear bases de datos (databases)
+
+Puedes crear nuevas databases dentro de cualquier pagina de Notion:
 
 ```bash
-mcporter call notion.API-post-page --args '{"parent": {"database_id": "31982aed-93c7-8133-99e1-000bb95b379a"}, "properties": {"Tarea": {"title": [{"text": {"content": "Nombre de la tarea"}}]}, "Asignado por": {"people": [{"id": "31ed872b-594c-8180-9f4c-00020e2d7794"}]}, "Estado": {"status": {"name": "Sin empezar"}}, "Prioridad": {"select": {"name": "Alta"}}}}'
+mcporter call notion.API-create-a-database --args '{
+  "parent": {"type": "page_id", "page_id": "<PAGE_ID>"},
+  "title": [{"text": {"content": "Nombre de la Base de Datos"}}],
+  "properties": {
+    "Nombre": {"title": {}},
+    "Estado": {"status": {"options": [{"name": "Sin empezar", "color": "red"}, {"name": "En curso", "color": "yellow"}, {"name": "Listo", "color": "green"}]}},
+    "Prioridad": {"select": {"options": [{"name": "Alta", "color": "red"}, {"name": "Media", "color": "yellow"}, {"name": "Baja", "color": "green"}]}},
+    "Fecha": {"date": {}},
+    "Responsable": {"people": {}},
+    "Notas": {"rich_text": {}}
+  }
+}'
 ```
 
-#### Otras bases de datos
+**Tipos de propiedad soportados**: title, rich_text, number, select, multi_select, date, people, checkbox, url, email, phone_number, status, files, relation
 
-| Nombre | Database ID | Campos |
-|--------|-------------|--------|
-| Calendario | `31982aed-93c7-80a2-ad8b-000b5a3e9db8` | Nombre (title), Fecha (date), Etiquetas (multi_select) |
-| MAMBA FRIENDS | `31982aed-93c7-80a3-b89d-000b2186b049` | Nombre (title), Estado (status), Etiquetas (multi_select) |
+**Para crear dentro de la pagina raiz de MNL**, usa `"page_id": "f9aa451a-eae8-8272-9423-81419cc00592"`.
 
-#### Pagina raiz
+### Consultar y modificar estructura de databases
 
-- **Mamba Negra Latam**: `31982aed-93c7-8008-82a9-dab06e04aae3`
+**Obtener schema de una database:**
+```bash
+mcporter call notion.API-retrieve-a-database --args '{"database_id": "<DB_ID>"}'
+```
 
-### Comandos de mcporter para Notion — COPIAR EXACTO
+**Actualizar schema (agregar/modificar columnas):**
+```bash
+mcporter call notion.API-update-a-database --args '{"database_id": "<DB_ID>", "properties": {"Nueva Columna": {"rich_text": {}}}}'
+```
 
-**Buscar paginas y databases:**
+### Comandos Notion
+
+**Consultar tareas de un CM:**
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<DB_ID>"}'
+```
+
+**Filtrar por estado (no terminadas):**
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<DB_ID>", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
+```
+
+**Filtrar por marca:**
+```bash
+mcporter call notion.API-query-data-source --args '{"data_source_id": "<DB_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "Pepsi"}}}'
+```
+
+**Crear tarea:**
+```bash
+mcporter call notion.API-post-page --args '{"parent": {"database_id": "<DB_ID>"}, "properties": {"Tarea": {"title": [{"text": {"content": "Nombre"}}]}, "Estado": {"status": {"name": "Sin empezar"}}, "Prioridad": {"select": {"name": "Alta"}}}}'
+```
+
+**Actualizar tarea:**
+```bash
+mcporter call notion.API-patch-page --args '{"page_id": "<PAGE_ID>", "properties": {"Estado": {"status": {"name": "Listo"}}}}'
+```
+
+**Buscar en Notion:**
 ```bash
 mcporter call notion.API-post-search --args '{"query": "nombre a buscar"}'
 ```
 
-**Consultar TODAS las tareas de un CM (ejemplo: Mar):**
+**Leer contenido de pagina:**
 ```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-817a-91e0-000bbe2f663a"}'
+mcporter call notion.API-get-block-children --args '{"block_id": "<PAGE_ID>"}'
 ```
 
-**Consultar tareas filtradas por Estado (ejemplo: tareas no terminadas de Mar):**
+**Agregar bloques a pagina:**
 ```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-817a-91e0-000bbe2f663a", "filter": {"property": "Estado", "status": {"does_not_equal": "Done"}}}'
+mcporter call notion.API-patch-block-children --args '{"block_id": "<PAGE_ID>", "children": [{"object": "block", "type": "paragraph", "paragraph": {"rich_text": [{"text": {"content": "Texto."}}]}}]}'
 ```
 
-**Consultar tareas filtradas por Marca (ejemplo: tareas de Pepsi en TRAFICO Creative):**
-```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-81f1-aa3e-000bd49f95d3", "filter": {"property": "Marca", "select": {"equals": "Pepsi"}}}'
-```
+### Errores comunes
 
-**Leer contenido de una pagina:**
-```bash
-mcporter call notion.API-get-block-children --args '{"block_id": "PAGE_ID_AQUI"}'
-```
-
-**Leer propiedades de una pagina:**
-```bash
-mcporter call notion.API-retrieve-a-page --args '{"page_id": "PAGE_ID_AQUI"}'
-```
-
-### Patron para consultas cross-CM
-
-Para responder "que tareas estan atrasadas en todo el equipo", consulta TODOS los tableros de TRAFICO uno por uno. Son 9 tableros — ejecuta los 9 queries y consolida.
-
-### Errores comunes — NO hacer
-
-- **NO** inventes IDs de databases. Usa SOLO los IDs listados arriba.
-- **NO** pases parametros como `Notion-Version` o headers manuales — mcporter los maneja.
-- **NO** uses JSON malformado. Copia los ejemplos de arriba y cambia solo los valores.
-- Si un query retorna error 400, revisa que el JSON sea valido y los nombres de propiedades sean exactos.
+- NO inventes IDs de databases — usa SOLO los listados arriba
+- NO pases headers manuales — mcporter los maneja
+- Si error 400: verificar JSON valido y nombres de propiedades exactos
 
 ---
 
 ## Comunicacion entre agentes (sessions_send)
 
-Puedes consultar a otros agentes con `sessions_send`:
-
-- **Estratega** — criterios de scoring, contexto estrategico del brief, evaluacion de perfiles
-- **Admin** — estado de contratos, pagos pendientes, montos facturados
-
-Usa `sessions_send` solo para preguntas puntuales. Si la consulta requiere conversacion extendida, deriva al usuario al bot correspondiente.
-
----
-
-## WORKFLOWS FRECUENTES
-
-Estos son los flujos paso a paso para los casos de uso mas pedidos por el equipo. Seguir estos patrones garantiza respuestas completas y consistentes.
-
-### Workflow 1: Status de campana por marca
-
-Cuando pregunten: "Como va la campana de [MARCA]?" o "Status de [MARCA]"
-
-**Pasos:**
-
-1. **Identificar el CM responsable** — consultar el directorio del equipo en AGENTS.md. Si no sabes cual CM lleva la marca, buscar en los tableros TRAFICO de cada CM relevante.
-
-2. **Consultar el tablero TRAFICO del CM**, filtrado por marca:
-```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_TRAFICO_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
-```
-
-3. **Consultar el tablero SOLICITUD del CM** para ver requests pendientes:
-```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_SOLICITUD_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
-```
-
-4. **Consolidar la informacion**:
-   - Agrupar tareas por estado: Sin empezar / En curso / Listo
-   - Identificar tareas vencidas (fecha limite < hoy)
-   - Identificar tareas de alta prioridad pendientes
-
-5. **Presentar respuesta** con: fase actual, pendientes por influencer, riesgos, proximo hito.
+Consultar a otros agentes con pregunta puntual:
+- **Orquestador** — contexto estrategico, brief, estado general
+- **Admin** — contratos, pagos, montos facturados
+- **Research** — datos de mercado, competencia
+- **Influencer (Scout)** — criterios de scoring, evaluacion de perfil
 
 ---
 
-### Workflow 2: Carga de trabajo cross-CM
-
-Cuando pregunten: "Como van los CMs?", "Quien tiene mas carga?", o CG pida status general.
-
-**Pasos:**
-
-1. **Consultar los 9 tableros TRAFICO** (uno por CM), filtrando tareas activas:
-```bash
-# Creative
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-81f1-aa3e-000bd49f95d3", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Mar
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-817a-91e0-000bbe2f663a", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Juan G
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-814c-9c3a-000b5f26f191", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Aleja
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-81be-acd0-000b834ee4a4", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Isa
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31e82aed-93c7-8127-a10d-000b93d3de86", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# C.G
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31a82aed-93c7-8146-bf1b-000b372363d2", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Cami
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8148-bd5e-000bb15e8796", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Lau Criales
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8109-bbb7-000bb6590ee6", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-# Lau Reyes
-mcporter call notion.API-query-data-source --args '{"data_source_id": "31982aed-93c7-8151-b2af-000b490e6b8d", "filter": {"property": "Estado", "status": {"does_not_equal": "Listo"}}}'
-```
-
-2. **Contar por CM**: tareas activas, tareas de alta prioridad, tareas vencidas.
-
-3. **Presentar tabla resumen**:
-```
-CM            | Activas | Alta prioridad | Vencidas
---------------+---------+----------------+---------
-Cami          | 12      | 3              | 1
-Juan G        | 8       | 2              | 0
-Lau Criales   | 15      | 4              | 2
-...
-```
-
-4. **Destacar riesgos**: CMs con tareas vencidas o carga desproporcionada.
-
----
-
-### Workflow 3: Reporting — consolidar metricas
-
-Cuando pregunten: "Genera el reporte de [MARCA]", "Dame las metricas de [CAMPANA]"
-
-**Pasos:**
-
-1. **Buscar el sheet de metricas de la campana en Drive**:
-```bash
-gog drive search "reporte [MARCA]" --max 5
-```
-O buscar por nombre mas especifico:
-```bash
-gog drive search "metricas [MARCA] [AÑO]" --max 5
-```
-
-2. **Leer las metricas del sheet** (si encontrado en Google Sheets):
-```bash
-gog sheets get <sheetId> "Metricas!A1:Z50" --json
-```
-
-3. **Consolidar por influencer**. Para cada influencer de la campana, extraer:
-   - Alcance (Reach)
-   - Impresiones
-   - Engagement Rate (ER)
-   - CPM (si disponible)
-   - Sentimiento (si disponible)
-
-4. **Calcular totales de campana**: sumar metricas numericas, promediar tasas (ER, CPM).
-
-5. **Comparar vs estimados** (si hay sheet de propuesta):
-```bash
-gog drive search "propuesta [MARCA]" --max 5
-```
-Leer estimados y calcular delta por metrica.
-
-6. **Generar resumen narrativo**: metricas clave, que funciono, que no, recomendaciones para la proxima campana.
-
----
-
-### Workflow 4: Status de contenidos por creador
-
-Cuando pregunten: "Como van los contenidos de [MARCA]?", "Status de videos de [CAMPANA]"
-
-**Pasos:**
-
-1. **Consultar el tablero TRAFICO del CM** que lleva la marca, filtrado por marca:
-```bash
-mcporter call notion.API-query-data-source --args '{"data_source_id": "<CM_TRAFICO_ID>", "filter": {"property": "Marca", "multi_select": {"contains": "<MARCA>"}}}'
-```
-
-2. **Analizar el estado de cada tarea** para determinar la fase del contenido. Mapear el campo "Estado" de Notion a fases de contenido:
-   - "Sin empezar" → pendiente de iniciar
-   - "En curso" → en produccion (grabando / editando / en revision)
-   - "Listo" → aprobado o publicado
-
-3. **Complementar con contexto** de la descripcion de cada tarea si tiene detalle adicional sobre la fase exacta.
-
-4. **Presentar por influencer/creador**:
-```
-Influencer       | Contenido         | Estado
------------------+-------------------+------------------
-@creador1        | Video Instagram   | En revision por cliente
-@creador2        | Reel + Story      | En grabacion (deadline viernes)
-@creador3        | TikTok x2         | Pendiente brief creativo
-```
-
-5. **Identificar riesgos**: contenidos que no han arrancado con deadline cercano, o en revision por mas de 48h.
-
----
-
-### Workflow 5: Comparacion real vs estimado
-
-Cuando pregunten: "Compara real vs estimado de [MARCA]", "Como nos fue vs la propuesta?"
-
-**Pasos:**
-
-1. **Buscar el documento de propuesta/estimados**:
-```bash
-gog drive search "propuesta [MARCA]" --max 5
-```
-
-2. **Leer los estimados**:
-```bash
-gog sheets get <sheetId> "Estimados!A1:F20" --json
-```
-
-3. **Buscar el reporte de resultados reales**:
-```bash
-gog drive search "reporte [MARCA]" --max 5
-```
-
-4. **Leer los reales**:
-```bash
-gog sheets get <sheetId> "Resultados!A1:F20" --json
-```
-
-5. **Calcular delta por metrica**:
-```
-Metrica      | Estimado  | Real      | Delta    | Evaluacion
--------------+-----------+-----------+----------+------------
-Alcance      | 500,000   | 620,000   | +24%     | Supero
-Impresiones  | 800,000   | 750,000   | -6%      | Cumplio (margen aceptable)
-ER           | 3.5%      | 2.1%      | -40%     | Por debajo
-CPM          | $15,000   | $12,000   | -20%     | Mejor de lo esperado
-```
-
-6. **Generar evaluacion**: que metricas superaron, cuales quedaron por debajo, posibles razones, recomendaciones.
-
----
-
-### Workflow 6: Feedback de videos por influencer
-
-Cuando te envien feedback de ajustes de videos, o te pregunten el estado de los videos de una campana.
-
-**IMPORTANTE**: El Feedback Index es tu directorio central. SIEMPRE consultalo primero para obtener el Sheet ID de la campana. NO memorices Sheet IDs — siempre lee el Index.
-
-**Feedback Index ID**: `1i2ZiPau3dZF1WZJdwmd3F4nO_676_7Npx1KBQRruQO0`
-
-**Estructura del Index** (columnas A-E):
-- A: Campana | B: Marca | C: Sheet ID | D: Estado | E: Fecha Creacion
-
-**Estructura de cada Sheet de campana** (columnas A-H):
-- A: Influencer | B: Contenido | C: Estado | D: Ajustes Pendientes | E: Fuente | F: Fecha Registro | G: Ultima Actualizacion | H: Notas
-
-**Estados validos**: `Sin Ajustes` | `Con Ajustes Pendientes` | `Ajustes Aplicados` | `Aprobado`
-
-**Carpeta en Drive**: `Content FeedBack` (folder ID: `1qKtpII3ngIRurQx8Gnk-_XxNhjyMDDJc`)
-
-**Pasos para REGISTRAR feedback:**
-
-1. Parsear el mensaje: identificar campana, influencer, ajustes, y fuente (quien manda el feedback)
-2. Consultar el Index para obtener el Sheet ID:
-```bash
-gog sheets get 1i2ZiPau3dZF1WZJdwmd3F4nO_676_7Npx1KBQRruQO0 "Sheet1!A:E" --json
-```
-3. Si la campana NO existe en el Index: crear un nuevo Sheet en la carpeta Content FeedBack, estructurar las columnas, y registrar en el Index
-4. Leer el Sheet de la campana para verificar si el influencer ya tiene fila:
-```bash
-gog sheets get <SHEET_ID> "Sheet1!A:H" --json
-```
-5. Si el influencer ya existe: actualizar la fila (agregar ajustes, cambiar estado a "Con Ajustes Pendientes", actualizar fecha)
-6. Si es nuevo: agregar fila nueva:
-```bash
-gog sheets append <SHEET_ID> "Sheet1!A:H" --values-json '[["Altafulla", "Video IG Reel", "Con Ajustes Pendientes", "1. Quitar color rojo\n2. Agregar textos legales", "Cliente PepsiCo", "2026-03-29", "2026-03-29", ""]]' --insert INSERT_ROWS
-```
-7. Confirmar al usuario lo que registraste
-
-**Pasos para CONSULTAR estado:**
-
-1. Consultar el Index para obtener el Sheet ID
-2. Leer todo el Sheet de la campana:
-```bash
-gog sheets get <SHEET_ID> "Sheet1!A:H" --json
-```
-3. Agrupar por estado y presentar por influencer:
-   - Con Ajustes Pendientes: listar ajustes de cada uno
-   - Ajustes Aplicados: indicar que estan pendientes de aprobacion
-   - Aprobado: marcar como listos
-
-**Pasos para ACTUALIZAR estado:**
-
-1. Consultar el Index → obtener Sheet ID
-2. Leer el Sheet → encontrar la fila del influencer
-3. Actualizar la columna C (Estado) y G (Ultima Actualizacion):
-```bash
-gog sheets update <SHEET_ID> "Sheet1!C<ROW>:C<ROW>" --values-json '[["Ajustes Aplicados"]]' --input USER_ENTERED
-gog sheets update <SHEET_ID> "Sheet1!G<ROW>:G<ROW>" --values-json '[["2026-03-29"]]' --input USER_ENTERED
-```
-
----
-
-## NOTAS
-
-- **Version**: V4 — Actualizado 29-Mar-2026 (Workflow 6: feedback de videos)
-- **Cambios V3 → V4**: Agregado Workflow 6 para tracking de feedback de videos por influencer con Google Sheets. Index-first pattern (siempre consultar Feedback Index antes de operar).
+**Version**: V6 — 02-Abr-2026 (optimizado <15K chars, workflows movidos a AGENTS.md)

@@ -1,16 +1,27 @@
 {
   "plugins": {
     "enabled": true,
-    "allow": ["telegram"],
-    "entries": { "telegram": { "enabled": true } }
+    "allow": [
+      "telegram"
+    ],
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
   },
   "gateway": {
     "mode": "local",
     "bind": "lan",
     "port": 18789,
-    "auth": { "mode": "token", "token": "${OPENCLAW_GATEWAY_TOKEN}" },
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
     "controlUi": {
-      "allowedOrigins": ["https://mamba.opclaworch.online"],
+      "allowedOrigins": [
+        "https://mamba.opclaworch.online"
+      ],
       "dangerouslyDisableDeviceAuth": true
     }
   },
@@ -18,28 +29,125 @@
     "defaults": {
       "model": {
         "primary": "google/gemini-3.1-pro",
-        "fallbacks": ["google/gemini-2.5-pro"]
+        "fallbacks": [
+          "google/gemini-2.5-pro"
+        ]
       },
+      "contextTokens": 500000,
       "thinkingDefault": "low",
+      "userTimezone": "America/Bogota",
+      "compaction": {
+        "memoryFlush": {
+          "enabled": true
+        },
+        "reserveTokensFloor": 40000
+      },
+      "contextPruning": {
+        "mode": "cache-ttl"
+      },
+      "bootstrapMaxChars": 25000,
+      "maxConcurrent": 7,
       "subagents": {
         "maxSpawnDepth": 1,
-        "maxChildrenPerAgent": 3
+        "maxChildrenPerAgent": 5,
+        "maxConcurrent": 12
       }
     },
     "list": [
       {
-        "id": "estratega",
-        "name": "Estratega",
+        "id": "orquestador",
+        "name": "Orquestador",
         "default": true,
         "workspace": "~/.openclaw/workspace/estratega",
         "agentDir": "~/.openclaw/agents/estratega/agent",
-        "skills": ["mcporter"],
+        "skills": [
+          "mcporter",
+          "brief-to-strategy",
+          "competitor-analysis",
+          "self-improving-agent",
+          "agent-team-orchestration",
+          "skill-vetter",
+          "challenge-diagnostic"
+        ],
         "identity": {
-          "name": "Estratega",
+          "name": "Orquestador",
           "emoji": "🎯"
         },
         "subagents": {
-          "allowAgents": ["pm", "admin", "prometeo"]
+          "allowAgents": [
+            "research",
+            "creative",
+            "influencer",
+            "pm",
+            "admin",
+            "prometeo"
+          ]
+        }
+      },
+      {
+        "id": "research",
+        "name": "Research Agent",
+        "workspace": "~/.openclaw/workspace/research",
+        "agentDir": "~/.openclaw/agents/research/agent",
+        "skills": [
+          "mcporter",
+          "market-research",
+          "competitor-analysis"
+        ],
+        "identity": {
+          "name": "Radar",
+          "emoji": "🔍"
+        },
+        "subagents": {
+          "allowAgents": [
+            "creative",
+            "influencer"
+          ]
+        }
+      },
+      {
+        "id": "creative",
+        "name": "Creative Strategist",
+        "workspace": "~/.openclaw/workspace/creative",
+        "agentDir": "~/.openclaw/agents/creative/agent",
+        "skills": [
+          "mcporter",
+          "insight-builder",
+          "concept-builder",
+          "content-guidelines",
+          "brand-voice-builder",
+          "event-concept",
+          "methodology-selector"
+        ],
+        "identity": {
+          "name": "Musa",
+          "emoji": "💡"
+        },
+        "subagents": {
+          "allowAgents": [
+            "research",
+            "influencer"
+          ]
+        }
+      },
+      {
+        "id": "influencer",
+        "name": "Influencer Analyst",
+        "workspace": "~/.openclaw/workspace/influencer",
+        "agentDir": "~/.openclaw/agents/influencer/agent",
+        "skills": [
+          "mcporter",
+          "scouting-shortlist"
+        ],
+        "identity": {
+          "name": "Scout",
+          "emoji": "📊"
+        },
+        "subagents": {
+          "allowAgents": [
+            "research",
+            "creative"
+          ]
         }
       },
       {
@@ -49,16 +157,31 @@
         "agentDir": "~/.openclaw/agents/pm/agent",
         "model": {
           "primary": "google/gemini-3-flash",
-          "fallbacks": ["google/gemini-2.5-flash"]
+          "fallbacks": [
+            "google/gemini-2.5-flash"
+          ]
         },
         "thinkingDefault": "off",
-        "skills": ["healthcheck", "skill-creator", "tmux", "weather", "mcporter"],
+        "skills": [
+          "healthcheck",
+          "skill-creator",
+          "tmux",
+          "weather",
+          "mcporter"
+        ],
         "identity": {
           "name": "PM",
           "emoji": "📋"
         },
         "subagents": {
-          "allowAgents": ["estratega", "admin", "prometeo"]
+          "allowAgents": [
+            "orquestador",
+            "research",
+            "creative",
+            "influencer",
+            "admin",
+            "prometeo"
+          ]
         }
       },
       {
@@ -68,14 +191,23 @@
         "agentDir": "~/.openclaw/agents/admin/agent",
         "model": {
           "primary": "google/gemini-3-flash",
-          "fallbacks": ["google/gemini-2.5-flash"]
+          "fallbacks": [
+            "google/gemini-2.5-flash"
+          ]
         },
         "identity": {
           "name": "Admin",
           "emoji": "💰"
         },
         "subagents": {
-          "allowAgents": ["pm", "estratega", "prometeo"]
+          "allowAgents": [
+            "orquestador",
+            "pm",
+            "research",
+            "creative",
+            "influencer",
+            "prometeo"
+          ]
         }
       },
       {
@@ -85,14 +217,23 @@
         "agentDir": "~/.openclaw/agents/prometeo/agent",
         "model": {
           "primary": "github-copilot/gemini-3.1-pro-preview",
-          "fallbacks": ["google/gemini-2.5-pro"]
+          "fallbacks": [
+            "google/gemini-2.5-pro"
+          ]
         },
         "identity": {
           "name": "Prometeo",
           "emoji": "🔥"
         },
         "subagents": {
-          "allowAgents": ["estratega", "pm", "admin"]
+          "allowAgents": [
+            "orquestador",
+            "pm",
+            "admin",
+            "research",
+            "creative",
+            "influencer"
+          ]
         }
       }
     ]
@@ -100,10 +241,32 @@
   "channels": {
     "telegram": {
       "dmPolicy": "pairing",
+      "groupPolicy": "open",
+      "groupAllowFrom": [
+        "6107170400",
+        "8086667993"
+      ],
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
       "accounts": {
         "estratega": {
-          "name": "Estratega Mamba Negra",
+          "name": "Orquestador Mamba Negra",
           "botToken": "${TELEGRAM_BOT_TOKEN_ESTRATEGA}"
+        },
+        "research": {
+          "name": "Radar - Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_RESEARCH}"
+        },
+        "creative": {
+          "name": "Musa - Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_CREATIVE}"
+        },
+        "influencer": {
+          "name": "Scout - Mamba Negra",
+          "botToken": "${TELEGRAM_BOT_TOKEN_INFLUENCER}"
         },
         "pm": {
           "name": "PM Mamba Negra",
@@ -117,17 +280,81 @@
           "name": "Prometeo Mamba Negra",
           "botToken": "${TELEGRAM_BOT_TOKEN_PROMETEO}"
         }
-      }
+      },
+      "enabled": true
     }
   },
   "bindings": [
-    { "agentId": "estratega", "match": { "channel": "telegram", "accountId": "estratega" } },
-    { "agentId": "pm", "match": { "channel": "telegram", "accountId": "pm" } },
-    { "agentId": "admin", "match": { "channel": "telegram", "accountId": "admin" } },
-    { "agentId": "prometeo", "match": { "channel": "telegram", "accountId": "prometeo" } }
+    {
+      "agentId": "orquestador",
+      "match": {
+        "channel": "telegram",
+        "accountId": "estratega"
+      }
+    },
+    {
+      "agentId": "research",
+      "match": {
+        "channel": "telegram",
+        "accountId": "research"
+      }
+    },
+    {
+      "agentId": "creative",
+      "match": {
+        "channel": "telegram",
+        "accountId": "creative"
+      }
+    },
+    {
+      "agentId": "influencer",
+      "match": {
+        "channel": "telegram",
+        "accountId": "influencer"
+      }
+    },
+    {
+      "agentId": "pm",
+      "match": {
+        "channel": "telegram",
+        "accountId": "pm"
+      }
+    },
+    {
+      "agentId": "admin",
+      "match": {
+        "channel": "telegram",
+        "accountId": "admin"
+      }
+    },
+    {
+      "agentId": "prometeo",
+      "match": {
+        "channel": "telegram",
+        "accountId": "prometeo"
+      }
+    }
   ],
-  "session": { "mainKey": "main" },
-  "messages": { "queue": { "debounceMs": 500 } },
+  "session": {
+    "mainKey": "main",
+    "agentToAgent": {
+      "maxPingPongTurns": 3
+    }
+  },
+  "messages": {
+    "queue": {
+      "debounceMs": 500
+    }
+  },
+  "tools": {
+    "exec": {
+      "security": "full",
+      "ask": "off"
+    },
+    "agentToAgent": {
+      "enabled": true
+    }
+  },
   "skills": {
     "entries": {
       "gog": {
@@ -138,5 +365,9 @@
         }
       }
     }
+  },
+  "meta": {
+    "lastTouchedVersion": "2026.4.1",
+    "lastTouchedAt": "2026-04-05T16:37:02.361Z"
   }
 }

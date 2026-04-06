@@ -1,51 +1,40 @@
 # USER.md — Perfiles del Equipo (Bot Admin)
 
----
+## Usuarios principales
 
-## USUARIOS DEL AGENTE
+### CG (Carlos Gonzalez) — Director Comercial
+- Usuario principal del Admin bot
+- Consulta: costos consolidados por campana, presupuesto vs ejecutado, flujo de caja semanal
+- Formato preferido: resumen ejecutivo con cifras exactas y alertas
+- Esta construyendo un Google Sheet maestro de flujo de caja semanal (pendiente de entregar)
+- Necesita respuestas tipo: "Presupuesto Nike: $15M aprobado, $11.2M ejecutado (75%), $3.8M pendiente"
 
-**NOTA**: Esta seccion se llena en **Fase 1A Sesion 2** con nombres reales, roles y preferencias del equipo.
+### Mar (Mariana Monroy) — Estratega
+- Consulta: estado financiero de campanas para informar decisiones estrategicas
+- Frecuencia: ocasional
+- Formato: cifras puntuales, sin rodeos
 
-**Formato por usuario**:
-- **[Nombre]** — [Rol]: [Preferencias de uso, frecuencia, tipo de consultas tipicas]
+### CMs (Tatiana, Camila, Juan Guillermo, Laura)
+- Consultan: montos y fechas de pago de influencers de sus campanas
+- Necesitan: respuestas rapidas con cifras exactas y estado del contrato/pago
+- Formato: monto, fecha, estado. Sin relleno.
 
-**Ejemplo** (placeholder):
-- **Carolina** — Auxiliar Administrativa: Usa el bot diariamente para registrar y consultar pagos. Consulta estados de contratos y consolida costos por campana.
-- **Andrea** — Campaign Manager Senior: Consulta montos y estados de pago de sus campanas. Necesita respuestas rapidas con cifras exactas.
-- **Santiago** — Comercial: Consulta costos consolidados por campana para reuniones con clientes. Necesita resumen ejecutivo de presupuesto vs ejecutado.
+### Auxiliar administrativa
+- Colabora en seguimiento de contratos y procesamiento de pagos
+- Necesita: datos exactos para ejecutar pagos y enviar contratos
 
----
+## Contexto del equipo
 
-## CONTEXTO GENERAL DEL EQUIPO
+- Modelo financiero: multiples proveedores por campana, pagos a influencers con fechas pactadas, facturacion al cliente por hitos
+- Herramientas: Google Sheets (Base Pago), Google Drive (contratos), WhatsApp (seguimiento)
+- Moneda: COP (pesos colombianos)
 
-### Perfil de la Agencia
-- **Tipo**: Agencia de Influencer Marketing especializada en Colombia y Latam
-- **Tamano**: [A definir en discovery]
-- **Modelo financiero**: Multiples proveedores por campana, pagos a influencers con fechas pactadas, facturacion al cliente por hitos
+## Como adaptar respuestas
 
-### Herramientas Actuales
-- **Base Pago**: Google Sheets (documento principal de registro financiero)
-- **Contratos**: Google Drive (almacenamiento), WhatsApp (seguimiento)
-- **Facturacion**: [A definir — sistema contable de MNL]
-- **Comunicacion**: WhatsApp (equipo), Telegram (bots IA)
-
-### Nivel Tecnico
-- **Promedio**: Medio — comodos con Sheets y Drive
-- **Adopcion de IA**: [A definir en discovery]
-- **Preferencia**: Datos exactos, alertas proactivas, consolidaciones rapidas
-
----
-
-## COMO USAR ESTE DOCUMENTO
-
-El agente Admin lee este archivo para entender **a quien le habla** y **como adaptar sus respuestas**.
-
-- Para Auxiliar administrativa: respuestas detalladas con montos, fechas, estados por proveedor
-- Para CMs: respuestas operativas con datos de sus campanas
-- Para Comercial: resumen ejecutivo de costos y presupuesto
-
-Cuando el equipo crece, actualizar con nuevos perfiles.
+- Para CG: resumen ejecutivo con consolidacion financiera y alertas de vencimiento
+- Para CMs: estado de pagos y contratos de sus campanas especificas
+- Para auxiliar administrativa: datos exactos para ejecucion (montos, fechas, beneficiarios)
 
 ---
 
-**Version**: V1 — completar en Fase 1A Sesion 2 con perfiles reales del equipo
+**Version**: V2 — 02-Abr-2026 (perfiles reales post-discovery)
