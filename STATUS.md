@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 30 Marzo 2026 (memoria activada + brand voice + skill brief-to-strategy + video feedback + modelos optimizados)
+**Ultima actualizacion**: 06 Abril 2026 (V7.0 upgrade + self-improvement + USER.md editing + Notion DB creation)
 
 ---
 
@@ -35,7 +35,7 @@
 - **Ubicacion**: Colombia
 - **Director**: Carlos
 - **Proyecto**: Transformacion integral con IA — de agentes a las 5 dimensiones (Estrategia, Operacion, Contenido, Reporting, Cultura)
-- **Sistema multi-agente**: 3 bots Telegram (Estratega, PM, Admin) — desplegados y operativos desde 16-Mar-2026
+- **Sistema multi-agente**: 7 agentes (4 estrategia + PM + Admin + Prometeo) — arquitectura V2 desplegada 02-Abr-2026
 
 ---
 
@@ -73,30 +73,93 @@
 
 ---
 
-## SISTEMA MULTI-AGENTE — EN PRODUCCION
+## SISTEMA MULTI-AGENTE V2 — EN PRODUCCION
 
-> **Desplegado**: 16-Mar-2026. Los 3 agentes estan corriendo en Telegram y accesibles via dashboard web.
-> **Design doc**: `docs/plans/2026-03-13-mamba-negra-multi-agent-design.md`
+> **V1 desplegado**: 16-Mar-2026 (3 agentes). **V2 desplegado**: 02-Abr-2026 (7 agentes).
+> **Design doc V1**: `docs/plans/2026-03-13-mamba-negra-multi-agent-design.md`
+> **Design doc V2**: `docs/plans/2026-04-02-multi-agent-teams-design.md`
 
-### Arquitectura
-- **Patron**: 3 bots independientes + sessions_send (sincrono) entre ellos
+### Arquitectura V2
+
+- **Patron**: Orquestador (hub) + 3 workers especializados (Research, Creative, Influencer) + PM + Admin + Prometeo
+- **Comunicacion**: `sessions_spawn` (asincrono, Orquestador lanza workers en paralelo) + `sessions_send` (sincrono, consultas puntuales entre cualquier agente)
+- **Subagents config**: `maxSpawnDepth: 1`, `maxChildrenPerAgent: 5`, `maxConcurrent: 12`
+- **Principio clave**: Agentes son especialistas por **capacidad**, no por fase. Pueden ser invocados en cualquier momento del proceso.
 - **Framework compartido**: `knowledge/campaign-framework.md` (9 fases del ciclo de campana)
+- **Knowledge distribuido**: mnl-bible.md (Manual Maestro Carlos), verticals/, scoring, campaign samples — distribuidos a todos los agentes
 - **LLM por defecto**: `google/gemini-3.1-pro` con fallback a `google/gemini-2.5-pro`
-- **LLM PM y Admin**: `google/gemini-3-flash` con fallback a `google/gemini-2.5-flash` (optimizado 30-Mar-2026)
-- **Thinking**: Nivel `low` global. PM tiene `thinkingDefault: off` (requiere v2026.3.28+)
-- **MCP/Skills PM**: Notion (mcporter), Google Drive/Sheets/Docs (gog v0.12.0)
-- **MCP Estratega/Admin**: Pendiente — configurar segun funciones de cada agente
+- **LLM PM y Admin**: `google/gemini-3-flash` con fallback a `google/gemini-2.5-flash`
+- **Thinking**: Nivel `low` global. PM tiene `thinkingDefault: off`
 - **Dashboard**: https://mamba.opclaworch.online
+
+### Topologia de Comunicacion
+
+```
+                    Orquestador
+                   /     |     \        (sessions_spawn)
+            Research <-> Creative <-> Influencer  (sessions_send)
+```
+
+- Orquestador puede spawnear Research, Creative, Influencer en paralelo
+- Workers se consultan entre si via sessions_send
+- PM, Admin, Prometeo accesibles via sessions_send desde cualquier agente
+
+### AGENTES (7)
+
+| ID | Nombre | Bot Telegram | Modelo | Rol |
+|----|--------|-------------|--------|-----|
+| orquestador | Orquestador (ex-Estratega) | @StrategyMambabot | google/gemini-3.1-pro | Coordinacion, briefs, entregas (pasos 1-3, 10-12). Usa sessions_spawn |
+| research | Radar | @RadarMambaBot | google/gemini-3.1-pro | Investigacion de mercado, datos, analisis competitivo |
+| creative | Musa | @CreativeMambaBot | google/gemini-3.1-pro | Insights, conceptos, ideas de contenido |
+| influencer | Scout | @ScoutMambaBot | google/gemini-3.1-pro | Busqueda de influencers, scoring, copy comercial |
+| pm | PM | @PMMambabot | google/gemini-3-flash | Timelines, tareas, entregas |
+| admin | Admin | @AdmonMambaBot | google/gemini-3-flash | Contratos, pagos |
+| prometeo | Prometeo | @PrometeoMNBot | google/gemini-3.1-pro | Tecnico/dev |
 
 ### Bots de Telegram
 
 | Agente | Bot | Token var | Estado |
 |--------|-----|-----------|--------|
-| Estratega | @StrategyMambabot | `TELEGRAM_BOT_TOKEN_ESTRATEGA` | ACTIVO, pareado |
+| Orquestador | @StrategyMambabot | `TELEGRAM_BOT_TOKEN_ESTRATEGA` | ACTIVO, pareado |
+| Radar (Research) | @RadarMambaBot | `TELEGRAM_BOT_TOKEN_RESEARCH` | ACTIVO |
+| Musa (Creative) | @CreativeMambaBot | `TELEGRAM_BOT_TOKEN_CREATIVE` | ACTIVO |
+| Scout (Influencer) | @ScoutMambaBot | `TELEGRAM_BOT_TOKEN_INFLUENCER` | ACTIVO |
 | PM | @PMMambabot | `TELEGRAM_BOT_TOKEN_PM` | ACTIVO, pareado |
 | Admin | @AdmonMambaBot | `TELEGRAM_BOT_TOKEN_ADMIN` | ACTIVO, pareado |
+| Prometeo | @PrometeoMNBot | `TELEGRAM_BOT_TOKEN_PROMETEO` | ACTIVO |
 
 **Usuario pareado**: Juan Jose (Telegram ID: 6107170400)
+
+### TELEGRAM GROUPS
+
+- **Modo**: Forum (Topics) — cada campana = un topic nuevo
+- **Grupo activo**: "MNL Strategy Team" (compartido) — Mar + Mae + 7 bots + Carlos (opcional)
+- **Grupos pendientes**: "Mar - Strategy Room" (personal), "Mae - Strategy Room" (personal)
+- **Routing**: @mencion va al bot correcto. Sin @mencion → Orquestador responde (es default)
+- **Config**: `groupPolicy: "open"`, `groupAllowFrom: ["6107170400"]`, `groups: { "*": { "requireMention": true } }`
+- **Requisito**: `/setprivacy` Disable en BotFather para cada bot antes de agregarlo a grupos. Si se cambio privacy despues de agregar, remover y re-agregar el bot al grupo.
+
+### Tools y Skills por Agente
+
+| Agente | Tools | Skills |
+|--------|-------|--------|
+| Orquestador | sessions_spawn, sessions_send, gog, Notion, Tavily (5 tools) | brief-to-strategy, competitor-analysis, challenge-diagnostic, self-improving-agent, agent-team-orchestration, skill-vetter, mcporter |
+| Radar (Research) | sessions_send, gog, Tavily (5 tools: search, research, extract, crawl, map) | competitor-analysis, market-research, mcporter |
+| Musa (Creative) | sessions_send, gog | insight-builder, concept-builder, content-guidelines, brand-voice-builder, event-concept, methodology-selector, mcporter |
+| Scout (Influencer) | sessions_send, gog, Tavily | scouting-shortlist, mcporter |
+| PM | sessions_send, gog, Notion (mcporter — DB creation habilitado v1.9.1) | healthcheck, skill-creator, tmux, weather, mcporter |
+| Admin | sessions_send, gog | mcporter |
+| Prometeo | sessions_send | mcporter |
+
+### Tavily Tools (5 — documentados en TOOLS.md de cada agente que los tiene)
+
+| Tool | Funcion |
+|------|---------|
+| tavily-search | Busqueda web con IA |
+| tavily-extract | Extraccion de contenido de URLs |
+| tavily-crawl | Crawl de sitios web |
+| tavily-map | Mapa de sitio |
+| tavily-research | Investigacion profunda con IA |
 
 ### Gemini API Keys (Google AI Studio, proyecto 922302496243)
 
@@ -106,39 +169,80 @@
 | PM Mamba | Respaldo |
 | Admin Mamba | Respaldo |
 
-### Agente 1: Estratega
+### Agente 1: Orquestador (ex-Estratega)
 
-- **Rol**: Asistente IA de estrategia digital (NO "jefe" — transparente sobre ser IA)
+- **Rol**: Coordinador central — interpreta briefs, decide que agentes invocar, sintetiza resultados, compila entregas
 - **Bot Telegram**: @StrategyMambabot
-- **Fases**: 1 (Brief), 2 (Estrategia), 4 (Scouting), 8 (Reporte), 9 (Aprendizajes)
-- **Workspace repo**: `workspaces/estratega/` (AGENTS.md V1, SOUL.md V1)
+- **Fases**: 1-3 (Brief, Estrategia, Research dispatch), 10-12 (Compilacion, Feedback, Entrega)
+- **Workspace repo**: `workspaces/estratega/`
 - **Workspace VM**: `~/.openclaw/workspace/estratega/`
-- **sessions_send a**: PM, Admin
+- **sessions_spawn a**: Research, Creative, Influencer (paralelo)
+- **sessions_send a**: PM, Admin, Prometeo
 - **Google Sheets (gog)**: Lee briefs de campana del Google Form via Sheet `1dvdlmMCJuNgHNtNQobkqA7O1M7tWJnQdM2mV_fJZ6Bw`
-- **Skills**: brief-to-strategy (con input desde Google Form Sheet), competitor-analysis
-- **Tools**: gog (Drive/Sheets/Docs), Notion (mcporter), Tavily Search (mcporter), sessions_send
+- **Skills**: brief-to-strategy (rediseñado — coordina en vez de ejecutar todo), mcporter
+- **Tools**: sessions_spawn, sessions_send, gog (Drive/Sheets/Docs), Notion (mcporter), Tavily (5 tools)
+- **Es default**: Si nadie es mencionado en un grupo, responde el
 
-### Agente 2: PM — Project Manager (SETUP COMPLETO 16-Mar-2026)
+### Agente 2: Radar (Research)
+
+- **Rol**: Especialista en investigacion, datos, contexto de mercado, analisis competitivo
+- **Bot Telegram**: @RadarMambaBot
+- **Workspace repo**: `workspaces/research/`
+- **Workspace VM**: `~/.openclaw/workspace/research/`
+- **sessions_send a**: Creative, Influencer
+- **Skills**: competitor-analysis (migrado de Estratega), market-research, mcporter
+- **Tools**: sessions_send, Tavily (5 tools), gog (Drive)
+- **NO tiene**: sessions_spawn (es worker)
+
+### Agente 3: Musa (Creative)
+
+- **Rol**: Especialista en pensamiento creativo, insights, conceptos, ideas de contenido
+- **Bot Telegram**: @CreativeMambaBot
+- **Workspace repo**: `workspaces/creative/`
+- **Workspace VM**: `~/.openclaw/workspace/creative/`
+- **sessions_send a**: Research, Influencer
+- **Skills**: insight-builder, concept-builder, mcporter
+- **Tools**: sessions_send, gog (Drive)
+- **NO tiene**: sessions_spawn, Tavily
+
+### Agente 4: Scout (Influencer)
+
+- **Rol**: Especialista en busqueda, scoring, evaluacion y copy comercial de influencers
+- **Bot Telegram**: @ScoutMambaBot
+- **Workspace repo**: `workspaces/influencer/`
+- **Workspace VM**: `~/.openclaw/workspace/influencer/`
+- **sessions_send a**: Research, Creative
+- **Skills**: scouting-shortlist, mcporter
+- **Tools**: sessions_send, Tavily (background check), gog (Sheets/Drive)
+- **NO tiene**: sessions_spawn
+
+### Agente 5: PM — Project Manager
 
 - **Rol**: Asistente IA de gestion de proyectos
 - **Bot Telegram**: @PMMambabot
-- **Fases**: 3 (Gantt), 4 (Tracking), 5 (Aprobaciones), 6 (Ejecucion), 8 (Reporte)
 - **Workspace repo**: `workspaces/pm/` (7 archivos: AGENTS.md V3, SOUL.md V1.2, USER.md, IDENTITY.md, TOOLS.md V4, MEMORY.md, HEARTBEAT.md)
 - **Workspace VM**: `~/.openclaw/workspace/pm/`
-- **sessions_send a**: Estratega, Admin
+- **sessions_send a**: Orquestador, Research, Creative, Influencer, Admin, Prometeo
 - **Notion MCP**: Configurado via mcporter — workspace personal Juan Jose (temporal)
 - **Google Drive/Sheets/Docs**: gog con OAuth ia@mambanegramkt.com
 - **Skills**: mcporter, gog, healthcheck, skill-creator, tmux, weather
-- **Memoria**: Instruccion de guardar/consultar memoria entre sesiones (AGENTS.md V1.1)
+- **Memoria**: Instruccion de guardar/consultar memoria entre sesiones
 
-### Agente 3: Admin — Asistente Administrativo
+### Agente 6: Admin — Asistente Administrativo
 
 - **Rol**: Asistente IA de gestion financiera y administrativa
 - **Bot Telegram**: @AdmonMambaBot
-- **Fases**: 7 (Base Pago/Costos), apoyo en 4 (contratos) y 6 (pagos)
-- **Workspace repo**: `workspaces/admin/` (AGENTS.md, SOUL.md V1.1, USER.md)
+- **Workspace repo**: `workspaces/admin/` (AGENTS.md V2, SOUL.md V1.1, USER.md, MEMORY.md)
 - **Workspace VM**: `~/.openclaw/workspace/admin/`
-- **sessions_send a**: PM, Estratega
+- **sessions_send a**: Orquestador, PM, Research, Creative, Influencer, Prometeo
+
+### Agente 7: Prometeo — Tecnico/Dev
+
+- **Rol**: Asistente tecnico y de desarrollo
+- **Bot Telegram**: @PrometeoMNBot
+- **Workspace repo**: `workspaces/prometeo/` (AGENTS.md V1, SOUL.md, USER.md, IDENTITY.md, TOOLS.md, MEMORY.md, HEARTBEAT.md)
+- **Workspace VM**: `~/.openclaw/workspace/prometeo/`
+- **sessions_send a**: Orquestador, PM, Admin, Research, Creative, Influencer
 
 ---
 
@@ -157,20 +261,36 @@
 
 ```
 ~/.openclaw/
-├── openclaw.json          # Config central (3 agentes, plugins, bindings)
-├── .env                   # Tokens y API keys (chmod 600)
+├── openclaw.json          # Config central (7 agentes, plugins, bindings, subagents)
+├── .env                   # Tokens (7 bots) y API keys (chmod 600)
 ├── openclaw.json.bak      # Backup del doctor
 ├── workspace/
-│   ├── estratega/
-│   │   ├── AGENTS.md      # V3.1 — scouting senior + brand voice + memoria
-│   │   ├── SOUL.md        # V1 — con regla no-mostrar-razonamiento
+│   ├── estratega/         # Orquestador (ex-Estratega)
+│   │   ├── AGENTS.md      # Coordinacion + pasos 1-3, 10-12
+│   │   ├── SOUL.md        # Directo, estrategico, colombiano
 │   │   ├── USER.md
-│   │   ├── TOOLS.md       # V2 — gog + Notion + Tavily + Google Form Brief Sheet
+│   │   ├── TOOLS.md       # sessions_spawn + gog + Notion + Tavily
 │   │   ├── MEMORY.md      # Semilla de memoria
-│   │   └── skills/        # brief-to-strategy (con input Form Sheet), competitor-analysis
+│   │   └── knowledge/     # campaign-framework.md, mnl-bible.md
+│   ├── research/          # Radar — Investigacion
+│   │   ├── AGENTS.md      # Especialista investigacion
+│   │   ├── SOUL.md        # Analitico, riguroso, cita fuentes
+│   │   ├── TOOLS.md       # Tavily + gog + sessions_send
+│   │   └── skills/        # competitor-analysis, market-research
+│   ├── creative/          # Musa — Creatividad
+│   │   ├── AGENTS.md      # Especialista creativo
+│   │   ├── SOUL.md        # Propositivo, opinado
+│   │   ├── TOOLS.md       # gog + sessions_send
+│   │   ├── knowledge/     # campaign-framework.md, brands/
+│   │   └── skills/        # insight-builder, concept-builder
+│   ├── influencer/        # Scout — Influencers
+│   │   ├── AGENTS.md      # Especialista influencers
+│   │   ├── SOUL.md        # Data-driven, criterio cualitativo
+│   │   ├── TOOLS.md       # Tavily + gog + sessions_send
+│   │   └── skills/        # scouting-shortlist
 │   ├── pm/
-│   │   ├── AGENTS.md      # V1.1 — con gestion de memoria
-│   │   ├── SOUL.md        # V1.1 — regla no-razonamiento
+│   │   ├── AGENTS.md      # V3 — reportes VP + feedback videos
+│   │   ├── SOUL.md        # V1.2 — regla no-razonamiento
 │   │   ├── USER.md
 │   │   ├── IDENTITY.md    # PM, 📋
 │   │   ├── TOOLS.md       # Guia gog + Notion + sessions_send
@@ -178,9 +298,18 @@
 │   │   ├── HEARTBEAT.md   # Vacio (sin heartbeat activo)
 │   │   └── memory/        # Logs diarios (auto-creado)
 │   ├── admin/
-│   │   ├── AGENTS.md
+│   │   ├── AGENTS.md      # V2 — flujo de caja + memoria
+│   │   ├── SOUL.md        # V1.1
+│   │   ├── USER.md
+│   │   └── MEMORY.md
+│   ├── prometeo/
+│   │   ├── AGENTS.md      # V1
 │   │   ├── SOUL.md
-│   │   └── USER.md
+│   │   ├── USER.md
+│   │   ├── IDENTITY.md
+│   │   ├── TOOLS.md
+│   │   ├── MEMORY.md
+│   │   └── HEARTBEAT.md
 │   └── knowledge/
 │       └── campaign-framework.md  # 9 fases compartidas
 ├── agents/                # Sessions y estado (auto-creado por OpenClaw)
@@ -278,6 +407,30 @@
 63. [x] AGENTS.md PM: instruccion de minimizar tool calls agregada
 64. [ ] Pendiente: configurar timezone Colombia (UTC-5) para todos los agentes
 
+**V7.0 Upgrade (04-Abr-2026)**:
+
+71. [x] Thinking fix: OUTPUT FORMAT section en 7 SOUL.md (bloquea `<think>`, XML tags)
+72. [x] MODO RAPIDO vs MODO ENTREGA en 4 AGENTS.md (estratega, creative, research, influencer)
+73. [x] Modo iterativo con checkpoints humanos (seccion 2.10 en Orquestador)
+74. [x] 14 skills custom declarados por agente en openclaw.json
+75. [x] 5 skills enriquecidos con prompts del Notion "Banco de Prompts"
+76. [x] 5 skills nuevos creados (challenge-diagnostic, content-guidelines, brand-voice-builder, event-concept, methodology-selector)
+77. [x] Research TOOLS.md: 5 herramientas Tavily documentadas (tavily_research = modo Perplexity)
+78. [x] Drive consolidation protocol distribuido a 6 agentes
+79. [x] campaign-corrections.md (12 reglas de Mar) como knowledge del Orquestador
+80. [x] contextTokens reducido a 500K + compaction.memoryFlush + contextPruning cache-ttl + userTimezone
+81. [x] Manual del equipo: docs/MANUAL-AGENTES-MNL.md
+82. [x] NotebookLM: "Manual de Agentes — Mamba Negra Latam" (5 fuentes)
+
+**Notion DB Creation + Self-Improvement + USER.md (05-06 Abr 2026)**:
+
+83. [x] mcporter.json: pin @notionhq/notion-mcp-server@1.9.1 (v2.x bloquea create-a-database)
+84. [x] PM TOOLS.md: documentacion API-create-a-database + page_id raiz corregido
+85. [x] Self-improving agent: .learnings/ creados + instrucciones en 7 AGENTS.md
+86. [x] USER.md self-editing: instrucciones en 7 AGENTS.md para modificar preferencias
+87. [x] Sync VM → local → mamba-negra repo + push a GitHub (commit bc10e61)
+88. [x] STATUS.md actualizado con V7.0 + sesion 05-06 Abr
+
 **Tavily + Competitor Analysis + Google Form Briefs (30-Mar-2026)**:
 
 65. [x] Registrar Tavily MCP en mcporter.json (search, extract, map, crawl — 1,000 creditos/mes gratis)
@@ -335,18 +488,21 @@
 ### Capa 4: Agentes (`agents/`)
 | Archivo | Estado | Notas |
 |---------|--------|-------|
-| openclaw.json | Desplegado | 4 agentes, memorySearch + memoryFlush activos (30-Mar), modelos optimizados |
-| .env.example | Actualizado | 4 bot tokens documentados con bot handles y fechas |
+| openclaw.json | Desplegado | **7 agentes**, memorySearch + memoryFlush activos, sessions_spawn + sessions_send, Telegram Groups |
+| .env.example | Actualizado | 7 bot tokens documentados con bot handles y fechas |
 | HANDOFF-PROTOCOL.md | Creado | Protocolo de handoff entre agentes: flujo de campana, tabla de handoffs |
 | ONBOARDING-NORAVER.md | Creado | Caso practico onboarding con Noraver Gripa (script para Semana 4) |
-| workspaces/estratega/ | 6+ archivos | **AGENTS.md V3.1** (scouting senior + brand voice + memoria), SOUL.md V1, USER.md, **TOOLS.md V2** (gog + Notion + Tavily + Google Form briefs), MEMORY.md, **skills/** (brief-to-strategy, competitor-analysis) |
+| workspaces/estratega/ | Refactorizado | **Orquestador**: coordinacion + sessions_spawn + brief-to-strategy rediseñado |
+| workspaces/research/ | **NUEVO** | **Radar**: investigacion, Tavily, competitor-analysis (migrado), market-research |
+| workspaces/creative/ | **NUEVO** | **Musa**: creatividad, insight-builder, concept-builder, brand voice |
+| workspaces/influencer/ | **NUEVO** | **Scout**: influencers, scouting-shortlist, scoring, copy comercial |
 | workspaces/pm/ | 7 archivos | **AGENTS.md V3** (reportes VP + feedback videos), **SOUL.md V1.2**, USER.md, IDENTITY.md, **TOOLS.md V4**, MEMORY.md, HEARTBEAT.md |
-| workspaces/admin/ | 4 archivos | **AGENTS.md V2** (flujo de caja + memoria), SOUL.md V1.1, USER.md, **MEMORY.md** (nuevo) |
+| workspaces/admin/ | 4 archivos | **AGENTS.md V2** (flujo de caja + memoria), SOUL.md V1.1, USER.md, **MEMORY.md** |
 | workspaces/prometeo/ | 7 archivos | AGENTS.md V1, SOUL.md, USER.md, IDENTITY.md, TOOLS.md, MEMORY.md, HEARTBEAT.md |
 | mcp-servers/modash-mcp/ | Construido | MCP server Modash (7 tools), Node.js. NO desplegado (API tiene 0 creditos) |
 | n8n-workflows/README.md | Placeholder | Vacio — workflows planeados para Fase 1C |
 
-**Veredicto**: Estratega V3.1 (3 skills + Tavily + Google Form briefs), PM V3 (6 workflows + feedback videos), Admin V2 (memoria). **memorySearch activo**. Tavily MCP activo (1,000/mes gratis). Modash MCP construido, evaluando Influencers Club como alternativa.
+**Veredicto**: **Arquitectura V2 con 7 agentes**. Orquestador coordina via sessions_spawn. 3 workers especializados (Research, Creative, Influencer). PM V3, Admin V2, Prometeo. **memorySearch activo**. Tavily MCP activo (1,000/mes gratis). Telegram Groups con Topics configurados. Modash MCP construido, evaluando alternativas.
 
 ### Capa 5: Medicion (`measurement/`)
 | Archivo | Estado | Notas |
@@ -404,24 +560,28 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## PENDIENTES INMEDIATOS
 
-### P0 — Transformacion IA (Semana 1)
-- [x] **Discovery Session 1**: Encuesta Discovery + Baseline aplicada (5 respuestas: CG, Tatiana, Camila, Juan Guillermo, Laura) — 24-25 Mar 2026
-- [x] **Recolectar baseline**: Tiempos reales documentados (scouting ~2d, reporte ~1d, repetitivas ~8h/sem) — 26 Mar 2026
-- [x] **AI Maturity baseline validado**: Promedio real 1.8 (Contenido y Cultura ajustados a 2.5) — 26 Mar 2026
-- [x] **Documentos de Strategy team**: Workflow 12 pasos + 4 metodologias + 2 strategic thinkings + 1 brief — 26 Mar 2026
-- [x] **Analisis consolidado**: `adoption/DISCOVERY-FINDINGS.md` creado con hallazgos completos — 26 Mar 2026
+### P0 — Multi-Agente V2 (02-Abr-2026)
+- [ ] **Test flujo orquestado**: Probar sessions_spawn (Orquestador → Research + Creative + Influencer en paralelo)
+- [ ] **Crear grupos personales**: "Mar - Strategy Room" y "Mae - Strategy Room" con Topics
+- [ ] **Agregar user IDs**: Mar y Mae a `groupAllowFrom` en openclaw.json
+- [ ] **Onboarding equipo**: Presentar nuevo sistema de 7 agentes + Telegram Groups al equipo MNL
+- [ ] **Revocar tokens de bots**: Generar nuevos tokens en VM (seguridad post-deploy)
+- [ ] **Test E2E por agente**: Verificar que cada uno de los 7 bots responde correctamente en Telegram
+
+### P0 — Transformacion IA (completado)
+- [x] **Discovery Session 1**: Encuesta Discovery + Baseline aplicada (5 respuestas) — 24-25 Mar 2026
+- [x] **Recolectar baseline**: Tiempos reales documentados — 26 Mar 2026
+- [x] **AI Maturity baseline validado**: Promedio real 1.8 — 26 Mar 2026
+- [x] **Documentos de Strategy team**: Workflow 12 pasos + 4 metodologias — 26 Mar 2026
+- [x] **Analisis consolidado**: `adoption/DISCOVERY-FINDINGS.md` — 26 Mar 2026
 - [ ] **Validar con Carlos**: Vision, Roadmap, AI Maturity Assessment (ver `strategy/`)
 - [ ] **Validar con CMs**: Perfiles por vertical y modash-playbook (ver `knowledge/verticals/`)
 
-### P0 — Tecnico (Pre-Onboarding)
-- [x] Agregar regla no-mostrar-razonamiento a SOUL.md de Admin (17-Mar-2026, review session)
-- [x] Configurar gog (Drive) para Estratega en openclaw.json — ya configurado
-- [ ] **Copiar knowledge/ a workspace/estratega/knowledge/ en VM** — decision 26-Mar
-- [x] **SCP todos los workspaces V3 a la VM** + restart gateway — 29-Mar-2026
-- [ ] Probar sessions_send entre agentes — pendiente re-test
-- [ ] **Test E2E**: mandar preguntas tipo Noraver a cada bot y verificar respuestas V3
-- [x] Desplegar SOUL.md V1.1 de Admin a la VM — incluido en deploy V3 29-Mar
+### P0 — Tecnico
+- [x] Arquitectura V2 desplegada: 7 agentes + sessions_spawn + Telegram Groups — 02-Abr-2026
+- [x] SCP todos los workspaces a la VM + restart gateway
 - [ ] Migrar gateway de nohup a systemd estable
+- [ ] Configurar timezone Colombia (UTC-5) para todos los agentes
 
 ### P1 — API de Influencers (Modash o Influencers Club)
 - [x] MNL tiene API key de Modash (confirmado 26-Mar)
@@ -429,19 +589,17 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] **BLOQUEADOR**: Modash API key tiene 0 creditos. Modash cuesta ~$16k USD/ano
 - [ ] **Evaluando alternativa**: Influencers Club (~$249/mes). Free tier no da acceso API (403). Requiere plan pago para endpoints.
 - [ ] Decision pendiente: Modash (activar creditos) vs Influencers Club (plan pago) vs otra alternativa
-- [ ] Cuando se defina: desplegar MCP a VM + registrar en mcporter + actualizar Estratega TOOLS.md
+- [ ] Cuando se defina: desplegar MCP a VM + registrar en mcporter + actualizar Scout TOOLS.md
 
 ### P1 — Pendientes de Carlos (sesion 29-Mar-2026)
 - [ ] **Google Sheet flujo de caja**: Carlos lo esta construyendo. Pedirle Sheet ID para conectar al Admin Bot via gog
-- [x] **Scouting nivel senior**: Prompt del Estratega V3 incorpora copy comercial con data — desplegado 29-Mar
+- [x] **Scouting nivel senior**: Copy comercial con data — migrado a Scout (Influencer agent)
 - [x] **Reportes para VPs**: Prompt del PM V3 incorpora framework 4 bloques analisis senior — desplegado 29-Mar
 - [ ] **Creditos Modash**: Pedirle a Carlos/equipo que contacten soporte Modash para activar API
 
 ### P1 — Alta Prioridad
-- [ ] **Workshop 1**: Onboarding PM Bot con equipo (Semana 3) — ver `adoption/TRAINING-PLAN.md`
-- [ ] **Pairing del equipo MNL** en los 3 bots de Telegram
-- [ ] Configurar MCP/tools para Estratega
-- [ ] Configurar MCP/tools para Admin
+- [ ] **Workshop 1**: Onboarding equipo con nuevo sistema de 7 agentes + Telegram Groups
+- [ ] **Pairing del equipo MNL** en los 7 bots de Telegram
 - [ ] Configurar HEARTBEAT.md para Daily Digest del PM
 - [ ] Reactivar device auth en dashboard
 
@@ -454,7 +612,6 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] Implementar pipeline de aprobaciones (Funcion 3 — PM-VALUE-ANALYSIS.md)
 - [ ] Implementar scoring de salud de campana (Funcion 4 — PM-VALUE-ANALYSIS.md)
 - [ ] Evaluar Honcho (memoria por usuario) para Fase 2 cuando equipo completo use los bots
-- [ ] Configurar timezone Colombia (UTC-5) para todos los agentes
 
 ---
 
@@ -518,12 +675,12 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## NOTAS TECNICAS
 
-### LLM Configurado (actualizado 30-Mar-2026)
-- **Estratega**: `google/gemini-3.1-pro` (thinking: low)
+### LLM Configurado (actualizado 02-Abr-2026)
+- **Orquestador, Radar, Musa, Scout**: `google/gemini-3.1-pro` (thinking: low)
 - **PM**: `google/gemini-3-flash` (thinking: off) — optimizado para velocidad y costo
 - **Admin**: `google/gemini-3-flash` — optimizado para velocidad y costo
 - **Prometeo**: `github-copilot/gemini-3.1-pro-preview`
-- **Fallbacks**: gemini-2.5-pro (Estratega), gemini-2.5-flash (PM/Admin)
+- **Fallbacks**: gemini-2.5-pro (default), gemini-2.5-flash (PM/Admin)
 
 ### Sistema de Memoria (activado 30-Mar-2026)
 - **memorySearch**: provider "gemini" (embeddings via GEMINI_API_KEY existente, free tier)
@@ -550,11 +707,28 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - **memory/YYYY-MM-DD.md**: Logs diarios automaticos (auto-creados por OpenClaw)
 - **knowledge/**: Documentos de referencia compartidos
 
-### MCP y Skills configurados (PM)
-- **Notion**: via mcporter (`~/.mcporter/mcporter.json`), token en env NOTION_TOKEN
+### MCP Servers en mcporter (actualizado 05-Abr-2026)
+- **Config**: `~/.mcporter/mcporter.json` (backup: `mcporter.json.bak`)
+- **Notion**: `@notionhq/notion-mcp-server@1.9.1` (pineado — v2.x bloquea DB creation). 19 tools incl. API-create-a-database
+- **Tavily**: `tavily-mcp@latest`. 5 tools (search, research, extract, crawl, map). 1,000 creditos/mes gratis
+- **Pagina raiz MNL accesible**: `f9aa451a-eae8-8272-9423-81419cc00592` (la antigua `31982aed...` no es accesible por la integracion)
+
+### Google Workspace (gog)
 - **Google Drive/Sheets/Docs**: via gog skill, OAuth en `~/.config/gogcli/`, env GOG_KEYRING_PASSWORD + GOG_ACCOUNT en openclaw.json skills.entries
 - **OAuth credentials**: `~/.openclaw/gog-oauth.json` (Desktop App, proyecto GCP 922302496243)
 - **Auth headless**: `gog auth add --remote --step 1` → copiar URL → autorizar → `--step 2 --auth-url <callback>`
+
+### Self-Improvement (activado 05-Abr-2026)
+- **Skill ClawHub**: `self-improving-agent` instalado en Orquestador
+- **Instrucciones**: Seccion "AUTO-MEJORA Y PERSONALIZACION" en AGENTS.md de los 7 agentes
+- **Directorios**: `.learnings/` con LEARNINGS.md, ERRORS.md, FEATURE_REQUESTS.md en los 7 workspaces
+- **Triggers**: correcciones de usuario, fallos de herramientas, feature requests, knowledge gaps, best practices
+- **Promocion**: patrones recurrentes (3+) se escalan a SOUL.md, AGENTS.md o TOOLS.md
+
+### USER.md Self-Editing (activado 05-Abr-2026)
+- Los 7 agentes pueden modificar USER.md cuando un usuario pide recordar preferencias
+- Triggers: "recuerda que prefiero...", "configurame el tono...", "a mi me gusta que..."
+- USER.md se carga en CADA sesion nueva — cambios son permanentes
 
 ### gcloud CLI
 - Config `mambanegra` creada para este proyecto
@@ -571,6 +745,7 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 | Diseno de despliegue | `docs/plans/2026-03-12-mamba-negra-deploy-design.md` |
 | Design doc multi-agente | `docs/plans/2026-03-13-mamba-negra-multi-agent-design.md` |
 | Plan implementacion multi-agente | `docs/plans/2026-03-13-mamba-negra-multi-agent-implementation.md` |
+| **Design doc multi-agente V2** | `docs/plans/2026-04-02-multi-agent-teams-design.md` |
 | **Design doc transformacion IA** | `docs/plans/2026-03-17-mamba-negra-ai-transformation-design.md` |
 | **Plan implementacion transformacion** | `docs/plans/2026-03-17-mamba-negra-ai-transformation-implementation.md` |
 | Overview multi-agente | `clients/mamba-negra/MULTI-AGENT-OVERVIEW.md` |
@@ -658,4 +833,47 @@ Sesion de planeacion con Carlos (29-Mar). Carlos se define como "retador": pone 
 
 ---
 
-**Estado general (30-Mar-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **SISTEMA LISTO PARA ONBOARDING**: Estratega V3.1 (3 skills: brief-to-strategy + competitor-analysis + mcporter, Tavily + Notion + gog, Google Form briefs, brand voice, memoria). PM V3 (reportes VP + feedback videos + 6 workflows Notion/Sheets). Admin V2 (flujo de caja + memoria). **memorySearch activo** (provider: gemini). Modash MCP construido pero bloqueado (0 creditos, evaluando Influencers Club como alternativa). **Bloqueadores**: (1) API de influencers (Modash o Influencers Club), (2) Sheet flujo de caja de Carlos. **Proximo paso**: Onboarding equipo MNL + activar API de influencers + recibir Sheet de Carlos.
+## SESSION LOG (04-Abr-2026) — V7.0 Upgrade: Skills Architecture + Thinking Fix + Drive Consolidation
+
+### Problemas resueltos
+1. **Thinking visible en Telegram**: Agentes mostraban `<think>`, XML tags. Fix: OUTPUT FORMAT section en 7 SOUL.md
+2. **Output muy corto**: SOUL.md incentivaba brevedad para TODO. Fix: MODO RAPIDO vs MODO ENTREGA en 4 AGENTS.md + contextual depth en SOUL.md
+3. **Sin modo iterativo**: Orquestador lanzaba equipo completo sin checkpoints. Fix: seccion 2.10 con checkpoints humanos
+4. **Correcciones perdidas**: Workers spawneados no recibian contexto. Fix: `campaign-corrections.md` como knowledge persistente
+5. **Skills no declarados**: 14 skills existian en VM pero solo "mcporter" en openclaw.json. Fix: skills declarados por agente
+6. **Tavily subutilizado**: Research solo conocia 2 de 5 herramientas. Fix: TOOLS.md actualizado con tavily_research (modo Perplexity)
+7. **Sin consolidacion progresiva**: Entregables solo al final. Fix: drive-consolidation-protocol.md compartido a 6 agentes
+
+### Skills enriquecidos con prompts del Notion
+- insight-builder, concept-builder, market-research, brief-to-strategy, competitor-analysis
+- Fuente: "Banco de Prompts | Strategy Team" en Notion (7 etapas, ~18 tipos)
+
+### Skills nuevos creados
+- challenge-diagnostic (Orquestador), content-guidelines (Creative), brand-voice-builder (Creative), event-concept (Creative), methodology-selector (Creative)
+
+### Config changes (openclaw.json)
+- contextTokens: 1M → 500K, compaction.memoryFlush.enabled, contextPruning: cache-ttl, userTimezone: America/Bogota, bootstrapMaxChars: 25000
+
+### Documentacion
+- Manual: `docs/MANUAL-AGENTES-MNL.md` (para Mar, Carlos, CMs)
+- NotebookLM: "Manual de Agentes — Mamba Negra Latam" (5 fuentes, cuenta ia@mambanegramkt.com)
+
+---
+
+## SESSION LOG (05-06 Abr 2026) — Notion DB Creation + Self-Improvement + USER.md Editing
+
+### Cambios realizados
+1. **Notion DB creation habilitado**: PM no podia crear databases — Notion API v2025-09-03 (v2.x del MCP server) bloquea el endpoint. Fix: pinear `@notionhq/notion-mcp-server@1.9.1` en mcporter.json. Test exitoso (database creada y verificada)
+2. **PM TOOLS.md actualizado**: Documentacion de `API-create-a-database`, `API-retrieve-a-database`, `API-update-a-database`. Page ID raiz corregido a `f9aa451a-eae8-8272-9423-81419cc00592`
+3. **Self-improving agent activado**: `.learnings/` creados para 7 agentes + instrucciones en AGENTS.md. Triggers: correcciones, errores, feature requests, knowledge gaps
+4. **USER.md self-editing**: 7 agentes pueden modificar USER.md cuando usuario pide recordar preferencias (tono, formato, nivel detalle). Cambios permanentes entre sesiones
+5. **Sync completo**: VM → local → mamba-negra repo. Commit `bc10e61` pusheado a GitHub
+6. **Skill ClawHub `dimagious/notion-skill`**: Evaluado y descartado — es wrapper de documentacion, redundante con mcporter
+
+### Investigacion sobre creacion visual en Notion
+- Agents CAN: crear databases, pages, tablas, bloques, imagenes (URL externa), embeds
+- Agents CANNOT: crear chart views (solo via UI de Notion), board/calendar/timeline views
+
+---
+
+**Estado general (06-Abr-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **V7.0 DESPLEGADO**: 7 agentes con 14 skills custom, thinking fix, MODO RAPIDO/ENTREGA, modo iterativo con checkpoints, Drive consolidation protocol, self-improving agent (.learnings/), USER.md self-editing. **Notion DB creation habilitado** (MCP pineado a v1.9.1). **contextTokens: 500K**, compaction + contextPruning activos. Manual del equipo creado + NotebookLM. **Bloqueadores**: (1) API de influencers, (2) Sheet flujo de caja de Carlos. **Proximo paso**: PM crea 4 databases en Notion (Campanas Master, Trafico Master, Solicitudes Master, Content Feedback) + test flujo orquestado + onboarding equipo.
