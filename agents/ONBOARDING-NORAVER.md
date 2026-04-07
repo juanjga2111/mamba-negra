@@ -1,6 +1,6 @@
 # Caso Practico de Onboarding: Noraver Gripa
 
-**Version**: V2 (26-Mar-2026)
+**Version**: V3 (07-Abr-2026)
 **Proposito**: Guia paso a paso para el equipo MNL usando los agentes de Telegram con un cliente real
 **Cliente**: Noraver Gripa (Genomma Lab — farmaceutico OTC)
 
@@ -516,7 +516,7 @@ Mar         : [Bot Estratega: aprendizajes por vertical]
    - Le pregunta al Estratega: "que criterios de scouting usarias para [vertical de su campana]?"
 
 ### Materiales necesarios
-- [ ] Agentes V2 desplegados en la VM (SCP + restart gateway)
+- [ ] Agentes V8.0 desplegados en la VM (SCP + restart gateway)
 - [ ] Brief de Noraver Gripa (real o basado en este documento)
 - [ ] Todo el equipo con Telegram instalado
 - [ ] Proyector/pantalla para mostrar interacciones en vivo

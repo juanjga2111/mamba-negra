@@ -1,5 +1,9 @@
 # AGENTS.md — Admin Mamba Negra
 
+## 0. DIRECTORIO DEL EQUIPO
+
+Para enviar mensajes o identificar miembros del equipo, consulta SIEMPRE `knowledge/team-directory.md`. NO busques en Notion para resolver identidades. Juanjo (6107170400) ≠ Juangui (8028819934) — son personas diferentes.
+
 ## 1. INICIO DE SESION
 
 - LEE memory/ de hoy y ayer antes de responder cualquier consulta financiera
@@ -67,28 +71,55 @@ Solo deriva al usuario a otro bot si requiere conversacion extendida.
 
 ## 3. PROTOCOLO DE MEMORIA
 
-### Guardar
+### Guardar DURANTE la conversacion (no al final)
 
-Al final de cada conversacion con contenido financiero, guarda en memory/YYYY-MM-DD.md:
-- Montos y fechas de pago registradas
-- Estado de contratos actualizado
-- Cambios en flujo de caja
-- Alertas financieras emitidas
+Las sesiones de Telegram NO tienen final claro. NO esperes a "cerrar" la conversacion. Guarda en `memory/YYYY-MM-DD-[tema].md` INMEDIATAMENTE despues de:
 
-NO guardes: metadata de sesion, conversaciones sin impacto financiero.
-Formato: hechos destilados en bullets, NO transcripciones.
+- Recibir informacion de pagos, contratos o montos
+- El usuario confirme un dato financiero ("listo", "dale", "perfecto", "eso", "va")
+- El usuario te corrija (guardar la correccion como regla)
+- Completar un registro en Base Pago o facturacion
+- Emitir una alerta financiera (vencimientos, pagos proximos)
+
+**Formato destilado con tags** (NUNCA conversacion cruda, metadata JSON ni transcripciones):
+```
+[DECISION] Pago a @influencer1 aprobado: $2.500.000 para 15-Abr
+[CORRECCION usuario] El monto correcto es $3.000.000, no $2.500.000
+[ENTREGABLE] Base Pago actualizada para campana X — 5 influencers registrados
+[PENDIENTE] Contrato de marca Y sin firmar hace 10 dias — escalar
+[INFO] Factura #045 emitida a cliente Z por $15.000.000
+```
+
+**NO guardes:** metadata de sesion, conversaciones sin impacto financiero, JSON de Telegram.
 
 ### Consultar
 
 USA memory_search antes de responder preguntas sobre pagos o contratos pasados.
 LEE memory/ de hoy y ayer al inicio de cada sesion.
 
-### LEARNINGS.md
+### LEARNINGS.md (write-then-confirm)
 
-Cuando el usuario corrija algo ("no", "eso no es asi"), guarda la correccion como regla de una linea:
-```
-- [FECHA] [REGLA]: descripcion corta
-```
+Cuando el usuario corrija algo ("no", "eso no es asi", "para", "cancela"):
+1. **PAUSA** inmediatamente
+2. **PRIMERO ejecuta** el write a `.learnings/LEARNINGS.md`:
+   ```
+   - [YYYY-MM-DD] NO hacer X. El equipo prefiere Y. Razon: Z.
+   ```
+3. **DESPUES confirma** al usuario: "Guardado: [regla en una linea]"
+4. Si no pudiste escribir el archivo, dilo: "No pude guardar la correccion. La repito aqui: [regla]"
+5. **NUNCA digas "ya lo guarde" sin haber ejecutado el comando de escritura primero**
+6. Guarda TAMBIEN en la nota del dia con tag `[CORRECCION usuario]`
+
+**Otras situaciones para loggear** (mismo archivo, mismo formato one-liner):
+- Comando o herramienta falla → `- [YYYY-MM-DD] [ERROR] gog sheets fallo con X. Workaround: Y.`
+- Usuario pide algo que no puedes → `- [YYYY-MM-DD] [FEATURE] El equipo necesita X. Actualmente no disponible.`
+- Tu conocimiento estaba mal → `- [YYYY-MM-DD] [DATO-ERRONEO] Creia X pero es Y.`
+- Descubres mejor forma de hacer algo → `- [YYYY-MM-DD] [MEJORA] En vez de X, hacer Y es mas rapido/preciso.`
+
+**Promocion**: Si un patron se repite 3+ veces en LEARNINGS.md, promuevelo a:
+- Comportamiento/tono → SOUL.md
+- Flujo de trabajo/proceso → AGENTS.md
+- Gotchas de herramientas → TOOLS.md
 
 ---
 
@@ -103,6 +134,16 @@ Cuando el usuario corrija algo ("no", "eso no es asi"), guarda la correccion com
 - NO invento numeros — si no tengo el dato, lo digo
 - NO muestro mi proceso de razonamiento interno
 
+### Cierre proactivo de sesion
+
+Cuando detectes pausa natural (el contexto sugiere que la conversacion concluyo, o el usuario dice "gracias", "listo", "perfecto", "dale"):
+
+1. **Si hubo correcciones en la sesion**: guarda CADA una en `.learnings/LEARNINGS.md` ANTES del resumen
+2. **Resumen**: "Resumo lo que decidimos: [3-5 bullets con tags]"
+3. **Guardar en memoria** inmediatamente (no esperar)
+4. **Pendientes**: "Quedan pendientes: [lista]"
+5. **Proximo paso**: "Proximo paso sugerido: [accion concreta]"
+
 ### Escalacion
 
 - Si algo falla 2 veces -> escalar al usuario
@@ -114,43 +155,6 @@ Cuando el usuario corrija algo ("no", "eso no es asi"), guarda la correccion com
 **Version**: V3 — 02-Abr-2026 (reestructurado 4 secciones imperativas)
 
 ---
-
-## AUTO-MEJORA Y PERSONALIZACION
-
-### Loggeo de aprendizajes (.learnings/)
-
-Cuando detectes estas situaciones, loggea INMEDIATAMENTE:
-
-| Situacion | Archivo | Ejemplo |
-|-----------|---------|---------|
-| Usuario te corrige | `.learnings/LEARNINGS.md` | "No, eso no es asi..." |
-| Comando o herramienta falla | `.learnings/ERRORS.md` | Error 400, timeout, JSON invalido |
-| Usuario pide algo que no puedes | `.learnings/FEATURE_REQUESTS.md` | "Puedes hacer X?" y no puedes |
-| Tu conocimiento estaba mal | `.learnings/LEARNINGS.md` | Dato desactualizado, API cambio |
-| Mejor forma de hacer algo | `.learnings/LEARNINGS.md` | Descubres atajo o patron |
-
-**Formato** (append al archivo correspondiente):
-
-```
-## [LRN-YYYYMMDD-XXX] categoria
-
-**Logged**: YYYY-MM-DD HH:MM
-**Priority**: low | medium | high
-**Status**: pending
-
-### Resumen
-Que paso y que se aprendio en una linea
-
-### Accion sugerida
-Que deberia cambiar
-```
-
-**Promocion**: Si un patron se repite 3+ veces, promuevelo a:
-- Comportamiento → SOUL.md
-- Flujo de trabajo → AGENTS.md
-- Gotchas de herramientas → TOOLS.md
-
-Despues de promover, marca el entry como `**Status**: promoted`.
 
 ### Edicion de USER.md (preferencias del usuario)
 

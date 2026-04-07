@@ -1,167 +1,194 @@
-# Protocolo de Handoff entre Agentes — Mamba Negra
+# Protocolo de Comunicacion entre Agentes — Mamba Negra V2
 
-**Version**: V1 (26-Mar-2026)
-**Estado**: Listo para onboarding (Semana 3)
-
-> Define como los 3 agentes de Telegram se coordinan entre si y con el equipo humano a lo largo del ciclo de campana.
+**Fecha**: 07 Abril 2026
+**Version**: 2.1 — Actualizado con V8.0 (mejoras en persistencia de contexto)
 
 ---
 
-## PRINCIPIO FUNDAMENTAL
+## Principio Fundamental
 
-El equipo NO necesita saber como funcionan los agentes internamente. Solo necesitan saber **a quien escribirle y cuando**. Los handoffs entre agentes ocurren automaticamente via `sessions_send` o por indicacion al usuario.
+El equipo NO necesita saber como funcionan los agentes internamente. Solo necesitan saber **a quien escribirle**. Los handoffs entre agentes ocurren automaticamente via `sessions_spawn` y `sessions_send`, o por indicacion al usuario cuando corresponde.
+
+### Persistencia de Contexto entre Sesiones (V8.0)
+
+Desde V8.0 (07-Abr-2026), los 7 agentes tienen mecanismos mejorados para mantener contexto:
+- **Memoria inmediata**: Los agentes guardan aprendizajes DURANTE la conversacion (no al final), evitando perdida de memoria si la sesion se interrumpe.
+- **HEARTBEAT.md**: Cada agente tiene un archivo HEARTBEAT.md con sus prioridades diarias, estado de campanas activas, y Drive consolidation. Esto asegura que al iniciar una nueva sesion, el agente retoma contexto sin que el usuario deba repetir informacion.
+- **Cierre proactivo de sesion**: Al cerrar, cada agente genera un resumen con pendientes y proximo paso sugerido — este contexto alimenta la siguiente sesion.
+- **Team-directory en TOOLS.md**: Cada agente conoce los IDs de Telegram de sus companeros para comunicacion directa.
 
 ---
 
-## FLUJO DE CAMPANA CON AGENTES INTEGRADOS
+## Topologia de Comunicacion
 
 ```
-BRIEF (WhatsApp/Reunion)
-    |
-    v
-[ESTRATEGA] <-- CM le pasa el brief
-    |  - Clasifica tipo (RAYO/ARCO/PRISMA/MAREA)
-    |  - Identifica info faltante
-    |  - Genera criterios de scouting por vertical
-    |  - Estructura Strategic Thinking
-    |
-    +--> sessions_send al PM: "Nueva campana [marca], tipo [X], deadline [Y]"
-    |
-    v
-[PM] <-- Recibe aviso del Estratega o CM le escribe directo
-    |  - Crea cronograma en Notion (template segun tipo)
-    |  - Asigna CM basado en carga y vertical
-    |  - Configura hitos y alertas
-    |
-    v
-[ESTRATEGA] <-- CM consulta durante scouting
-    |  - Evalua perfiles vs criterios
-    |  - Genera shortlist con scoring
-    |  - Prepara propuesta estrategica
-    |
-    v
-[PM] <-- Tracking de ejecucion
-    |  - Monitorea status de contenidos por creador
-    |  - Alerta atrasos
-    |  - Compara KPIs reales vs estimados
-    |
-    v
-[ADMIN] <-- Fase financiera
-    |  - Base pago actualizada
-    |  - Alertas de pagos pendientes
-    |  - Rentabilidad de campana
-    |
-    v
-[PM + ESTRATEGA] <-- Reporte final
-    |  - PM consolida metricas
-    |  - Estratega genera insights y analisis
-    |  - PM entrega template pre-llenado al CM
-    |
-    v
-[ESTRATEGA] <-- Aprendizajes
-       - Resumen post-campana
-       - Actualiza knowledge base por marca/vertical
+                Orquestador
+               ↗     ↑     ↘        (sessions_spawn)
+        Radar  ←→  Musa  ←→  Scout   (sessions_send)
+                     ↕
+                 PM / Admin
+```
+
+- **Orquestador** puede spawnear a Radar, Musa, Scout, PM y Admin
+- **Radar, Musa y Scout** pueden consultarse entre si via sessions_send
+- **PM y Admin** reciben consultas via sessions_send pero no spawnan a nadie
+- **Prometeo** opera de forma independiente
+
+---
+
+## Tres Patrones de Comunicacion
+
+### 1. sessions_spawn (asincrono)
+
+**Quien lo usa**: Solo el Orquestador.
+**Para que**: Lanzar workers en paralelo para trabajo pesado. Cada worker corre en una sesion aislada. Consume profundidad (maxSpawnDepth: 1).
+
+```
+Orquestador: sessions_spawn → Radar ("investiga marca Nike, mercado deportivo Colombia")
+Orquestador: sessions_spawn → Scout ("explora perfiles fitness/lifestyle en Colombia, 50k-200k")
+[Radar y Scout trabajan en paralelo]
+[Orquestador recibe ambos resultados cuando terminan]
+```
+
+### 2. sessions_send (sincrono)
+
+**Quien lo usa**: Cualquier agente.
+**Para que**: Consulta puntual a otro agente. Respuesta inmediata. NO consume profundidad.
+
+```
+Musa: sessions_send → Radar ("datos de engagement promedio en TikTok Colombia para fitness")
+Radar: responde con datos
+Musa: continua construyendo el concepto con datos reales
+```
+
+### 3. Referencia al usuario (manual)
+
+**Quien lo usa**: Cualquier agente.
+**Para que**: Cuando la consulta esta fuera de su especialidad Y requiere trabajo extenso (no una sola pregunta). El agente recomienda al usuario hablar directamente con el bot correspondiente.
+
+> "Eso es trabajo extenso de investigacion. Escribele a @RadarMambaBot directamente para que se sumerja en el tema."
+
+---
+
+## Flujo Orquestado Completo (brief-to-delivery)
+
+Un brief de campana procesado de principio a fin:
+
+```
+PASO 1: Mar escribe "@StrategyMambabot procesa el brief de Nike"
+
+PASO 2: Orquestador lee el brief (Drive/Google Form)
+
+PASO 3: Orquestador ejecuta directamente:
+        - Clasifica tipo de campana (RAYO/ARCO/PRISMA/MAREA)
+        - Identifica info faltante
+        - Define alcance y objetivos
+
+PASO 4: Orquestador lanza workers en paralelo:
+        sessions_spawn → Radar ("investiga marca Nike, mercado deportivo Colombia")
+        sessions_spawn → Scout ("explora perfiles fitness/lifestyle Colombia")
+        [Radar y Scout trabajan simultaneamente]
+
+PASO 5: Orquestador recibe resultados de Radar y Scout
+
+PASO 6: Orquestador lanza worker creativo con el research:
+        sessions_spawn → Musa ("con este research, construye insight y concepto para Nike")
+
+PASO 7: Musa trabaja. Si necesita datos adicionales:
+        sessions_send → Radar ("engagement promedio en Instagram fitness Colombia")
+
+PASO 8: Orquestador recibe resultado creativo de Musa
+
+PASO 9: Orquestador compila entrega parcial:
+        - Research + shortlist de influencers + concepto creativo
+        - Presenta a Mar en el topic de la campana
+
+PASO 10: Mar da feedback → Orquestador ajusta
+         (puede re-spawnear workers si el feedback lo requiere)
+
+PASO 11: Orquestador compila entrega final
+
+PASO 12: Orquestador guarda en Drive + actualiza Index
 ```
 
 ---
 
-## TABLA DE HANDOFFS
+## Reglas de Derivacion
 
-| De | A | Trigger | Mensaje via sessions_send | Ejemplo |
-|----|---|---------|---------------------------|---------|
-| Estratega | PM | Brief clasificado | "Nueva campana [marca], tipo [RAYO/ARCO/PRISMA/MAREA], [N] influencers, deadline [fecha]" | "Nueva campana Detodito, tipo ARCO, 6 influencers, deadline 15 abril" |
-| PM | Estratega | Scouting atrasado | "Campana [marca]: scouting lleva [N] dias sin avance. CM: [nombre]" | "Campana Nike: scouting lleva 4 dias. CM: Tatiana" |
-| PM | Admin | Influencers confirmados | "Campana [marca]: [N] influencers confirmados, iniciar contratos" | "Campana MK: 4 influencers confirmados, iniciar contratos" |
-| Estratega | PM | Propuesta aprobada | "Propuesta [marca] aprobada por cliente. Iniciar ejecucion" | "Propuesta Detodito aprobada. 6 influencers, cronograma arranca lunes" |
-| PM | Estratega | Reporte en preparacion | "Campana [marca] en fase de reporte. Necesito insights y analisis" | "Campana Nike cerro. Metricas listas, necesito insights" |
-| Admin | PM | Pago procesado | "Pago a [influencer] procesado por [monto]" | "Pago a @influencer1 procesado por $2.5M" |
+### Cuando manejar internamente (sessions_send)
 
----
+Un agente usa sessions_send para resolver la consulta sin molestar al usuario:
 
-## REGLAS DE DERIVACION AL USUARIO
+| Agente | Consulta interna a | Ejemplo |
+|--------|-------------------|---------|
+| Musa | Radar | "Necesito un dato de mercado para fundamentar este insight" |
+| Musa | Scout | "Que tipo de perfiles hay disponibles para esta vertical?" |
+| Scout | Radar | "Background check: que se dice de esta marca en redes?" |
+| Scout | Musa | "Que angulo creativo funciona mejor con este tipo de influencer?" |
+| Radar | Musa | "Necesito contexto de brand voice para enfocar la investigacion" |
+| Radar | Scout | "Que perfiles usaron los competidores en campanas similares?" |
+| PM | Cualquiera | "Necesito status de la parte de [agente] para el reporte" |
 
-Los agentes derivan al usuario (no intentan resolver solos) cuando:
+### Cuando referir al usuario
 
-| Situacion | Agente | Accion |
-|-----------|--------|--------|
-| Negociacion de tarifa con influencer | Estratega | "Los rangos para este tipo de perfil son $X-$Y. La negociacion la manejas tu directamente." |
-| Decision estrategica sobre concepto creativo | Estratega | "Tengo 3 opciones de insight. La decision final es del equipo de Strategy." |
-| Aprobacion de presupuesto | PM/Admin | "El presupuesto total es $X. Necesita aprobacion de [comercial/Carlos]." |
-| Conflicto de prioridades entre campanas | PM | "Hay conflicto entre [campana A] y [campana B]. Necesito que [comercial] defina prioridad." |
-| Info que no esta en Notion/Drive | Cualquiera | "No tengo esa informacion registrada. Necesito que [persona] actualice [sistema]." |
+Un agente recomienda escribirle a otro bot cuando:
 
----
+| Situacion | Agente que recibe | Refiere a | Ejemplo de respuesta |
+|-----------|-------------------|-----------|---------------------|
+| Piden investigacion profunda | Musa o Scout | @RadarMambaBot | "Para una investigacion completa de mercado, escribele a @RadarMambaBot" |
+| Piden ideas creativas | Radar o Scout | @CreativeMambaBot | "Para conceptos e insights, @CreativeMambaBot es quien puede ayudarte" |
+| Piden shortlist de influencers | Radar o Musa | @InfluencerMambaBot | "Eso es trabajo de scouting. Escribele a @InfluencerMambaBot" |
+| Piden cronograma o status | Cualquier worker | @PMMambabot | "Para cronogramas y tracking, habla con @PMMambabot" |
+| Piden info financiera | Cualquier worker | @AdmonMambaBot | "Temas de contratos y pagos son de @AdmonMambaBot" |
+| No sabe a quien preguntar | Cualquiera | @StrategyMambabot | "No estoy seguro de poder ayudarte con eso. Preguntale a @StrategyMambabot" |
 
-## PATRON DE USO POR ROL
+### Nunca intentar (fuera de expertise)
 
-### Para CMs (Tatiana, Camila, Juan Guillermo, Laura)
-
-| Momento del dia | Agente | Que preguntar |
-|----------------|--------|---------------|
-| Inicio de campana | Estratega | "Tengo brief de [marca]. Que tipo de campana es y que perfil de influencer necesito?" |
-| Durante scouting | Estratega | "Evalua este perfil: [link/nombre]. Cumple los criterios para [vertical]?" |
-| Setup del proyecto | PM | "Crea cronograma para campana [marca], tipo [X], [N] influencers" |
-| Cada dia | PM | "Como van mis campanas activas? Algo atrasado?" |
-| Aprobacion de contenido | PM | "El contenido de [influencer] esta aprobado. Actualiza status" |
-| Cierre de campana | PM | "Genera reporte de metricas de campana [marca]" |
-| Post-campana | Estratega | "Que aprendimos de esta campana? Que funciono?" |
-
-### Para CG (Comercial)
-
-| Momento | Agente | Que preguntar |
-|---------|--------|---------------|
-| Revision matutina | PM | "Status de todas las campanas activas. Algo en riesgo?" |
-| Antes de reunion con cliente | PM | "Dame un resumen rapido de campana [marca]: fase, metricas, pendientes" |
-| Fin de semana | Admin | "A quien pagamos esta semana? Hay pagos retrasados?" |
-| Planning | PM | "Carga de trabajo del equipo. Quien puede tomar una campana nueva?" |
+| Agente | NO intenta |
+|--------|-----------|
+| Radar | Generar conceptos creativos, evaluar influencers, crear cronogramas |
+| Musa | Buscar datos de mercado, scoring de influencers, gestion de pagos |
+| Scout | Crear estrategias creativas, llevar cronogramas, gestionar contratos |
+| PM | Investigacion de mercado, creatividad, scouting de influencers |
+| Admin | Estrategia, investigacion, creatividad, scouting |
 
 ---
 
-## INTEGRACION CON HERRAMIENTAS
+## Configuracion de Subagentes
 
-| Herramienta | Agente con acceso | Uso |
-|-------------|-------------------|-----|
-| **Notion** (19 DBs) | PM | TRAFICO/SOLICITUD boards, tareas, estados, asignaciones |
-| **Google Drive** | PM, Estratega | Briefs, propuestas, reportes, cronogramas |
-| **Google Sheets** | PM | Metricas, cuadros de costos, tracking |
-| **Google Docs** | PM | Reportes narrativos, lineamientos |
-| **Modash** | Estratega (criterios), CM (ejecucion manual) | Scouting — el Estratega genera criterios, el CM ejecuta en Modash |
+Que agentes puede contactar cada uno (allowAgents en openclaw.json):
 
-### Nota sobre Modash
-Modash no tiene API accesible para los agentes. El flujo es:
-1. Estratega genera criterios de busqueda optimizados
-2. CM ejecuta la busqueda manualmente en Modash
-3. CM comparte resultados con Estratega para evaluar/scoring
+| Agente | allowAgents |
+|--------|------------|
+| Orquestador | research, creative, influencer, pm, admin |
+| Radar (research) | creative, influencer |
+| Musa (creative) | research, influencer |
+| Scout (influencer) | research, creative |
+| PM | — |
+| Admin | — |
+| Prometeo | — |
+
+```jsonc
+{
+  "agents": {
+    "defaults": {
+      "subagents": {
+        "maxSpawnDepth": 1,
+        "maxChildrenPerAgent": 5,
+        "maxConcurrent": 12
+      }
+    }
+  }
+}
+```
 
 ---
 
-## METRICAS DE EXITO DEL HANDOFF
+## Documentos relacionados
 
-| Metrica | Baseline (sin agentes) | Target (con agentes) |
-|---------|------------------------|----------------------|
-| Tiempo para responder "como va la campana" | 5-30 min | <30 seg |
-| Scouting completo | ~2 dias | ~4-6 horas |
-| Reporte final | 4-8 horas | 1-2 horas |
-| CMs saben que hacen otros CMs | No | Si (via PM bot) |
-| Alertas de atraso | Reactivas ("cuando ya es tarde") | Proactivas (>48h sin movimiento) |
-
----
-
-## ONBOARDING (Semana 3)
-
-### Dia 1: Demo + Pairing
-1. Mostrar este documento al equipo (5 min)
-2. Demo en vivo: CG le pregunta al PM bot "status de campanas activas" (5 min)
-3. Demo en vivo: CM le pregunta al Estratega "criterios de scouting para vertical X" (5 min)
-4. Pairing de todo el equipo en los 3 bots (10 min)
-5. Cada CM elige 1 campana activa para probar con el PM bot (tarea)
-
-### Dia 2-5: Shadow Mode
-- Equipo trabaja normalmente + usa agentes en paralelo
-- Canal de feedback (WhatsApp group o Notion) para reportar: que sirvio, que no, que falta
-- Juan Jose revisa feedback diariamente y ajusta AGENTS.md
-
-### Semana 4: Primera evaluacion
-- Que CMs usaron los bots? Con que frecuencia?
-- Que preguntas funcionaron? Cuales no?
-- Iterar → V3 de AGENTS.md con feedback real
+| Documento | Path |
+|-----------|------|
+| Multi-Agent Overview V2 | `clients/mamba-negra/MULTI-AGENT-OVERVIEW.md` |
+| Design doc V2 | `docs/plans/2026-04-02-multi-agent-teams-design.md` |
+| Status del proyecto | `clients/mamba-negra/STATUS.md` |
+| V8.0 Upgrade (workspace files) | Cambios en AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md de cada agente |

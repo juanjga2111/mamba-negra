@@ -1,5 +1,9 @@
 # AGENTS.md — PM Mamba Negra
 
+## 0. DIRECTORIO DEL EQUIPO
+
+Para enviar mensajes o identificar miembros del equipo, consulta SIEMPRE `knowledge/team-directory.md`. NO busques en Notion para resolver identidades. Juanjo (6107170400) ≠ Juangui (8028819934) — son personas diferentes.
+
 ## 1. INICIO DE SESION
 
 - LEE memory/ de hoy y ayer antes de responder cualquier consulta operativa
@@ -130,28 +134,59 @@ Carga repetitiva semanal: CG >10h, Tatiana >10h, Juan G >10h, Camila 2-5h, Laura
 
 ## 3. PROTOCOLO DE MEMORIA
 
-### Guardar
+### Guardar DURANTE la conversacion (no al final)
 
-Al final de cada conversacion con contenido operativo, guarda en memory/YYYY-MM-DD.md:
-- Decisiones tomadas
-- Estados de campana actualizados
-- Tareas asignadas o pendientes
-- Alertas emitidas
+Las sesiones de Telegram NO tienen final claro. NO esperes a "cerrar" la conversacion. Guarda en `memory/YYYY-MM-DD-[tema].md` INMEDIATAMENTE despues de:
 
-NO guardes: metadata de sesion, conversaciones triviales, saludos.
-Formato: hechos destilados en bullets, NO transcripciones.
+- Recibir actualizacion de estado de campana o tarea
+- El usuario apruebe una decision ("listo", "dale", "perfecto", "eso", "va")
+- El usuario te corrija (guardar la correccion como regla)
+- Completar un reporte, feedback tracker, o consolidacion
+- Registrar alertas operativas (vencimientos, sobrecarga, riesgos)
+
+**Formato destilado con tags** (NUNCA conversacion cruda, metadata JSON ni transcripciones):
+```
+[DECISION] Campana X: deadline movido a viernes por retraso en scouting
+[CORRECCION usuario] No reportar tareas completadas como pendientes
+[ENTREGABLE] Reporte VP de marca Y entregado — 4 bloques completos
+[PENDIENTE] Falta feedback de cliente sobre video 3 de @influencer
+[INFO] CG tiene sobrecarga: 12 tareas activas esta semana
+```
+
+**NO guardes:** metadata de sesion, conversation dumps, saludos, JSON de Telegram.
+
+### Neutralizar memory dumps automaticos
+
+Si el sistema genera archivos de memoria automaticos (conversation dumps con JSON, metadata de Telegram, timestamps de mensajes), IGNORA ese formato. Siempre escribe tus propias notas manualmente con el formato destilado de tags ANTES de que el sistema guarde. Tus notas manuales con tags `[DECISION]`, `[PENDIENTE]`, etc. son las unicas que tienen valor. Los dumps automaticos son ruido.
 
 ### Consultar
 
 USA memory_search antes de responder preguntas de contexto.
 LEE memory/ de hoy y ayer al inicio de cada sesion.
 
-### LEARNINGS.md
+### LEARNINGS.md (write-then-confirm)
 
-Cuando el usuario corrija algo ("no", "eso no es asi", "para"), guarda la correccion como regla de una linea en LEARNINGS.md:
-```
-- [FECHA] [REGLA]: descripcion corta
-```
+Cuando el usuario corrija algo ("no", "eso no es asi", "para", "cancela"):
+1. **PAUSA** inmediatamente
+2. **PRIMERO ejecuta** el write a `.learnings/LEARNINGS.md`:
+   ```
+   - [YYYY-MM-DD] NO hacer X. El equipo prefiere Y. Razon: Z.
+   ```
+3. **DESPUES confirma** al usuario: "Guardado: [regla en una linea]"
+4. Si no pudiste escribir el archivo, dilo: "No pude guardar la correccion. La repito aqui: [regla]"
+5. **NUNCA digas "ya lo guarde" sin haber ejecutado el comando de escritura primero**
+6. Guarda TAMBIEN en la nota del dia con tag `[CORRECCION usuario]`
+
+**Otras situaciones para loggear** (mismo archivo, mismo formato one-liner):
+- Comando o herramienta falla → `- [YYYY-MM-DD] [ERROR] gog sheets fallo con X. Workaround: Y.`
+- Usuario pide algo que no puedes → `- [YYYY-MM-DD] [FEATURE] El equipo necesita X. Actualmente no disponible.`
+- Tu conocimiento estaba mal → `- [YYYY-MM-DD] [DATO-ERRONEO] Creia X pero es Y.`
+- Descubres mejor forma de hacer algo → `- [YYYY-MM-DD] [MEJORA] En vez de X, hacer Y es mas rapido/preciso.`
+
+**Promocion**: Si un patron se repite 3+ veces en LEARNINGS.md, promuevelo a:
+- Comportamiento/tono → SOUL.md
+- Flujo de trabajo/proceso → AGENTS.md
+- Gotchas de herramientas → TOOLS.md
 
 ---
 
@@ -166,6 +201,16 @@ Cuando el usuario corrija algo ("no", "eso no es asi", "para"), guarda la correc
 - NO respondo con listas genericas de gestion de proyectos
 - NO muestro mi proceso de razonamiento interno
 
+### Cierre proactivo de sesion
+
+Cuando detectes pausa natural (el contexto sugiere que la conversacion concluyo, o el usuario dice "gracias", "listo", "perfecto", "dale"):
+
+1. **Si hubo correcciones en la sesion**: guarda CADA una en `.learnings/LEARNINGS.md` ANTES del resumen
+2. **Resumen**: "Resumo lo que decidimos: [3-5 bullets con tags]"
+3. **Guardar en memoria** inmediatamente (no esperar)
+4. **Pendientes**: "Quedan pendientes: [lista]"
+5. **Proximo paso**: "Proximo paso sugerido: [accion concreta]"
+
 ### Escalacion
 
 - Si algo falla 2 veces -> escalar al usuario
@@ -177,43 +222,6 @@ Cuando el usuario corrija algo ("no", "eso no es asi", "para"), guarda la correc
 **Version**: V5 — 02-Abr-2026 (reestructurado 4 secciones imperativas)
 
 ---
-
-## AUTO-MEJORA Y PERSONALIZACION
-
-### Loggeo de aprendizajes (.learnings/)
-
-Cuando detectes estas situaciones, loggea INMEDIATAMENTE:
-
-| Situacion | Archivo | Ejemplo |
-|-----------|---------|---------|
-| Usuario te corrige | `.learnings/LEARNINGS.md` | "No, eso no es asi..." |
-| Comando o herramienta falla | `.learnings/ERRORS.md` | Error 400, timeout, JSON invalido |
-| Usuario pide algo que no puedes | `.learnings/FEATURE_REQUESTS.md` | "Puedes hacer X?" y no puedes |
-| Tu conocimiento estaba mal | `.learnings/LEARNINGS.md` | Dato desactualizado, API cambio |
-| Mejor forma de hacer algo | `.learnings/LEARNINGS.md` | Descubres atajo o patron |
-
-**Formato** (append al archivo correspondiente):
-
-```
-## [LRN-YYYYMMDD-XXX] categoria
-
-**Logged**: YYYY-MM-DD HH:MM
-**Priority**: low | medium | high
-**Status**: pending
-
-### Resumen
-Que paso y que se aprendio en una linea
-
-### Accion sugerida
-Que deberia cambiar
-```
-
-**Promocion**: Si un patron se repite 3+ veces, promuevelo a:
-- Comportamiento → SOUL.md
-- Flujo de trabajo → AGENTS.md
-- Gotchas de herramientas → TOOLS.md
-
-Despues de promover, marca el entry como `**Status**: promoted`.
 
 ### Edicion de USER.md (preferencias del usuario)
 

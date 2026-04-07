@@ -1,123 +1,197 @@
-# Mamba Negra — Sistema Multi-Agente IA
+# Mamba Negra — Sistema Multi-Agente IA V2
 
-**Fecha**: 13 Marzo 2026
-**Version**: 1.0
+**Fecha**: 07 Abril 2026
+**Version**: 2.1
 
 ---
 
 ## Que es esto?
 
-Un sistema de 3 agentes de IA especializados que asisten al equipo de Mamba Negra Latam en todo el ciclo de vida de una campana de influencer marketing. Cada agente es un bot de Telegram con su propio dominio de expertise, y pueden consultarse entre si cuando una pregunta cruza dominios.
+Un sistema de **7 agentes de IA especializados por capacidad** que asisten al equipo de Mamba Negra Latam en todo el ciclo de vida de una campana de influencer marketing. Un Orquestador coordina el trabajo y spawna workers especializados en paralelo. Workers ejecutan tareas dentro de su dominio y pueden consultarse entre si.
+
+Cada agente es un bot de Telegram. El equipo interactua con ellos en **Telegram Groups con Topics** — un topic por campana, una @mencion para dirigirse a un agente especifico. Si no mencionas a nadie, el Orquestador responde.
+
+### Mejoras V8.0 (07-Abr-2026) — Workspace Files
+
+La V8.0 mejoro los **workspace files** (AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md) de los 7 agentes sin cambios en la arquitectura, modelos ni comunicacion. Las mejoras principales:
+
+- **Memoria inmediata**: Los agentes guardan informacion clave durante la conversacion (no solo al final)
+- **HEARTBEAT universal**: Los 7 agentes ejecutan checkpoints proactivos al iniciar sesion (memoria, Campaign Strategy Index, Drive consolidation)
+- **Cierre proactivo**: Al concluir una conversacion, el agente resume, guarda memoria, lista pendientes y sugiere proximo paso
+- **LEARNINGS mejorado**: Protocolo write-then-confirm con tags destilados. Patrones recurrentes (3+) se escalan a instrucciones permanentes
+- **Team directory**: IDs de Telegram del equipo disponibles para envio de DMs
+- **Cross-notification**: El Orquestador notifica a otros agentes cuando recibe informacion estrategica nueva
 
 ---
 
-## Los 3 Agentes
+## Los 7 Agentes
 
-### 1. Estratega — Jefe de Estrategia Digital
+### 1. Orquestador — Coordinacion y Entregas
+**Bot**: `@StrategyMambabot`
 
-El cerebro estrategico de la agencia. Entiende briefs, construye propuestas, define criterios de seleccion de influencers y documenta aprendizajes.
-
-| | |
-|---|---|
-| **Canal** | Bot de Telegram dedicado |
-| **Fases que cubre** | 1 (Brief), 2 (Estrategia), 4 (Scouting), 8 (Reporte), 9 (Aprendizajes) |
-| **Le preguntas** | "Que perfil de influencer necesitamos para este brief?", "Cuales son los criterios de scoring para campana de awareness?" |
-| **No le preguntas** | Cronogramas, estados de tareas, pagos, contratos |
-
-### 2. PM — Project Manager de Campanas
-
-El motor operativo. Lleva cronogramas, asigna tareas, monitorea avance, alerta atrasos y mantiene la documentacion en orden.
+El cerebro coordinador de la agencia. Recibe briefs, decide que agentes invocar, sintetiza resultados y compila entregas. Ejecuta directamente los pasos iniciales (clasificacion, analisis del brief) y finales (compilacion, feedback, entrega). Spawna workers en paralelo para investigacion, creatividad y scouting.
 
 | | |
 |---|---|
-| **Canal** | Bot de Telegram dedicado |
-| **Fases que cubre** | 3 (Gantt), 4 (Tracking scouting), 5 (Aprobaciones), 6 (Ejecucion), 8 (Reporte) |
-| **Le preguntas** | "Como va la campana X?", "Que campanas tiene Maria?", "Ya se aprobo el contenido?" |
-| **No le preguntas** | Estrategia de influencers, pagos, contratos |
+| **Modelo** | google/gemini-3.1-pro |
+| **Tools** | sessions_spawn, sessions_send, gog (Drive/Sheets), Notion |
+| **Skills** | brief-to-strategy (orquestado), Google Form Briefs |
+| **Es default** | Si — responde cuando nadie es mencionado en un grupo |
+| **Le pides** | "Procesa el brief de Nike", "Arma la estrategia completa para esta campana" |
+| **No le pides** | Investigacion profunda, busqueda de influencers, cronogramas |
 
-### 3. Admin — Asistente Administrativo y Financiero
+### 2. Radar — Investigacion Profunda
+**Bot**: `@RadarMambaBot`
 
-El guardian de los numeros. Gestiona pagos a proveedores e influencers, contratos, cuentas de cobro y facturacion.
+El investigador. Se sumerge en datos duros (papers, reportes, estudios de mercado), datos sociales (tendencias, conversaciones, percepcion de marca), analisis competitivo (SWOT, gaps, benchmarks) y contexto Colombia/LATAM. Busca campanas pasadas en Drive.
 
 | | |
 |---|---|
-| **Canal** | Bot de Telegram dedicado |
-| **Fases que cubre** | 7 (Base Pago / Costos), apoyo en 4 (contratos) y 6 (pagos durante ejecucion) |
-| **Le preguntas** | "Cuanto se le debe al influencer Z?", "Ya se firmo el contrato?", "Que pagos vencen esta semana?" |
-| **No le preguntas** | Estrategia, cronogramas, asignacion de tareas |
+| **Modelo** | google/gemini-3.1-pro |
+| **Tools** | Tavily (5 tools incl. research), gog (Drive), sessions_send |
+| **Skills** | competitor-analysis, market-research |
+| **Le pides** | "Investiga la marca X y su mercado", "Que esta haciendo la competencia en redes?", "Tendencias de fitness en Colombia" |
+| **No le pides** | Ideas creativas, busqueda de influencers, cronogramas |
+
+### 3. Musa — Pensamiento Creativo
+**Bot**: `@CreativeMambaBot`
+
+La chispa creativa. Genera insights humanos, construye conceptos y proposiciones de marca, selecciona la metodologia de campana (RAYO/ARCO/PRISMA/MAREA), propone ideas de contenido con referencias visuales y mantiene el brand voice.
+
+| | |
+|---|---|
+| **Modelo** | google/gemini-3.1-pro |
+| **Tools** | gog (Drive), sessions_send |
+| **Skills** | insight-builder, concept-builder |
+| **Le pides** | "Dame un insight para campana de snacks con Gen Z", "Que metodologia usamos para awareness?", "Ideas de contenido para esta marca" |
+| **No le pides** | Datos de mercado, busqueda de influencers, cronogramas, pagos |
+
+### 4. Scout — Todo Influencers
+**Bot**: `@InfluencerMambaBot`
+
+El especialista en influencers. Busca y filtra perfiles, aplica scoring cuantitativo y cualitativo, ejecuta background check (brand safety), genera copy comercial por perfil con vision senior (directiva de Carlos), y define criterios de scouting para CMs.
+
+| | |
+|---|---|
+| **Modelo** | google/gemini-3.1-pro |
+| **Tools** | Tavily (background check), gog (Sheets/Drive), sessions_send, futura API influencers |
+| **Skills** | scouting-shortlist (con copy comercial senior) |
+| **Le pides** | "Busca influencers de lifestyle en Colombia 50k-200k", "Evalua este perfil para la campana X", "Shortlist con copy comercial para Nike" |
+| **No le pides** | Estrategia creativa, cronogramas, pagos |
+
+### 5. PM — Operaciones
+**Bot**: `@PMMambabot`
+
+El motor operativo. Lleva cronogramas, asigna tareas, monitorea avance, alerta atrasos, genera reportes de metricas y trackea feedback de videos por influencer. Conectado a Notion (22 tools) para gestion de proyectos.
+
+| | |
+|---|---|
+| **Modelo** | google/gemini-3-flash |
+| **Tools** | gog (Sheets/Drive), Notion (22 tools), sessions_send |
+| **Skills** | 6 workflows (Notion + Sheets + feedback videos) |
+| **Le pides** | "Como va la campana X?", "Crea cronograma para Nike", "Que campanas tiene Tatiana?", "Status del feedback de videos" |
+| **No le pides** | Estrategia, investigacion, creatividad, pagos |
+
+### 6. Admin — Finanzas
+**Bot**: `@AdmonMambaBot`
+
+El guardian de los numeros. Gestiona contratos, pagos a influencers y proveedores, base pago, cuentas de cobro y facturacion. Memoria activa para tracking financiero.
+
+| | |
+|---|---|
+| **Modelo** | google/gemini-3-flash |
+| **Tools** | gog, sessions_send |
+| **Le pides** | "Cuanto se le debe al influencer Z?", "Ya se firmo el contrato?", "Que pagos vencen esta semana?" |
+| **No le pides** | Estrategia, cronogramas, investigacion, creatividad |
+
+### 7. Prometeo — Tecnico / Dev
+**Bot**: `@PrometeoMNBot`
+
+El agente tecnico. Soporte de desarrollo, infraestructura y configuracion.
+
+| | |
+|---|---|
+| **Modelo** | google/gemini-3.1-pro-preview |
+| **Le pides** | Temas tecnicos y de desarrollo |
 
 ---
 
-## El Framework: 9 Fases del Ciclo de Campana
+## Como se comunican
 
-Basado en el Manual Maestro del Campaign Manager de MNL. Este framework es el "mapa" que los 3 agentes comparten y entienden.
+Los agentes usan tres patrones de comunicacion:
+
+### 1. sessions_spawn (asincrono, paralelo)
+
+El Orquestador lanza workers en paralelo. Cada worker corre en una sesion aislada. Se usa para trabajo pesado que puede ejecutarse simultaneamente.
 
 ```
-FASE 1          FASE 2            FASE 3           FASE 4
-Recepcion  -->  Construccion -->  Cronograma  -->  Scouting +
-del Brief       Estrategica       Gantt            Negociacion
-[Comercial]     [Strategy]        [CM]             [CM]
- Estratega       Estratega         PM          Estratega + PM
-
-    |               |                |               |
-    v               v                v               v
-
-FASE 5          FASE 6            FASE 7           FASE 8          FASE 9
-Aprobaciones -> Ejecucion y  -->  Reporte de  -->  Reporte   -->  Aprendizajes
-Internas        Seguimiento       Costos           Final
-[CM+Strat+Com]  [CM]              [CM+Admin]       [CM+Design]    [CM]
-    PM              PM               Admin        PM+Estratega    Estratega
+Orquestador: sessions_spawn → Radar ("investiga marca Nike")
+Orquestador: sessions_spawn → Scout ("explora perfiles fitness Colombia")
+[Radar y Scout trabajan en paralelo, Orquestador recibe ambos resultados]
 ```
 
-### Detalle por Fase
+### 2. sessions_send (sincrono, consulta puntual)
 
-| # | Fase | Objetivo | Owner | Agente(s) | Entregable | Trigger de salida |
-|---|------|----------|-------|-----------|------------|-------------------|
-| 1 | Recepcion del Brief | Recibir y distribuir el brief del cliente | Comercial | Estratega | Brief compartido a Strategy + CM | Brief distribuido a todos |
-| 2 | Construccion Estrategica | Definir objetivo, funnel, rol de influencers, tipo de contenidos | Strategy | Estratega | Estrategia aprobada por comercial | Comercial aprueba estrategia |
-| 3 | Cronograma Gantt | Crear timeline operativo con hitos | CM | PM | Cronograma validado con comercial y brand manager | Gantt aprobado |
-| 4 | Scouting + Negociacion | Buscar, evaluar y negociar con influencers | CM | Estratega + PM | Shortlist con scoring + estado de negociacion | Influencers confirmados |
-| 5 | Aprobaciones Internas | Validar contenido con CM, Strategy, Comercial y Cliente | CM | PM | Contenido aprobado (doble aprobacion MN + Marca) | Cliente aprueba |
-| 6 | Ejecucion y Seguimiento | Monitorear publicaciones, calidad y KPIs | CM | PM | KPIs monitoreados, alertas tempranas | Campana ejecutada |
-| 7 | Reporte de Costos | Diligenciar Base Pago con valores y fechas | CM + Admin auxiliar | Admin | Documento Base Pago completo | Todos los pagos registrados |
-| 8 | Reporte Final | Recolectar data y armar documento visual | CM + Design | PM + Estratega | Reporte presentado al cliente | Reporte entregado |
-| 9 | Aprendizajes | Documentar que funciono, que no, insights | CM | Estratega | Documento de aprendizajes por marca | Documentado y archivado |
+Cualquier agente puede consultar a otro con una pregunta puntual. La respuesta es inmediata. No consume profundidad.
 
----
+```
+Musa: sessions_send → Radar ("necesito datos de engagement en TikTok Colombia")
+Radar: responde con datos → Musa continua su trabajo
+```
 
-## Como se comunican los agentes entre si
+### 3. Referencia al usuario (manual)
 
-Los agentes no son islas. Cuando uno recibe una pregunta que toca el dominio de otro, puede **consultarlo internamente** via `sessions_send` y responder al usuario con la informacion completa — sin que el usuario tenga que cambiar de bot.
+Si la consulta requiere trabajo extenso fuera de la especialidad del agente, este recomienda al usuario hablar directamente con el bot correspondiente.
 
-### Ejemplos de consultas cruzadas
-
-| Situacion | Agente que recibe | Consulta interna a | Que pasa |
-|-----------|-------------------|-------------------|----------|
-| "Como va la campana X? Y cuales eran los criterios de scoring?" | PM | Estratega | PM responde el estado + incluye criterios que le dio el Estratega |
-| "Ya se firmo el contrato con Y?" (preguntado al PM) | PM | Admin | PM responde con la info de contrato que le dio Admin |
-| "En que fase va la campana X?" (preguntado al Estratega) | Estratega | PM | Estratega responde con info de avance que le dio PM |
-
-### Cuando SI deriva al usuario
-
-Si la consulta requiere una conversacion extendida (no una sola pregunta), el agente dice:
-
-> "Eso requiere trabajo detallado con [PM/Estratega/Admin]. Preguntale directamente en su bot."
+> "Eso es trabajo para @InfluencerMambaBot. Escribele directamente para que te arme la shortlist completa."
 
 ---
 
-## Reglas transversales del sistema
+## Telegram Groups con Topics
 
-Estas reglas vienen del Manual MNL y aplican a los 3 agentes:
+El equipo trabaja en **grupos de Telegram con modo foro** (topics habilitados). Esto permite separar campanas en hilos independientes dentro del mismo grupo.
 
-| Regla | Descripcion |
-|-------|-------------|
-| **Doble aprobacion** | Nada sale sin aprobacion de MN + Marca |
-| **Alarma temprana** | Si algo falla en ejecucion, escalar al comercial inmediatamente |
-| **Gestion de capacidad** | Si la carga compromete calidad, el CM alerta al comercial |
-| **Cambios de alcance** | No se aceptan del cliente directo, se escalan al comercial |
-| **Confidencialidad** | Toda informacion de marcas, presupuestos e influencers es confidencial |
-| **Gestion documental** | Carpetas por marca y campana en Drive/Notion, links centralizados |
-| **El silencio es riesgo** | Comunicacion radicalmente clara en todo momento |
+### Como funciona
+
+- **@mencion** para dirigirse a un agente especifico en el grupo
+- **Sin @mencion** → el Orquestador responde (es el agente default)
+- **Topics** separan campanas — cada campana tiene su propio hilo
+- **Nueva campana** = nuevo topic (la estratega lo crea, toma 5 segundos)
+- **Nuevo miembro** = nuevo grupo personal + agregar los 7 bots (cero cambios en config)
+
+### Grupos
+
+| Grupo | Tipo | Miembros |
+|-------|------|----------|
+| "Mar - Strategy Room" | Personal | Mar + 7 bots |
+| "Mae - Strategy Room" | Personal | Mae + 7 bots |
+| "MNL Strategy Team" | Compartido | Mar + Mae + 7 bots + Carlos (opcional) |
+
+---
+
+## Cheat Sheet
+
+```
+Que necesitas?                          A quien le hablas?
+------------------------------------------------------------
+Procesar un brief completo               @StrategyMambabot
+(el coordina todo)
+
+Investigar marca/mercado/tendencia       @RadarMambaBot
+
+Ideas creativas, conceptos, insights,    @CreativeMambaBot
+metodologia de campana
+
+Buscar/evaluar influencers,              @InfluencerMambaBot
+shortlist con copy comercial
+
+Timeline, estado de tareas, entregas     @PMMambabot
+
+Contratos, pagos, facturacion            @AdmonMambaBot
+
+No se a quien preguntarle                @StrategyMambabot
+(el decide y redirige)
+```
 
 ---
 
@@ -127,13 +201,13 @@ Estas reglas vienen del Manual MNL y aplican a los 3 agentes:
 
 | Componente | Tecnologia |
 |------------|-----------|
-| Plataforma | OpenClaw v2026.3.11 (nativo, Node.js 22) |
-| LLM | Google Gemini 2.5 Pro (fallback: 2.5 Flash) |
-| Canal | Telegram (1 bot por agente, dmPolicy: pairing) |
+| Plataforma | OpenClaw v2026.4.1 (nativo, Node.js 22 via fnm) |
+| LLM | Google Gemini 3.1 Pro / 3 Flash (segun agente) |
+| Canal | Telegram (7 bots, groupPolicy: open) |
 | VM | GCP `openclaw-mambanegra` (e2-medium, Ubuntu 24.04) |
-| Comunicacion inter-agente | sessions_send (sincrono) |
-| Knowledge compartido | `campaign-framework.md` (markdown local) |
-| Futuro | MCP Notion, MCP Google Drive, Mission Control |
+| Comunicacion | sessions_spawn (async) + sessions_send (sync) |
+| Knowledge | campaign-framework.md, brand voice profiles (markdown local) |
+| Integraciones | Notion (22 tools), Tavily (5 tools), gog (Drive/Sheets) |
 
 ### Config multi-agente en openclaw.json (simplificado)
 
@@ -141,91 +215,37 @@ Estas reglas vienen del Manual MNL y aplican a los 3 agentes:
 {
   "agents": {
     "defaults": {
-      "subagents": { "maxSpawnDepth": 1, "maxChildrenPerAgent": 3 }
+      "subagents": {
+        "maxSpawnDepth": 1,
+        "maxChildrenPerAgent": 5,
+        "maxConcurrent": 12
+      }
     },
     "list": [
       {
-        "id": "estratega",
-        "workspace": "~/.openclaw/workspace-estratega",
-        "subagents": { "allowAgents": ["pm", "admin"] }
+        "id": "orquestador",
+        "default": true,
+        "subagents": { "allowAgents": ["research", "creative", "influencer", "pm", "admin"] }
       },
       {
-        "id": "pm",
-        "workspace": "~/.openclaw/workspace-pm",
-        "subagents": { "allowAgents": ["estratega", "admin"] }
+        "id": "research",
+        "subagents": { "allowAgents": ["creative", "influencer"] }
       },
       {
-        "id": "admin",
-        "workspace": "~/.openclaw/workspace-admin",
-        "subagents": { "allowAgents": ["pm", "estratega"] }
-      }
+        "id": "creative",
+        "subagents": { "allowAgents": ["research", "influencer"] }
+      },
+      {
+        "id": "influencer",
+        "subagents": { "allowAgents": ["research", "creative"] }
+      },
+      { "id": "pm" },
+      { "id": "admin" },
+      { "id": "prometeo" }
     ]
-  },
-  "channels": {
-    "telegram-estratega": { "botToken": "..." },
-    "telegram-pm": { "botToken": "..." },
-    "telegram-admin": { "botToken": "..." }
-  },
-  "bindings": [
-    { "agentId": "estratega", "match": { "channel": "telegram-estratega" } },
-    { "agentId": "pm", "match": { "channel": "telegram-pm" } },
-    { "agentId": "admin", "match": { "channel": "telegram-admin" } }
-  ]
+  }
 }
 ```
-
-### Estructura de archivos en el repo
-
-```
-clients/mamba-negra/
-├── STATUS.md                     # Estado general del proyecto
-├── MULTI-AGENT-OVERVIEW.md       # Este documento
-├── openclaw.json                 # Config de 3 agentes
-├── knowledge/
-│   ├── campaign-framework.md     # Framework de 9 fases (COMPARTIDO)
-│   └── influencer-scoring.md     # Criterios de scoring
-├── workspaces/
-│   ├── estratega/                # Agente Estratega
-│   │   ├── AGENTS.md
-│   │   ├── SOUL.md
-│   │   └── USER.md
-│   ├── pm/                       # Agente PM
-│   │   ├── AGENTS.md
-│   │   ├── SOUL.md
-│   │   └── USER.md
-│   └── admin/                    # Agente Admin
-│       ├── AGENTS.md
-│       ├── SOUL.md
-│       └── USER.md
-└── n8n-workflows/
-    └── README.md
-```
-
----
-
-## Roadmap de implementacion
-
-### Fase 1: Framework + PM (prioridad)
-- Crear `campaign-framework.md` (documento compartido de 9 fases)
-- Crear workspace del agente PM
-- Evolucionar Estratega V0 a V1 (conciencia del framework)
-- Actualizar `openclaw.json` con 2 agentes + sessions_send
-- Desplegar y probar en VM
-
-### Fase 2: Admin
-- Crear workspace del agente Admin
-- Agregar tercer agente a `openclaw.json`
-- Probar los 3 juntos con sessions_send
-
-### Fase 3: Iteracion con equipo real
-- Equipo MNL prueba los 3 bots
-- Feedback y refinamiento de AGENTS.md
-- Conectar MCP (Notion, Drive)
-
-### Futuro: Growth Path del equipo
-- Agente o modulo para trackear desempeno
-- Scorecard interno (6 criterios del manual)
-- Criterios de decision para promocion
 
 ---
 
@@ -233,8 +253,7 @@ clients/mamba-negra/
 
 | Documento | Path |
 |-----------|------|
-| Design doc completo | `docs/plans/2026-03-13-mamba-negra-multi-agent-design.md` |
+| Design doc V2 | `docs/plans/2026-04-02-multi-agent-teams-design.md` |
+| Protocolo de comunicacion | `clients/mamba-negra/agents/HANDOFF-PROTOCOL.md` |
 | Status del proyecto | `clients/mamba-negra/STATUS.md` |
-| Manual Maestro CM (fuente) | `C:\Users\juanj\Downloads\MANUAL MAESTRO - CM MNL.pdf` |
-| Fase 1A Discovery | `clients/mamba-negra/FASE1A-DISCOVERY.md` |
-| Diseno de despliegue | `docs/plans/2026-03-12-mamba-negra-deploy-design.md` |
+| Mapa de proceso con IA | `clients/mamba-negra/agents/PROCESS-AI-MAP.md` |

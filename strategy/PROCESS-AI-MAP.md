@@ -1,7 +1,7 @@
 # Process-AI Map — Flujo de Campana con Agentes Integrados
 
-**Version**: V2 (26-Mar-2026) — Actualizado con data real de discovery
-**Estado**: Basado en encuesta a 5 miembros del equipo + Strategy Team WorkFlow
+**Version**: V4 (07-Abr-2026) — Actualizado con V8.0 (mejoras en workspace files)
+**Estado**: Basado en encuesta a 5 miembros del equipo + Strategy Team WorkFlow + design doc multi-agente V2
 
 > Este documento muestra, para cada fase del ciclo de campana MNL, que se hace hoy (real, validado), como se hara con los agentes de Telegram integrados, y el ahorro estimado.
 
@@ -11,9 +11,9 @@
 
 **Hoy**: El equipo usa ChatGPT/Gemini de forma ad-hoc (cada quien por su cuenta, sin contexto compartido).
 
-**Con agentes**: Los 3 bots de Telegram (@StrategyMambabot, @PMMambabot, @AdmonMambaBot) son parte del flujo. Tienen contexto permanente: framework de campana, perfiles por vertical, playbook Modash, datos de Notion, y aprenden de cada interaccion.
+**Con agentes**: Los 7 agentes especializados de Telegram son parte del flujo. El **Orquestador** (@StrategyMambabot) coordina y despacha a los agentes especialistas: **Radar** (@ResearchMambaBot) para investigacion, **Musa** (@CreativeMambaBot) para creatividad, **Scout** (@InfluencerMambaBot) para influencers, **PM** (@PMMambabot) para gestion, y **Admin** (@AdmonMambaBot) para finanzas. Tienen contexto permanente, knowledge base compartido, y se comunican entre si.
 
-**La diferencia clave**: ChatGPT no sabe nada de MNL. Los agentes SI — tienen el knowledge base, las metodologias RAYO/ARCO/PRISMA/MAREA, los criterios de scoring, y acceso a Notion con las 19 DBs.
+**La diferencia clave**: ChatGPT no sabe nada de MNL. Los agentes SI — tienen el knowledge base, las metodologias RAYO/ARCO/PRISMA/MAREA, los criterios de scoring, acceso a Notion con las 19 DBs, y pueden trabajar en paralelo (Orquestador lanza Radar + Scout simultaneamente). Desde V8.0 (07-Abr-2026), los agentes guardan memoria durante la conversacion (no al final), tienen HEARTBEAT.md con prioridades diarias y Drive consolidation, y cierran sesiones proactivamente con resumen de pendientes.
 
 ---
 
@@ -37,7 +37,7 @@
 | Clasificar tipo de campana | MANUAL — Estratega decide | ASISTIDO — Estratega bot sugiere RAYO/ARCO/PRISMA/MAREA segun alcance y objetivos | INTEGRADO — Auto-clasificacion + template apropiado |
 | Distribuir al equipo | MANUAL — WhatsApp + reunion | ASISTIDO — PM bot notifica al equipo via Notion + alerta en Telegram | INTEGRADO — Auto-distribucion con checklist por rol |
 
-**Interaccion practica**: CM le escribe al @StrategyMambabot: *"Recibi este brief de [marca]. Objetivo: awareness. Presupuesto: $15M. Necesito que me ayudes a identificar que info falta y que tipo de campana es."*
+**Interaccion practica**: CM le escribe al @StrategyMambabot (Orquestador): *"Recibi este brief de [marca]. Objetivo: awareness. Presupuesto: $15M. Necesito que me ayudes a identificar que info falta y que tipo de campana es."* El Orquestador analiza, clasifica, y si necesita contexto de mercado lanza a @ResearchMambaBot (Radar) en paralelo.
 
 ---
 
@@ -53,7 +53,7 @@
 | Armar propuesta estrategica | MANUAL — Desde cero o copia anterior (Camila: "desde cero cada vez") | ASISTIDO — Estratega bot genera borrador con estructura Strategic Thinking (Target > Insight > Concepto > Propositions) | INTEGRADO — Borrador + benchmarks de campanas similares |
 | Definir KPIs esperados | MANUAL — Estimacion del CM | ASISTIDO — Estratega bot sugiere KPIs segun tipo de campana y vertical | INTEGRADO — KPIs con benchmarks reales por vertical |
 
-**Interaccion practica**: Estratega humana le escribe al @StrategyMambabot: *"Campana ARCO para Detodito Proteina. Target: adultos 18-35 activos. Necesito opciones de insight y propuesta de contenido."*
+**Interaccion practica**: Estratega humana le escribe al @StrategyMambabot (Orquestador): *"Campana ARCO para Detodito Proteina. Target: adultos 18-35 activos. Necesito opciones de insight y propuesta de contenido."* El Orquestador lanza en paralelo: @ResearchMambaBot (Radar) investiga mercado/competencia, @CreativeMambaBot (Musa) genera opciones de insight y concepto. El Orquestador sintetiza y presenta resultado consolidado.
 
 ---
 
@@ -77,16 +77,16 @@
 
 | Actividad | Hoy (real) | Con agentes (3m) | Futuro (6m) |
 |-----------|------------|-------------------|-------------|
-| Definir criterios de busqueda | MANUAL — Cada CM con sus propios criterios | ASISTIDO — Estratega bot genera checklist pre-Modash basado en vertical profile + brief | INTEGRADO — Auto-generado desde brief + vertical |
-| Busqueda en Modash | MANUAL — ~2 dias (filtros basicos, Instagram search) | ASISTIDO — Estratega bot prepara parametros de busqueda optimizados para Modash | INTEGRADO — Busquedas inteligentes con scoring |
-| Vetting (audiencia, fake, brand safety) | MANUAL — Uno por uno, revision visual | ASISTIDO — Checklist estandar de vetting por vertical (minimos ER, contenido prohibido) | INTEGRADO — Pre-filtro IA antes de abrir perfil |
-| Scoring de candidatos | MANUAL — "Ojo clinico", varia por CM | ASISTIDO — Estratega bot evalua perfil vs criterios y genera score con justificacion | INTEGRADO — Ranking automatico + justificacion |
+| Definir criterios de busqueda | MANUAL — Cada CM con sus propios criterios | ASISTIDO — Orquestador + Scout generan checklist pre-busqueda basado en vertical profile + brief | INTEGRADO — Auto-generado desde brief + vertical |
+| Busqueda de influencers | MANUAL — ~2 dias (filtros basicos, Instagram search) | ASISTIDO — Scout (@InfluencerMambaBot) prepara parametros y ejecuta busqueda optimizada | INTEGRADO — Busquedas inteligentes con scoring |
+| Vetting (audiencia, fake, brand safety) | MANUAL — Uno por uno, revision visual | ASISTIDO — Scout aplica checklist estandar de vetting por vertical (minimos ER, contenido prohibido) | INTEGRADO — Pre-filtro IA antes de abrir perfil |
+| Scoring de candidatos | MANUAL — "Ojo clinico", varia por CM | ASISTIDO — Scout evalua perfil vs criterios y genera score con justificacion + copy comercial | INTEGRADO — Ranking automatico + justificacion |
 | Pedir media kits y tarifas | MANUAL — CM contacta uno por uno | MANUAL — Se mantiene humano (relacion personal) | ASISTIDO — Template de contacto generado por bot |
 | Negociacion de tarifas | MANUAL — CM negocia solo | ASISTIDO — Admin bot sugiere rango basado en historico de pagos | ASISTIDO — Siempre humano lidera negociacion |
 
 **Ahorro estimado**: De ~2 dias a ~4-6 horas (reduccion ~60%)
 
-**Interaccion practica**: Laura le escribe al @StrategyMambabot: *"Busca en Modash 10 perfiles para campana inmobiliaria en Cali. Micro-influencers, ER minimo 2%, audiencia Colombia 60%+, contenido de lifestyle/hogar."*
+**Interaccion practica**: Laura le escribe al @StrategyMambabot (Orquestador): *"Necesito 10 perfiles para campana inmobiliaria en Cali. Micro-influencers, ER minimo 2%, audiencia Colombia 60%+, contenido de lifestyle/hogar."* El Orquestador lanza @InfluencerMambaBot (Scout) para busqueda/scoring y @ResearchMambaBot (Radar) para contexto del mercado inmobiliario. Scout genera shortlist con copy comercial; Radar aporta datos de tendencias.
 
 ---
 
@@ -162,34 +162,60 @@
 
 ## RESUMEN DE IMPACTO
 
-| Fase | Impacto IA | Agente Principal | Ahorro estimado |
-|------|-----------|-----------------|-----------------|
-| 1. Brief | Medio | Estratega | Evitar rebote de info |
-| 2. Estrategia | Alto | Estratega | -30% tiempo investigacion |
+| Fase | Impacto IA | Agente(s) Principal(es) | Ahorro estimado |
+|------|-----------|------------------------|-----------------|
+| 1. Brief | Medio | Orquestador | Evitar rebote de info |
+| 2. Estrategia | Alto | Orquestador → Radar + Musa | -30% tiempo investigacion |
 | 3. Gantt | Alto | PM | -50% tiempo setup |
-| 4. **Scouting** | **Muy Alto** | **Estratega** | **-60% (~1 dia recuperado)** |
+| 4. **Scouting** | **Muy Alto** | **Orquestador → Scout + Radar** | **-60% (~1 dia recuperado)** |
 | 5. Aprobaciones | Medio | PM | Menos bloqueos |
 | 6. Ejecucion | Alto | PM | Visibilidad instantanea |
 | 7. Costos | Medio | Admin | Control financiero |
-| 8. **Reporte** | **Muy Alto** | **PM + Estratega** | **-70% (~5h recuperadas)** |
-| 9. Aprendizajes | Medio | Estratega | Conocimiento acumulativo |
+| 8. **Reporte** | **Muy Alto** | **PM + Orquestador (→ Radar)** | **-70% (~5h recuperadas)** |
+| 9. Aprendizajes | Medio | Orquestador + Radar | Conocimiento acumulativo |
 
 ---
 
 ## GUIA PRACTICA: CUANDO HABLAR CON CADA AGENTE
 
-### @StrategyMambabot (Estratega)
+### @StrategyMambabot — Orquestador
 **Escribele cuando**:
-- Recibes un brief nuevo y necesitas clasificarlo (RAYO/ARCO/PRISMA/MAREA)
-- Necesitas criterios de busqueda para scouting por vertical
-- Quieres opciones de insight o concepto creativo
-- Necesitas evaluar un perfil de influencer vs los criterios
-- Quieres generar un borrador de propuesta estrategica
+- Recibes un brief nuevo y necesitas procesarlo completo
+- No sabes a quien preguntarle — el decide y redirige
+- Quieres que coordine investigacion + creatividad + scouting en paralelo
+- Necesitas una entrega consolidada (propuesta estrategica completa)
 - Al cerrar campana, para generar resumen de aprendizajes
 
-**Ejemplo**: *"Tengo brief de Detodito, lanzamiento de producto nuevo. Target jovenes 16-35. Presupuesto $20M. Que tipo de campana recomiendas y que perfil de influencer deberia buscar?"*
+**Ejemplo**: *"Tengo brief de Detodito, lanzamiento de producto nuevo. Target jovenes 16-35. Presupuesto $20M. Procesalo completo."* (El Orquestador lanza Radar, Musa y Scout internamente.)
 
-### @PMMambabot (PM)
+### @ResearchMambaBot — Radar (Investigacion)
+**Escribele cuando**:
+- Necesitas investigar una marca, mercado o tendencia
+- Quieres analisis competitivo (SWOT, gaps, benchmarks)
+- Necesitas datos de contexto Colombia/LATAM
+- Quieres buscar campanas pasadas o referencias de la industria
+
+**Ejemplo**: *"Investiga el mercado de snacks saludables en Colombia. Tendencias, competidores principales, y que estan haciendo en redes."*
+
+### @CreativeMambaBot — Musa (Creatividad)
+**Escribele cuando**:
+- Necesitas opciones de insight o concepto creativo
+- Quieres definir la metodologia de campana (RAYO/ARCO/PRISMA/MAREA)
+- Necesitas ideas de contenido con referencias visuales
+- Quieres explorar angulos creativos para un brief
+
+**Ejemplo**: *"Target: adultos 18-35 activos. Marca de proteina. Dame 3 opciones de insight y concepto creativo con proposiciones de contenido."*
+
+### @InfluencerMambaBot — Scout (Influencers)
+**Escribele cuando**:
+- Necesitas buscar y evaluar influencers para una campana
+- Quieres una shortlist con scoring y copy comercial
+- Necesitas criterios de scouting por vertical
+- Quieres evaluar un perfil especifico (brand safety, audiencia, ER)
+
+**Ejemplo**: *"Busca 10 micro-influencers en Cali para campana inmobiliaria. ER minimo 2%, audiencia Colombia 60%+, contenido lifestyle/hogar. Dame shortlist con copy comercial."*
+
+### @PMMambabot — PM
 **Escribele cuando**:
 - Necesitas crear un cronograma para una campana nueva
 - Quieres saber el status de una campana activa
@@ -200,7 +226,7 @@
 
 **Ejemplo**: *"Como va la campana de Acetaminofen MK? Que contenidos estan pendientes y cuales ya salieron?"*
 
-### @AdmonMambaBot (Admin)
+### @AdmonMambaBot — Admin
 **Escribele cuando**:
 - Necesitas saber a quien hay que pagar esta semana
 - Quieres ver el estado de cuentas de cobro pendientes
@@ -210,29 +236,39 @@
 
 **Ejemplo**: *"Cuales son los pagos programados para esta semana? Hay alguno retrasado?"*
 
+### @PrometeoMNBot — Prometeo
+**Escribele cuando**:
+- Eres Juan Jose y necesitas asistencia transversal del proyecto
+- Consultas sobre el repositorio, documentacion o estado del sistema
+
+> **Regla de oro**: Si no sabes a quien preguntarle, preguntale al Orquestador (@StrategyMambabot). El decide y redirige.
+
 ---
 
 ## PLAN DE IMPLEMENTACION (Semanas 3-4)
 
 ### Semana 3: Workshop Onboarding
-1. Presentar este mapa al equipo (discovery findings + proceso propuesto)
-2. Demo en vivo de cada agente con casos de uso reales
-3. Pairing de todo el equipo en los 3 bots de Telegram
-4. Tarea: usar el PM bot para reportar status de 1 campana activa
+1. Presentar este mapa al equipo (discovery findings + arquitectura 7 agentes)
+2. Demo en vivo: Orquestador procesa brief y lanza Radar + Musa + Scout
+3. Onboarding en Telegram Groups con Topics (grupos personales + compartido)
+4. Compartir cheat sheet de 7 agentes
+5. Tarea: usar el PM bot para reportar status de 1 campana activa
 
 ### Semana 4: Shadow Mode
 1. Equipo trabaja normalmente + usa agentes en paralelo
 2. NO se reemplaza el proceso actual — se complementa
-3. Recoger feedback: que sirvio, que no, que falta
-4. Iterar AGENTS.md con feedback real
+3. Estrategas prueban Radar y Musa directamente (no solo via Orquestador)
+4. Recoger feedback: que sirvio, que no, que falta
+5. Iterar AGENTS.md con feedback real
 
 ### Mes 2: Transicion gradual
-1. Agentes V2 con feedback incorporado
+1. Agentes con feedback incorporado
 2. Empezar a depender de PM bot para status (en vez de WhatsApp)
-3. Workshop 2: Scouting con Estratega bot
+3. Workshop 2: Scouting con Scout + Radar integrados
+4. Workshop 3: Creatividad con Musa para propuestas estrategicas
 
-> **Principio**: Cada agente entra cuando aporta valor real, no por calendario. Si el PM bot no resuelve algo mejor que WhatsApp, no se fuerza.
+> **Principio**: Cada agente entra cuando aporta valor real, no por calendario. Si un agente no resuelve algo mejor que el proceso actual, no se fuerza.
 
 ---
 
-> VALIDADO con data real de discovery (26-Mar-2026). Tiempos "Hoy" basados en encuesta a 5 miembros del equipo. Ahorro estimado basado en benchmarks de automatizacion de agencias similares.
+> VALIDADO con data real de discovery (26-Mar-2026). Tiempos "Hoy" basados en encuesta a 5 miembros del equipo. Ahorro estimado basado en benchmarks de automatizacion de agencias similares. Actualizado 02-Abr-2026 con arquitectura multi-agente V2 (7 agentes especializados + Telegram Groups con Topics). Actualizado 07-Abr-2026 con V8.0: memoria inmediata, HEARTBEAT.md para los 7 agentes, cierre proactivo de sesion, team-directory en TOOLS.md.

@@ -1,7 +1,7 @@
 # Roadmap — Transformacion IA de Mamba Negra Latam
 
-**Version**: V1 (17-Mar-2026)
-**Estado**: Borrador basado en design doc aprobado
+**Version**: V3 (07-Abr-2026)
+**Estado**: Actualizado con progreso real al 07-Abr-2026
 
 ---
 
@@ -9,41 +9,50 @@
 
 ### Mes 1: Diseno + Discovery + Knowledge (Semanas 1-4, comprimido)
 
-#### Semana 1: Discovery + Knowledge + Baseline
-- Discovery sessions con equipo (validar procesos, criterios, fricciones)
-- AI Maturity Assessment inicial (5 dimensiones con el equipo)
-- **Recolectar baseline de metricas**: medir tiempos actuales por fase (ver `measurement/BASELINE.md`)
-- Enriquecer knowledge base con data del equipo
-- Validar modash-playbook.md y perfiles por vertical con CMs
+#### Semana 1: Discovery + Knowledge + Baseline — COMPLETADA (26-Mar-2026)
+- ~~Discovery sessions con equipo (validar procesos, criterios, fricciones)~~ HECHO
+- ~~AI Maturity Assessment inicial (5 dimensiones con el equipo)~~ HECHO
+- ~~**Recolectar baseline de metricas**: medir tiempos actuales por fase~~ HECHO (ver `measurement/BASELINE.md`)
+- ~~Enriquecer knowledge base con data del equipo~~ HECHO
+- ~~Validar modash-playbook.md y perfiles por vertical con CMs~~ HECHO
 
-#### Semana 2: Vision + Roadmap + OKRs + Adopcion
-- Presentar VISION.md y ROADMAP.md a Carlos — validar y ajustar
-- Definir OKRs del primer trimestre (ver `strategy/OBJECTIVES.md`)
-- Disenar programa de adopcion por rol (ver `adoption/TRAINING-PLAN.md`)
-- Refinar AGENTS.md de agentes con conocimiento real del equipo
+#### Semana 2: Vision + Roadmap + OKRs + Adopcion — COMPLETADA (29-Mar-2026)
+- ~~Presentar VISION.md y ROADMAP.md a Carlos — validar y ajustar~~ HECHO (sesion 29-Mar)
+- ~~Definir OKRs del primer trimestre~~ HECHO (ver `strategy/OBJECTIVES.md`)
+- ~~Disenar programa de adopcion por rol~~ HECHO (ver `adoption/TRAINING-PLAN.md`)
+- ~~Refinar AGENTS.md de agentes con conocimiento real del equipo~~ HECHO (V3.1 desplegado)
 
-#### Semana 3: Primer Workshop + Onboarding
-- **Workshop 1**: Onboarding en agente(s) que esten listos (PM primero)
-- Pairing del equipo MNL en los bots de Telegram
-- Configurar MCP/tools faltantes (Estratega, Admin)
-- Integrar criterios de scouting/vertical en el Estratega bot
+#### Semana 3: Primer Workshop + Onboarding — EN PROGRESO
+- **02-Abr-2026**: Arquitectura multi-agente V2 desplegada (4 → 7 agentes, Telegram Groups con Topics)
+  - Nuevos agentes: Radar (@ResearchMambaBot), Musa (@CreativeMambaBot), Scout (@InfluencerMambaBot)
+  - Orquestador refactorizado desde Estratega con sessions_spawn
+  - Knowledge distribuido por agente
+  - Documentacion de tools (TOOLS.md) para todos los agentes
+- Agentes desplegados y en onboarding con primeros casos reales
+- Workshop formal con equipo MNL: PENDIENTE
+- Pairing del equipo MNL en Telegram Groups: PENDIENTE
+- Configurar MCP/tools faltantes: EN PROGRESO
 
-#### Semana 4+: Shadow Mode + Feedback
+#### Semana 4+: Shadow Mode + Feedback — PENDIENTE
 - Equipo usa agentes en paralelo a su proceso normal
 - NO se reemplaza el proceso actual — se usa en paralelo para comparar
+- Estrategas prueban Radar y Musa directamente (no solo via Orquestador)
 - Recolectar feedback: que funciona, que falta, que confunde
 - Iterar AGENTS.md y knowledge/ con feedback real
 
-### Mes 2: Adopcion + Agentes V2 (Semanas 5-8)
+### Mes 2: Adopcion + Iteracion (Semanas 5-8)
+
+> **Nota**: Varias tareas de Mes 2 se adelantaron — la arquitectura multi-agente, distribucion de knowledge, y documentacion de tools ya estan hechas (02-Abr-2026). El foco de Mes 2 sera adopcion real con el equipo y feedback.
 
 #### Semanas 5-6
-- **Workshop 2**: Modash + IA — flujo integrado de scouting (cuando Estratega este listo)
+- **Workshop 2**: Scouting con Scout + Radar integrados
+- **Workshop 3**: Creatividad con Musa para propuestas estrategicas
 - Seguir en shadow mode con feedback continuo
-- Agentes V2 desplegados con feedback incorporado
+- Iterar agentes con feedback real del equipo
 
 #### Semanas 7-8
-- Implementar Daily Digest del PM (HEARTBEAT.md)
-- Onboarding de agentes adicionales cuando esten listos (Estratega, Admin)
+- ~~Implementar HEARTBEAT.md para todos los agentes~~ HECHO (V8.0 desplegado 07-Abr-2026 — HEARTBEAT.md implementado para los 7 agentes, no solo PM. Incluye Drive consolidation y Campaign Strategy Index)
+- Evaluar API de influencers para Scout (Influencers Club / HypeAuditor)
 - **Principio**: cada agente entra cuando aporta valor real, no por calendario
 
 ### Mes 3: Consolidacion + Primera Medicion (Semanas 9-12)
@@ -60,12 +69,17 @@
 - Planificar Fase 2 basado en resultados reales
 
 ### Entregables Mes 3
-- [ ] Agentes en uso por el equipo (los que esten listos)
-- [ ] Knowledge base con procesos reales + playbook Modash validado
-- [ ] Scoring por vertical operativo
+- [x] Arquitectura multi-agente V2 desplegada (7 agentes, Telegram Groups con Topics)
+- [x] Knowledge base distribuido por agente con procesos reales
+- [x] Documentacion de tools para todos los agentes
+- [x] HEARTBEAT.md implementado para los 7 agentes (V8.0, 07-Abr-2026)
+- [x] Drive consolidation configurado en HEARTBEAT de cada agente
+- [x] Team-directory con IDs Telegram en TOOLS.md de cada agente
+- [ ] 7 agentes en uso activo por el equipo
+- [ ] Scoring por vertical operativo (Scout)
 - [ ] Primer reporte de campana asistido por IA
 - [ ] Baseline + primera medicion de progreso
-- [ ] Equipo capacitado en herramientas disponibles
+- [ ] Equipo capacitado en 7 agentes
 - [ ] Reporte trimestral a Carlos
 
 ---
@@ -119,4 +133,4 @@
 
 ---
 
-> PENDIENTE VALIDACION: Validar timeline con Carlos. El roadmap esta disenado para ser flexible — las semanas pueden ajustarse segun disponibilidad del equipo y prioridades de campanas activas.
+> **Progreso al 07-Abr-2026**: Semanas 1-2 completadas. Semana 3 en progreso — agentes desplegados (4 → 7), arquitectura multi-agente V2 implementada con Telegram Groups/Topics, knowledge distribuido, tools documentados. **V8.0 desplegado (07-Abr)**: mejoras en workspace files — memoria inmediata, HEARTBEAT.md para los 7 agentes (con Drive consolidation), team-directory, cierre proactivo de sesion, OUTPUT FORMAT anti-thinking-leak. No hubo cambios en openclaw.json ni modelos. Workshop formal con equipo MNL pendiente. El roadmap se mantiene flexible — las semanas se ajustan segun disponibilidad del equipo y prioridades de campanas activas.

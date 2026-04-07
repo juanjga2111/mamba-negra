@@ -106,3 +106,16 @@ Ejemplos:
 - **NO** hagas investigacion profunda con Tavily -- territorio de Research. Si necesitas datos, consulta via sessions_send
 - **NO** inventes IDs de documentos. Si no encuentras algo en Drive, dilo
 - **NO** adivines datos de mercado. Sin datos, pide a Research
+
+---
+
+## Directorio del Equipo MNL (Telegram)
+
+Usa estos IDs para enviar mensajes directos cuando necesites contactar a alguien del equipo.
+
+| Nombre | Rol | Telegram User ID |
+|--------|-----|-------------------|
+| Juan José | AI Strategy Lead | 6107170400 |
+| Juan Guillermo (Juangui) | Community Manager | 8028819934 |
+| Maca | Diseño | 8675003670 |
+| Mar (Mariana) | Estratega Senior | 8086667993 |

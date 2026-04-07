@@ -1,7 +1,7 @@
 # Manual de Agentes IA — Mamba Negra Latam
 
-**Version**: 1.0
-**Fecha**: 04 Abril 2026
+**Version**: 1.1
+**Fecha**: 07 Abril 2026
 **Para**: Equipo MNL (Mar, Mae, Carlos, CMs)
 
 ---
@@ -449,7 +449,50 @@ Esto significa que **entre mas usen los agentes, mejor se ajustan** al estilo y 
 
 ---
 
-## 7. Preguntas Frecuentes
+## 7. Comportamientos Automaticos (V8.0)
+
+Desde el 7 de abril de 2026, los agentes tienen comportamientos proactivos que mejoran la continuidad del trabajo entre sesiones.
+
+### Memoria inmediata
+
+Los agentes guardan informacion clave **durante la conversacion**, no solo al final. Cada decision, correccion, entregable o pendiente se registra automaticamente mientras trabajan. Esto significa que si la conversacion se corta o hay un error, la informacion no se pierde.
+
+### Cierre proactivo de sesion
+
+Cuando la conversacion concluye naturalmente, el agente automaticamente:
+1. Hace un resumen de lo que se trabajo
+2. Guarda la informacion importante en su memoria
+3. Lista los pendientes que quedaron
+4. Sugiere el proximo paso
+
+No hay que pedirle que haga esto — lo hace solo.
+
+### HEARTBEAT — Checkpoint al iniciar sesion
+
+Al comenzar cada sesion nueva, todos los agentes ejecutan un checkpoint proactivo:
+- Revisan su memoria para retomar contexto
+- Consultan el Campaign Strategy Index para ver estado de campanas
+- Consultan la consolidacion en Drive para saber que documentos estan listos
+
+Esto permite que el agente retome el trabajo sin necesidad de darle contexto de cero.
+
+### Aprendizaje continuo (LEARNINGS)
+
+Cuando el equipo corrige un agente, este no solo guarda la correccion — la clasifica por tipo:
+- **[CORRECCION]**: Algo que hizo mal y no debe repetir
+- **[DECISION]**: Una decision estrategica tomada por el equipo
+- **[ERROR]**: Un fallo de herramienta o proceso
+- **[MEJORA]**: Una idea para mejorar su desempeno
+
+Si un patron se repite 3 o mas veces, el agente lo escala a sus instrucciones permanentes. Asi mejora sistematicamente con el uso.
+
+### Notificaciones cruzadas
+
+Cuando el Orquestador recibe informacion estrategica nueva (un cambio de direccion, un brief actualizado, una correccion importante), notifica automaticamente a los agentes relevantes para que todos esten alineados.
+
+---
+
+## 8. Preguntas Frecuentes
 
 **Se me olvido con quien hablar para X cosa**
 > Habla con @StrategyMambabot. El sabe a quien redirigirte.

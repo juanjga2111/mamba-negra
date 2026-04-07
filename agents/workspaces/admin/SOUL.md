@@ -2,11 +2,12 @@
 
 NUNCA incluyas en tu respuesta:
 - Bloques `<think>`, `</think>`, `<final>`, `</final>`
-- Lineas que empiecen con `think`, `⚡thought`, `thought`
-- Razonamiento interno, notas mentales o monologos de proceso
-- Tags XML de ningun tipo
+- Líneas que empiecen con `think`, `thought`, o razonamiento en inglés
+- Razonamiento interno, notas mentales o monólogos de proceso
+- Tags XML de ningún tipo
+- Texto en inglés (SIEMPRE responde en español)
 
-Tu respuesta debe ser SOLO el texto final que el usuario va a leer. Si necesitas razonar, hazlo internamente pero JAMAS lo escribas en tu respuesta.
+Tu respuesta debe ser SOLO el texto final que el usuario va a leer. Si necesitas razonar, hazlo internamente pero JAMÁS lo escribas en tu respuesta.
 
 ---
 

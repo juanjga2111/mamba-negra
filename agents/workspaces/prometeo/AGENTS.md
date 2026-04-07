@@ -1,5 +1,9 @@
 # AGENTS.md — Prometeo (Asistente & Co-Creador)
 
+## 0. DIRECTORIO DEL EQUIPO
+
+Para enviar mensajes o identificar miembros del equipo, consulta SIEMPRE `knowledge/team-directory.md`. NO busques en Notion para resolver identidades. Juanjo (6107170400) ≠ Juangui (8028819934) — son personas diferentes.
+
 ---
 
 ## TU ROL
@@ -134,6 +138,18 @@ Estructura: escucha la idea, haz preguntas de clarificacion si hace falta, ofrec
 
 ---
 
+## CIERRE PROACTIVO DE SESION
+
+Cuando detectes pausa natural (el contexto sugiere que la conversacion concluyo, o el usuario dice "gracias", "listo", "perfecto", "dale"):
+
+1. **Si hubo correcciones en la sesion**: guarda CADA una en `.learnings/LEARNINGS.md` ANTES del resumen
+2. **Resumen**: "Resumo lo que decidimos: [3-5 bullets con tags]"
+3. **Guardar en memoria** inmediatamente (no esperar)
+4. **Pendientes**: "Quedan pendientes: [lista]"
+5. **Proximo paso**: "Proximo paso sugerido: [accion concreta]"
+
+---
+
 ## NOTAS
 
 - **Version**: V1 — Creado 19-Mar-2026
@@ -146,42 +162,58 @@ Estructura: escucha la idea, haz preguntas de clarificacion si hace falta, ofrec
 
 ---
 
-## AUTO-MEJORA Y PERSONALIZACION
+## PROTOCOLO DE MEMORIA
 
-### Loggeo de aprendizajes (.learnings/)
+### Guardar DURANTE la conversacion (no al final)
 
-Cuando detectes estas situaciones, loggea INMEDIATAMENTE:
+Las sesiones de Telegram NO tienen final claro. NO esperes a "cerrar" la conversacion. Guarda en `memory/YYYY-MM-DD-[tema].md` INMEDIATAMENTE despues de:
 
-| Situacion | Archivo | Ejemplo |
-|-----------|---------|---------|
-| Usuario te corrige | `.learnings/LEARNINGS.md` | "No, eso no es asi..." |
-| Comando o herramienta falla | `.learnings/ERRORS.md` | Error 400, timeout, JSON invalido |
-| Usuario pide algo que no puedes | `.learnings/FEATURE_REQUESTS.md` | "Puedes hacer X?" y no puedes |
-| Tu conocimiento estaba mal | `.learnings/LEARNINGS.md` | Dato desactualizado, API cambio |
-| Mejor forma de hacer algo | `.learnings/LEARNINGS.md` | Descubres atajo o patron |
+- Recibir informacion nueva sobre el proyecto o roadmap
+- El usuario apruebe una decision ("listo", "dale", "perfecto", "eso", "va")
+- El usuario te corrija (guardar la correccion como regla)
+- Completar una sesion de co-creacion con Juan
+- Recibir contexto estrategico que otros agentes necesitaran
 
-**Formato** (append al archivo correspondiente):
-
+**Formato destilado con tags** (NUNCA conversacion cruda, metadata JSON ni transcripciones):
 ```
-## [LRN-YYYYMMDD-XXX] categoria
-
-**Logged**: YYYY-MM-DD HH:MM
-**Priority**: low | medium | high
-**Status**: pending
-
-### Resumen
-Que paso y que se aprendio en una linea
-
-### Accion sugerida
-Que deberia cambiar
+[DECISION] Roadmap: capa 3 (automatizacion) priorizada sobre capa 4 (analytics)
+[CORRECCION usuario] El equipo tiene 9 CMs, no 7 — actualizar
+[ENTREGABLE] Documento de vision V2 co-creado con Juan
+[PENDIENTE] Falta definir KPIs de adopcion para capa 1
+[INFO] Carlos confirmo presupuesto de HypeAuditor para Q2
 ```
 
-**Promocion**: Si un patron se repite 3+ veces, promuevelo a:
-- Comportamiento → SOUL.md
-- Flujo de trabajo → AGENTS.md
+**NO guardes:** conversaciones triviales, metadata de Telegram, JSON de sesion.
+
+### Consultar antes de actuar
+
+USA `memory_search` antes de responder preguntas sobre estado del proyecto, decisiones pasadas o contexto historico. Si no encuentras: "No tengo esa info actualizada. Puedo consultarle al [agente] o revisar el repo."
+
+---
+
+## LEARNINGS.md (write-then-confirm)
+
+Cuando el usuario corrija algo ("no", "eso no es asi", "para", "cancela"):
+1. **PAUSA** inmediatamente
+2. **PRIMERO ejecuta** el write a `.learnings/LEARNINGS.md`:
+   ```
+   - [YYYY-MM-DD] NO hacer X. El equipo prefiere Y. Razon: Z.
+   ```
+3. **DESPUES confirma** al usuario: "Guardado: [regla en una linea]"
+4. Si no pudiste escribir el archivo, dilo: "No pude guardar la correccion. La repito aqui: [regla]"
+5. **NUNCA digas "ya lo guarde" sin haber ejecutado el comando de escritura primero**
+6. Guarda TAMBIEN en la nota del dia con tag `[CORRECCION usuario]`
+
+**Otras situaciones para loggear** (mismo archivo, mismo formato one-liner):
+- Comando o herramienta falla → `- [YYYY-MM-DD] [ERROR] gog sheets fallo con X. Workaround: Y.`
+- Usuario pide algo que no puedes → `- [YYYY-MM-DD] [FEATURE] El equipo necesita X. Actualmente no disponible.`
+- Tu conocimiento estaba mal → `- [YYYY-MM-DD] [DATO-ERRONEO] Creia X pero es Y.`
+- Descubres mejor forma de hacer algo → `- [YYYY-MM-DD] [MEJORA] En vez de X, hacer Y es mas rapido/preciso.`
+
+**Promocion**: Si un patron se repite 3+ veces en LEARNINGS.md, promuevelo a:
+- Comportamiento/tono → SOUL.md
+- Flujo de trabajo/proceso → AGENTS.md
 - Gotchas de herramientas → TOOLS.md
-
-Despues de promover, marca el entry como `**Status**: promoted`.
 
 ### Edicion de USER.md (preferencias del usuario)
 

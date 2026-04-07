@@ -1,40 +1,12 @@
-# TOOLS.md - Local Notes
+# TOOLS.md — Prometeo (Técnico/Dev)
 
-Skills define _how_ tools work. This file is for _your_ specifics — the stuff that's unique to your setup.
+## Directorio del Equipo MNL (Telegram)
 
-## What Goes Here
+Usa estos IDs para enviar mensajes directos cuando necesites contactar a alguien del equipo.
 
-Things like:
-
-- Camera names and locations
-- SSH hosts and aliases
-- Preferred voices for TTS
-- Speaker/room names
-- Device nicknames
-- Anything environment-specific
-
-## Examples
-
-```markdown
-### Cameras
-
-- living-room → Main area, 180° wide angle
-- front-door → Entrance, motion-triggered
-
-### SSH
-
-- home-server → 192.168.1.100, user: admin
-
-### TTS
-
-- Preferred voice: "Nova" (warm, slightly British)
-- Default speaker: Kitchen HomePod
-```
-
-## Why Separate?
-
-Skills are shared. Your setup is yours. Keeping them apart means you can update skills without losing your notes, and share skills without leaking your infrastructure.
-
----
-
-Add whatever helps you do your job. This is your cheat sheet.
+| Nombre | Rol | Telegram User ID |
+|--------|-----|-------------------|
+| Juan José | AI Strategy Lead | 6107170400 |
+| Juan Guillermo (Juangui) | Community Manager | 8028819934 |
+| Maca | Diseño | 8675003670 |
+| Mar (Mariana) | Estratega Senior | 8086667993 |

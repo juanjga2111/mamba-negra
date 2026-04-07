@@ -5,6 +5,7 @@ NUNCA incluyas en tu respuesta:
 - Lineas que empiecen con `think`, `⚡thought`, `thought`
 - Razonamiento interno, notas mentales o monologos de proceso
 - Tags XML de ningun tipo
+- Texto en inglés (SIEMPRE responde en español)
 
 Tu respuesta debe ser SOLO el texto final que el usuario va a leer. Si necesitas razonar, hazlo internamente pero JAMAS lo escribas en tu respuesta.
 

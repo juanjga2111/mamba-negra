@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 06 Abril 2026 (V7.0 upgrade + self-improvement + USER.md editing + Notion DB creation)
+**Ultima actualizacion**: 07 Abril 2026 (V8.0 upgrade — memoria inmediata, cierre proactivo, HEARTBEAT universal, LEARNINGS write-then-confirm)
 
 ---
 
@@ -295,7 +295,7 @@
 │   │   ├── IDENTITY.md    # PM, 📋
 │   │   ├── TOOLS.md       # Guia gog + Notion + sessions_send
 │   │   ├── MEMORY.md      # Semilla de memoria
-│   │   ├── HEARTBEAT.md   # Vacio (sin heartbeat activo)
+│   │   ├── HEARTBEAT.md   # Checkpoints proactivos al iniciar sesion (V8.0)
 │   │   └── memory/        # Logs diarios (auto-creado)
 │   ├── admin/
 │   │   ├── AGENTS.md      # V2 — flujo de caja + memoria
@@ -430,6 +430,18 @@
 86. [x] USER.md self-editing: instrucciones en 7 AGENTS.md para modificar preferencias
 87. [x] Sync VM → local → mamba-negra repo + push a GitHub (commit bc10e61)
 88. [x] STATUS.md actualizado con V7.0 + sesion 05-06 Abr
+
+**V8.0 Upgrade (06-07 Abr 2026)**:
+
+89. [x] P1: Memoria inmediata — agentes guardan en memory/ DURANTE la conversacion con tags destilados
+90. [x] P2: OUTPUT FORMAT anti-thinking-leak reforzado en 7 SOUL.md
+91. [x] P3: LEARNINGS write-then-confirm — protocolo fusionado con promocion (3+ → SOUL/AGENTS/TOOLS)
+92. [x] P4: Cierre proactivo de sesion — resumen + memoria + pendientes + proximo paso
+93. [x] P5: Team-directory en TOOLS.md — IDs de Telegram del equipo en cada agente
+94. [x] P6: HEARTBEAT.md universal — checkpoints proactivos para los 7 agentes (antes solo PM)
+95. [x] P7: Cross-notification — Orquestador notifica a otros agentes con info estrategica nueva
+96. [x] P8: Neutralizar memory flush — PM ignora conversation dumps automaticos
+97. [x] Code review fixes: numeracion duplicada, LEARNINGS viejo eliminado, boilerplate limpiado
 
 **Tavily + Competitor Analysis + Google Form Briefs (30-Mar-2026)**:
 
@@ -600,7 +612,7 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 ### P1 — Alta Prioridad
 - [ ] **Workshop 1**: Onboarding equipo con nuevo sistema de 7 agentes + Telegram Groups
 - [ ] **Pairing del equipo MNL** en los 7 bots de Telegram
-- [ ] Configurar HEARTBEAT.md para Daily Digest del PM
+- [x] Configurar HEARTBEAT.md para todos los agentes (V8.0 — checkpoints proactivos al iniciar sesion)
 - [ ] Reactivar device auth en dashboard
 
 ### P2 — Mejoras
@@ -876,4 +888,47 @@ Sesion de planeacion con Carlos (29-Mar). Carlos se define como "retador": pone 
 
 ---
 
-**Estado general (06-Abr-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **V7.0 DESPLEGADO**: 7 agentes con 14 skills custom, thinking fix, MODO RAPIDO/ENTREGA, modo iterativo con checkpoints, Drive consolidation protocol, self-improving agent (.learnings/), USER.md self-editing. **Notion DB creation habilitado** (MCP pineado a v1.9.1). **contextTokens: 500K**, compaction + contextPruning activos. Manual del equipo creado + NotebookLM. **Bloqueadores**: (1) API de influencers, (2) Sheet flujo de caja de Carlos. **Proximo paso**: PM crea 4 databases en Notion (Campanas Master, Trafico Master, Solicitudes Master, Content Feedback) + test flujo orquestado + onboarding equipo.
+## SESSION LOG (06-07 Abr 2026) — V8.0 Upgrade: Memoria Inmediata + Cierre Proactivo + HEARTBEAT Universal
+
+### Contexto
+Analisis de sesiones del 6-Abr-2026 revelo deficiencias criticas:
+- 3 agentes tenian CERO memoria persistente (Research, Influencer, Orquestador)
+- LEARNINGS.md vacio en todos (Creative decia "ya guarde" pero no lo hacia)
+- PM guardaba conversation dumps crudos en vez de informacion destilada
+- Thinking leak visible en respuestas (Orquestador en ingles, Research con `<think>`)
+- Agentes 100% reactivos — no proponian flujos ni guardaban info por iniciativa propia
+- No podian enviar DMs (no tenian IDs de Telegram del equipo)
+- Orquestador no compartia info estrategica con otros agentes
+
+### Alcance del cambio
+**SOLO workspace files** (AGENTS.md, SOUL.md, TOOLS.md, HEARTBEAT.md). NO se cambio openclaw.json, modelos, thinking settings, ni arquitectura de comunicacion.
+
+### 8 Mejoras implementadas
+
+**P1 — Memoria inmediata**: Los agentes ahora guardan en memory/ DURANTE la conversacion (no "al final"). Formato destilado con tags [DECISION], [CORRECCION], [ENTREGABLE], [PENDIENTE].
+
+**P2 — OUTPUT FORMAT anti-thinking-leak**: Seccion en SOUL.md que previene filtracion de `<think>` y razonamiento en ingles en respuestas.
+
+**P3 — LEARNINGS write-then-confirm**: Protocolo de escritura primero, confirmacion despues. Fusionado con concepto de promocion (3+ repeticiones se escalan a SOUL/AGENTS/TOOLS). Tags adicionales: [ERROR], [FEATURE], [DATO-ERRONEO], [MEJORA].
+
+**P4 — Cierre proactivo de sesion**: Cuando la conversacion concluye, el agente automaticamente hace resumen, guarda memoria, lista pendientes, sugiere proximo paso.
+
+**P5 — Team-directory en TOOLS.md**: IDs de Telegram del equipo (Juan Jose, Juangui, Maca, Mar) en cada agente para envio de DMs.
+
+**P6 — HEARTBEAT.md para todos**: Checkpoints proactivos al iniciar sesion — lee memory, consulta Campaign Strategy Index, consulta Drive consolidation. Adaptado por rol. Ahora los 7 agentes lo tienen (antes solo PM).
+
+**P7 — Cross-notification**: Orquestador notifica a otros agentes cuando recibe informacion estrategica nueva.
+
+**P8 — Neutralizar memory flush**: PM ignora conversation dumps automaticos del sistema.
+
+### Fixes adicionales del code review
+- Numeracion duplicada "3.4" corregida en Estratega AGENTS.md
+- LEARNINGS viejo (formato LRN-YYYYMMDD-XXX) eliminado y fusionado con P3
+- "Texto en ingles" agregado a Creative SOUL.md OUTPUT FORMAT
+- Boilerplate limpiado en Prometeo TOOLS.md
+- Trigger ">5 min sin mensaje" cambiado a "el contexto sugiere que concluyo"
+- HEARTBEAT actualizado con Drive consolidation + Campaign Strategy Index Sheet
+
+---
+
+**Estado general (07-Abr-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **V8.0 DESPLEGADO**: 8 mejoras en workspace files de los 7 agentes — memoria inmediata (guardan DURANTE la conversacion), cierre proactivo, HEARTBEAT universal (7 agentes), LEARNINGS write-then-confirm, team directory en TOOLS.md, cross-notification del Orquestador, anti-thinking-leak reforzado, memory flush neutralizado en PM. Sin cambios en openclaw.json, modelos ni arquitectura. **Notion DB creation habilitado** (MCP pineado a v1.9.1). **contextTokens: 500K**, compaction + contextPruning activos. Manual del equipo creado + NotebookLM. **Bloqueadores**: (1) API de influencers, (2) Sheet flujo de caja de Carlos. **Proximo paso**: Test flujo orquestado + onboarding equipo.
