@@ -128,9 +128,9 @@ Solo para preguntas puntuales. Si requiere trabajo extenso, deriva al usuario.
 
 Acceso a datos verificados de influencers: metricas, demographics, brand safety, audiencia, sentiment, pricing.
 
-**Importante**: Los creditos son MUY limitados (~4 restantes). Usa `search` (gratis) para encontrar perfiles, y `report` SOLO en perfiles finalistas que ya evaluaste cualitativamente.
+**Importante**: Creditos actuales **97 Analytical Reports** (verificado 17-Abr-2026). Usa `search` (gratis) para encontrar perfiles, y `report` SOLO en perfiles finalistas que ya evaluaste cualitativamente.
 
-**NOTA (Abril 2026)**: El Discovery API (`hypeauditor discover`) NO esta disponible en el plan actual (trial). Cuando se active el plan pagado, se habilitara. Por ahora usa `search` + `report`.
+**NOTA (17-Abr-2026)**: Discovery API **ACTIVO**. El campo `queries_left` arranco en 1000 (factura promete Daily/Monthly limit 5000 — discrepancia pendiente de aclarar con Paula). Cada pagina = 1 decrement = 20 resultados. Usa con moderacion hasta resolver cuota real. Mantiene `search` como baseline gratis para busqueda por nombre.
 
 ### Buscar influencer por nombre (GRATIS — sin limite)
 
@@ -171,13 +171,35 @@ El report `--raw` retorna TODO en JSON:
 - **Hashtag performance**: por periodo 30d/90d/180d
 - **Contacto**: email/telefono si disponible
 
+### Media de perfil ya reportado (0 creditos adicionales)
+
+Si ya corriste `report` en un perfil, podes pedir sus posts/reels cacheados sin costo extra:
+
+```bash
+# Default: top 10 mas recientes con likes/comments/views/ER
+hypeauditor media pautips
+
+# Todos los posts cacheados
+hypeauditor media pautips --limit 0
+
+# JSON completo (incluye preview_url, media_ids con performance 30d/90d/180d)
+hypeauditor media pautips --raw
+```
+
+Retorna por post: fecha, tipo (reel/post/carousel/igtv), shortcode, likes_count, comments_count, video_views_count, er, er_mark (excellent/average/poor/low), caption truncado.
+
+Limitacion: solo los posts que HA cacheo al generar el report original (~5-10 posts cubriendo varios meses), no feed completo. Para analisis de video actual usar `reel-analyzer`.
+
+Util para: validar tarifas contra ER reciente, detectar caida de rendimiento, identificar tipo dominante, ver captions reales para brand fit.
+
 ### Cuando usar cada comando
 
 | Situacion | Comando | Costo |
 |-----------|---------|-------|
 | Buscar perfiles por nombre/nicho | `search` | Gratis |
 | Analisis profundo de finalista | `report --raw` | 1 credito |
-| Filtrar universo por metricas | `discover` | NO DISPONIBLE (plan trial) |
+| Posts/reels cacheados de perfil ya reportado | `media` | 0 (si unlocked) |
+| Filtrar universo por metricas | `discover` | 1 query/pagina (1000/mes) |
 
 ### Flujo recomendado (mientras no haya Discovery API)
 
@@ -195,6 +217,84 @@ El report `--raw` retorna TODO en JSON:
 - **NO** gastes mas de 1-2 reports sin consultar con el equipo (creditos limitados ~4)
 - **NO** uses `report` sin `--raw` — siempre pide los datos completos en una sola llamada
 - **NO** intentes usar `discover` — da error en el plan actual
+
+---
+
+## Reel Analyzer (CLI)
+
+Descarga y analiza reels de Instagram/TikTok con Gemini Video. Genera un **Content Fingerprint** -- perfil cualitativo del creador basado en analisis real de su contenido.
+
+**Cuando usar:** Evaluacion cualitativa profunda de un influencer. Complementa las metricas cuantitativas de HypeAuditor con analisis real del contenido.
+
+### Descargar reels
+
+```bash
+# TikTok (no necesita login)
+reel-analyzer download @handle --platform tiktok --count 10
+
+# Instagram (requiere cookies -- preguntar a Juanjo si no estan configuradas)
+reel-analyzer download @handle --platform instagram --count 10
+
+# URL directa
+reel-analyzer download "https://www.tiktok.com/@handle" --count 5
+```
+
+### Analizar reels descargados
+
+```bash
+# Analisis basico
+reel-analyzer analyze /tmp/reels/handle/
+
+# Con brief de campana (evalua alineacion con la campana)
+reel-analyzer analyze /tmp/reels/handle/ --brief "campana de skincare para mujeres 25-35, awareness, tono autentico"
+
+# Con modelo especifico (default: gemini-2.5-flash)
+reel-analyzer analyze /tmp/reels/handle/ --model gemini-2.5-pro
+```
+
+### Download + Analyze en un paso
+
+```bash
+# Flujo completo: descarga 10 reels y los analiza
+reel-analyzer full @handle --platform tiktok --count 10 --brief "campana skincare awareness"
+```
+
+### Que retorna
+
+**Content Fingerprint** (agregado de todos los reels):
+- Scores 1-10: hook, edicion, autenticidad, calidad visual, CTA
+- Score overall promedio
+- Estilo dominante: energia, audio, categoria de contenido
+- Top 3 reels destacados
+- Alineacion con brief (si se proporciono)
+
+**Analisis individual** por reel:
+- Hook: score + tecnica usada
+- Edicion: score + estilo
+- Autenticidad, product placement, CTA, energia
+- Categoria de contenido, tipo de audio
+- Resumen en 1 oracion
+
+### Flujo recomendado de scouting con Reel Analyzer
+
+1. HypeAuditor `search` para encontrar candidatos (gratis)
+2. `reel-analyzer full @candidato --platform tiktok --count 10 --brief "..."` para los top 5-8 candidatos
+3. HypeAuditor `report --raw` SOLO para los 2-3 que pasen el filtro cualitativo
+4. Tavily para background check
+5. Copy comercial con datos cuantitativos (HypeAuditor) + cualitativos (Reel Analyzer)
+
+### Limitaciones
+
+- **Instagram**: Requiere archivo de cookies (`~/.openclaw/instagram_cookies.txt`). Las cookies expiran cada 30-90 dias. Si falla, pedir a Juanjo que las renueve.
+- **TikTok**: Funciona sin login para perfiles publicos. Mas confiable que Instagram.
+- **Tiempo**: Cada reel toma ~15-30 segundos de analisis (upload + procesamiento Gemini). 10 reels ≈ 3-5 minutos.
+- **Costo**: Usa Gemini API. ~$0.01-0.05 por reel con gemini-2.5-flash.
+
+### Cuando NO usar
+
+- Para metricas cuantitativas (engagement, demographics) -- usa HypeAuditor
+- Para background check -- usa Tavily
+- Para mas de 20 reels por perfil -- el analisis se vuelve lento. 10 reels es suficiente para un fingerprint solido.
 
 ---
 

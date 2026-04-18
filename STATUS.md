@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 07 Abril 2026 (V8.0 upgrade — memoria inmediata, cierre proactivo, HEARTBEAT universal, LEARNINGS write-then-confirm)
+**Ultima actualizacion**: 18 Abril 2026 (Scout V2 completo: Discovery API desbloqueado, workers con guardrails, skill `scouting-team`, plantilla Sheets V2 con 3 tabs nuevos integrada al Campaign Strategy Index)
 
 ---
 
@@ -103,6 +103,37 @@
 - Orquestador puede spawnear Research, Creative, Influencer en paralelo
 - Workers se consultan entre si via sessions_send
 - PM, Admin, Prometeo accesibles via sessions_send desde cualquier agente
+
+---
+
+## PILOTO ACTIVO (Primera semana de Abril 2026)
+
+> **Estado**: EN CURSO. 3 personas del equipo MNL usando agentes en escenarios reales desde ~01-Abr-2026.
+
+### Participantes del Piloto
+| Rol | Agentes que usa | Notas |
+|-----|----------------|-------|
+| Estratega (strategist) | Orquestador, Radar, Musa | Flujo de brief → estrategia → contenido |
+| CM (Community Manager) | PM, Orquestador | Gestion de tareas, feedback de videos |
+| Creativo/a | Musa, Scout | Conceptos creativos, scouting |
+
+### Contexto
+- **NO fue un rollout completo** del equipo — fue un despliegue selectivo para 3 personas clave
+- Las mejoras V7.0 (04-Abr) y V8.0 (06-07 Abr) fueron **impulsadas por feedback real** de este piloto:
+  - V7.0: thinking visible en Telegram, output muy corto, sin modo iterativo, skills no declarados
+  - V8.0: agentes sin memoria persistente, LEARNINGS vacios, thinking leak, agentes 100% reactivos
+- El piloto funciona como **shadow mode informal**: el equipo usa los agentes en paralelo a su proceso normal
+
+### Retro Programada
+- **Fecha**: 09-Abr-2026
+- **Participantes**: Los 3 usuarios piloto + Juan Jose
+- **Objetivos**:
+  1. Recoger feedback/retrospectiva de la primera semana
+  2. Entender en que fase estamos realmente
+  3. Mostrar lo que hay, lo que se planea y hacia donde aspiramos
+- **Output esperado**: Lista de fricciones, features pedidos, ajustes a agentes, decision sobre proximos pasos de adopcion
+
+---
 
 ### AGENTES (7)
 
@@ -207,14 +238,33 @@
 
 ### Agente 4: Scout (Influencer)
 
-- **Rol**: Especialista en busqueda, scoring, evaluacion y copy comercial de influencers
+- **Rol**: Especialista en busqueda, scoring, evaluacion y copy comercial de influencers. Orquesta 3 workers para flujos de scouting end-to-end (Scout V2 desplegado 18-Abr).
 - **Bot Telegram**: @ScoutMambaBot
 - **Workspace repo**: `workspaces/influencer/`
-- **Workspace VM**: `~/.openclaw/workspace/influencer/`
+- **Workspace VM**: `~/.openclaw/workspaces/influencer/`
 - **sessions_send a**: Research, Creative
-- **Skills**: scouting-shortlist, mcporter
-- **Tools**: sessions_send, Tavily (background check), gog (Sheets/Drive)
-- **NO tiene**: sessions_spawn
+- **sessions_spawn a**: scout-discovery, scout-report, scout-video (workers V2)
+- **Skills**: `scouting-shortlist` (V2 — evaluacion individual cuando ya hay perfiles), `scouting-team` (V1.0 — Flujo Z completo desde brief con workers paralelos, desplegado 18-Abr), mcporter
+- **Tools**: sessions_spawn + sessions_send, Tavily (background check), gog (Sheets/Drive), `hypeauditor` CLI (search/discover/report/media/credits), `reel-analyzer` CLI
+- **Plantilla Sheets V2**: ID `1cIcbnvb6IXqEb76p4ezgzvcBrtOL3KTwk1uDQjUjk3E` — copia por campaña, 3 tabs nuevos (ESTRATEGIA & CRITERIOS SCOUT, DISCOVERY, FINALISTAS DEEP DIVE) + los 5 tabs originales de propuesta comercial. Integrada con Campaign Strategy Index (actualiza cols I Criterios Scouting + J Shortlist al cierre).
+
+#### Workers del equipo Scout V2 (desplegados 02-Abr, reforzados 18-Abr)
+
+| Worker ID | Rol | Modelo | Guardrails |
+|---|---|---|---|
+| `scout-discovery` | Búsqueda masiva + rankeo preliminar | Flash | `cm_approved_by` obligatorio en task, max 2 páginas default, abort si `queries_left < 50`, filtros mínimos obligatorios |
+| `scout-report` | Deep dive de 1 perfil + BGC + copy comercial | Pro | 1 Analytical Report + 3 Tavily. `hypeauditor media` opcional (0 cred) para validar ER reciente |
+| `scout-video` | Análisis de 1 video vs brief | Pro | 0 créditos HA (solo Gemini Video) |
+
+#### Flujo Z — skill `scouting-team`
+
+1. **STEP 0 (gate)**: verifica Campaign Strategy Index col D = "Aprobada". Si no, aborta y escala a Estratega
+2. **STEP 1**: lee doc consolidado de Drive (MAMBA TRACK / Strategic-Thinking / Estrategia), hereda al BLOQUE 1 del Tab ESTRATEGIA & CRITERIOS SCOUT. Deriva criterios cuantitativos. **CHECKPOINT 1** humano (CM valida criterios, no la estrategia)
+3. **STEP 2**: spawnea `scout-discovery`. Escribe resultados en Tab DISCOVERY. **CHECKPOINT 2** humano (CM llena cols K/L/M: ¿Finalista?, Fit cualitativo, Notas)
+4. **STEP 3**: spawnea N×`scout-report` + M×`scout-video` en paralelo. Consolida en Tab FINALISTAS DEEP DIVE
+5. **STEP 4**: entrega copy comercial al CM + actualiza Campaign Strategy Index
+
+**Regla dura**: el "Fit cualitativo" NO se auto-calcula. Lo llena el CM abriendo los perfiles — expertise humana que se facilita con data cuantitativa, no se reemplaza.
 
 ### Agente 5: PM — Project Manager
 
@@ -572,11 +622,14 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## PENDIENTES INMEDIATOS
 
-### P0 — Multi-Agente V2 (02-Abr-2026)
+### P0 — Piloto Activo + Multi-Agente V2 (02-Abr-2026)
+- [x] **Piloto selectivo en marcha**: 3 personas del equipo (estratega, CM, creativo/a) usando agentes desde ~01-Abr-2026
+- [x] **V7.0 y V8.0 iterados con feedback real** del piloto (no mejoras proactivas)
+- [ ] **Retro con usuarios piloto**: Programada 09-Abr-2026 — recoger feedback, definir proximos pasos
 - [ ] **Test flujo orquestado**: Probar sessions_spawn (Orquestador → Research + Creative + Influencer en paralelo)
 - [ ] **Crear grupos personales**: "Mar - Strategy Room" y "Mae - Strategy Room" con Topics
 - [ ] **Agregar user IDs**: Mar y Mae a `groupAllowFrom` en openclaw.json
-- [ ] **Onboarding equipo**: Presentar nuevo sistema de 7 agentes + Telegram Groups al equipo MNL
+- [ ] **Expandir piloto**: Definir si se incorporan mas personas post-retro del 09-Abr
 - [ ] **Revocar tokens de bots**: Generar nuevos tokens en VM (seguridad post-deploy)
 - [ ] **Test E2E por agente**: Verificar que cada uno de los 7 bots responde correctamente en Telegram
 
@@ -610,7 +663,7 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] **Creditos Modash**: Pedirle a Carlos/equipo que contacten soporte Modash para activar API
 
 ### P1 — Alta Prioridad
-- [ ] **Workshop 1**: Onboarding equipo con nuevo sistema de 7 agentes + Telegram Groups
+- [ ] **Workshop 1**: Onboarding equipo ampliado post-retro (depende de resultados del 09-Abr)
 - [ ] **Pairing del equipo MNL** en los 7 bots de Telegram
 - [x] Configurar HEARTBEAT.md para todos los agentes (V8.0 — checkpoints proactivos al iniciar sesion)
 - [ ] Reactivar device auth en dashboard
@@ -931,4 +984,128 @@ Analisis de sesiones del 6-Abr-2026 revelo deficiencias criticas:
 
 ---
 
-**Estado general (07-Abr-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **V8.0 DESPLEGADO**: 8 mejoras en workspace files de los 7 agentes — memoria inmediata (guardan DURANTE la conversacion), cierre proactivo, HEARTBEAT universal (7 agentes), LEARNINGS write-then-confirm, team directory en TOOLS.md, cross-notification del Orquestador, anti-thinking-leak reforzado, memory flush neutralizado en PM. Sin cambios en openclaw.json, modelos ni arquitectura. **Notion DB creation habilitado** (MCP pineado a v1.9.1). **contextTokens: 500K**, compaction + contextPruning activos. Manual del equipo creado + NotebookLM. **Bloqueadores**: (1) API de influencers, (2) Sheet flujo de caja de Carlos. **Proximo paso**: Test flujo orquestado + onboarding equipo.
+**Estado general (08-Abr-2026)**: Proyecto de **TRANSFORMACION INTEGRAL CON IA** en 7 capas. **PILOTO ACTIVO** con 3 personas del equipo MNL (estratega, CM, creativo/a) desde ~01-Abr-2026. V7.0 y V8.0 iterados con feedback real del piloto. **Retro programada 09-Abr-2026**. V8.0 DESPLEGADO: 8 mejoras en workspace files de los 7 agentes — memoria inmediata, cierre proactivo, HEARTBEAT universal, LEARNINGS write-then-confirm, team directory, cross-notification, anti-thinking-leak, memory flush neutralizado. **Bloqueadores**: (1) API de influencers, (2) Sheet flujo de caja de Carlos. **Proximo paso**: Retro con usuarios piloto (09-Abr) → definir expansion del piloto.
+
+---
+
+## SESSION LOG (11-12 Abr 2026) — Nuevas Capacidades: gtrends + reel-analyzer + browser tool
+
+### Contexto
+Sesion enfocada en analizar Gemma 4 de Google como potencial modelo para los agentes, y en responder a Mar (estratega senior) sobre la posibilidad de que los agentes accedan a Google Trends, Answer The Public, e Instagram/TikTok para social listening.
+
+### Decisiones estrategicas
+
+**Gemma 4 — NO migrar agentes actuales**
+- Analisis critico: Gemini 3.1 Pro supera a Gemma 4 en GPQA (94.3% vs 84.3%), tiene 1M context vs 256K, y video nativo vs frames extraidos
+- VM sin GPU → self-hosting no viable
+- Batch API de Gemini (50% descuento) es la oportunidad real — mismo modelo, mismas capacidades, solo async
+- Gemma 4 en watchlist para volumen masivo futuro (>1000 calls/dia batch)
+- Detalle: `memory/reference_gemma4_analysis.md`
+
+### Nuevas capacidades desplegadas
+
+**1. gtrends.py — Google Trends CLI (para Radar)**
+- Ubicacion VM: `~/.openclaw/tools/gtrends.py` + symlink `~/.local/bin/gtrends`
+- Comandos: `interest`, `compare`, `related`, `suggestions` (trending tiene bug, no usar)
+- Dependencia: `pytrends 4.9.2` + `urllib3<2` (pytrends no soporta urllib3 v2)
+- Test E2E: exitoso con keywords en CO (influencer marketing, marketing digital, skincare)
+- Integrado en Radar TOOLS.md + AGENTS.md (seccion Social Data)
+
+**2. reel-analyzer.py — Reel Analyzer CLI (para Scout)**
+- Ubicacion VM: `~/.openclaw/tools/reel-analyzer.py` + symlink
+- Comandos: `download`, `analyze`, `full`
+- Dependencias: `yt-dlp 2026.3.17` + `google-genai 1.72.0` (NO `google-generativeai`, deprecated)
+- Modelo default: `gemini-2.5-flash` (video nativo, barato, ~$0.01-0.05 por reel)
+- Output: **Content Fingerprint** — scores 1-10 agregados (hook, editing, authenticity, visual, CTA) + dominant style + top reels + alineacion con brief
+- Test E2E: exitoso con @charlidamelio (2 reels TikTok descargados y analizados)
+- Gotcha TikTok: URLs directas de video funcionan 100%, handles de perfil ~50% (yt-dlp extractor bugs)
+- Gotcha Instagram: requiere cookies — **NO configuradas, pendiente**
+- Integrado en Scout TOOLS.md + AGENTS.md (seccion Scoring Cualitativo)
+
+**3. OpenClaw browser tool — Habilitado**
+- Plugin `browser` agregado a `openclaw.json` (`plugins.allow: ["telegram", "browser"]`)
+- Config top-level `browser`: `noSandbox: true`, `headless: true`, `executablePath` apuntando a Playwright Chromium
+- **Gotcha critico**: Chromium de Ubuntu 24.04 es un snap → bloquea con "Permission denied" en SingletonLock. Solucion: usar Chromium de Playwright (`~/.cache/ms-playwright/chromium-1217/chrome-linux64/chrome`)
+- Dependencias instaladas: `libxcomposite1`, `libxdamage1`, y otras libs X11 (necesarias incluso en headless)
+- Capacidades: navegar URLs, fill forms, click, snapshot accessibility tree, screenshots
+- **Limitacion real**: anti-bot en sitios grandes. Probado: Google search → CAPTCHA, TikTok Creative Center → 403, ATP → requiere login. Funcionan: hypeauditor.com (marketing), AnswerSocrates, Wikipedia, sitios informacionales
+- Detalle: `memory/reference_openclaw_browser_tool.md`
+
+### Investigacion sobre APIs de data
+
+**HypeAuditor — estado verificado 17-Abr-2026 (tras activacion plan via email a support)**
+
+Client ID: **2705001** (corregido — memoria anterior tenia 2840388 mal).
+
+| Endpoint | Status | Notas |
+|---|---|---|
+| `auditor.suggester` | ✅ Gratis | Baseline de auth |
+| `auditor.report?v=2` | ✅ Funciona | 97 Analytical Reports restantes |
+| `auditor.tiktok` | ✅ Funciona | — |
+| `auditor.reportMedia` | ✅ Post-unlock | Code 15 si el perfil no fue reportado antes |
+| `auditor.search` (Discovery) | ✅ **DESBLOQUEADO** | `queries_left` arrancó en 1000. Factura dice 5000 mensual — discrepancia pendiente con Paula |
+| `auditor.searchSandbox` | ✅ Funciona | No consume creditos |
+| `auditor.tiktokMedia` | ❌ Code 8 "Invalid request" | NO es plan (todo activo), es contrato desconocido del endpoint — 8 variantes probadas, ninguna funciona. Pendiente aclaracion Paula |
+
+**Codigos de error reales (verificados contra doc oficial):**
+3=Unknown Method, 4=Invalid Token, 8=Invalid Request, 15=Access Denied, 27=No API Access. La memoria anterior interpretaba "code 4 = plan no incluye" — ERRONEO. Los codigos correctos son 27 (plan) o 15 (recurso no desbloqueado). Detalle: `memory/feedback_hypeauditor_error_codes.md`.
+
+**Bug del CLI corregido**: `hypeauditor.mjs` leia `data.result.list` con shape flat. La doc oficial retorna `data.result.search_results` con items anidados (`basic.username`, `metrics.er.value`). Parser actualizado con fallback legacy. Hubiera fallado silenciosamente al activar Discovery.
+
+**Nuevo comando: `hypeauditor media <username>`**. Llama `auditor.reportMedia` — devuelve 6-10 posts cacheados con likes, comments, views, ER, er_mark, caption, type. 0 creditos adicionales si el perfil ya fue reportado. Usado en Scout V2 para validar ER reciente de finalistas.
+
+**Situacion comercial**: la propuesta Custom firmada marca ✅ Discovery API incluida en Starter. La factura emitida listaba "Reports API access" — producto distinto. Email a support + Paula resolvió la activacion el 17-Abr tarde. Ver `memory/reference_hypeauditor_api.md` para el estado completo.
+
+Detalle: `memory/reference_hypeauditor_api.md` + `memory/feedback_hypeauditor_error_codes.md`
+
+**APIs alternativas investigadas pero descartadas (no usar):**
+- Apify Instagram/TikTok scrapers — $3-5/mes pero el equipo prefiere HypeAuditor que ya tiene
+- SerpApi Google Trends ($25/mes) — pytrends gratis funciona bien
+- AlsoAsked API ($29/mes) — no justifica costo vs Tavily
+
+### Flujo de uso recomendado (Mar + equipo)
+
+**Analisis cualitativo de influencers TikTok:**
+1. `hypeauditor search "nombre"` → encuentra perfil (gratis)
+2. Mar/equipo pasa URLs directas de 5-10 videos al Scout
+3. `reel-analyzer download <urls>` → yt-dlp descarga
+4. `reel-analyzer analyze /tmp/reels/<handle>/ --brief "..."` → Gemini genera Fingerprint
+5. `hypeauditor report --raw` SOLO en los 2-3 finalistas (1 credito c/u)
+
+**Investigacion de tendencias (Radar):**
+- `gtrends interest "tema" --geo CO` → valida interes real
+- `gtrends related "categoria" --geo CO` → rising queries = insights emergentes
+
+### Pendientes
+
+- [ ] Configurar cookies de Instagram (`~/.openclaw/instagram_cookies.txt`) — manual, usuario debe exportar de Chrome local
+- [ ] Test E2E completo del flujo combinado via Telegram con Scout
+- [ ] Evaluar upgrade HypeAuditor Starter+API ($599/mes) post-trial si el flujo cualitativo se vuelve diario
+
+### Archivos modificados/creados
+
+**Locales (`C:\openclaw-agency\clients\mamba-negra\`):**
+- `tools/gtrends.py` (nuevo)
+- `tools/reel-analyzer.py` (nuevo)
+- `tools/deploy-tools.sh` (nuevo)
+- `agents/openclaw.json` (agregado plugin browser + config)
+- `agents/workspaces/influencer/TOOLS.md` (seccion Reel Analyzer)
+- `agents/workspaces/influencer/AGENTS.md` (referencia a Content Fingerprint)
+- `agents/workspaces/research/TOOLS.md` (seccion Google Trends)
+- `agents/workspaces/research/AGENTS.md` (gtrends en Social Data)
+
+**VM (`~/.openclaw/`):**
+- `tools/gtrends.py`, `tools/reel-analyzer.py`, `tools/deploy-tools.sh`
+- `workspace/influencer/TOOLS.md`, `workspace/influencer/AGENTS.md`
+- `workspace/research/TOOLS.md`, `workspace/research/AGENTS.md`
+- `openclaw.json` (con browser plugin)
+- `~/.cache/ms-playwright/chromium-1217/` (Chromium)
+- Symlinks: `~/.local/bin/gtrends`, `~/.local/bin/reel-analyzer`
+
+**Memoria del proyecto (nuevas):**
+- `memory/project_gtrends_reel_analyzer.md`
+- `memory/reference_openclaw_browser_tool.md`
+- `memory/reference_gemma4_analysis.md`
+- `memory/feedback_ubuntu_chromium_snap.md`
+- `memory/feedback_hypeauditor_error_codes.md`
+- `memory/reference_hypeauditor_api.md` (actualizada con endpoints descubiertos)
