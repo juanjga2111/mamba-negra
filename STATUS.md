@@ -1,6 +1,6 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 18 Abril 2026 (Scout V2 completo: Discovery API desbloqueado, workers con guardrails, skill `scouting-team`, plantilla Sheets V2 con 3 tabs nuevos integrada al Campaign Strategy Index)
+**Ultima actualizacion**: 20 Abril 2026 (HypeAuditor CLI v2 desplegado: cache local automatico 30d, comandos `network` + `pdf` + `cache`, parser `--cached`/`--force`. Endpoints `auditor.creators` y `auditor.{platform}Pdf` verificados gratis post-unlock. Mini Reports confirmado NO expuesto en API — 11 variantes probadas. 94 Analytical Reports restantes. TOOLS.md del Scout actualizado)
 
 ---
 
@@ -61,6 +61,10 @@
 - Caddy v2.11.2 (reverse proxy HTTPS)
 - gog v0.12.0 (Google Workspace CLI — Drive, Sheets, Docs)
 - mcporter v0.7.3 (MCP server manager)
+- **hypeauditor CLI v2** (desplegado 14-17 Abr, actualizado 20-Abr-2026) — `/usr/local/bin/hypeauditor` wrapper + `/usr/local/bin/hypeauditor.mjs` Node script. Comandos: search, report (con cache 30d automatico), media, discover, **network** (My Network gratis), **pdf** (PDF oficial HA, 0 creditos si unlocked), **cache** (stats/prune/clear), credits. Cache local en `~/.openclaw/hypeauditor-cache/`. Fuente en repo: `clients/mamba-negra/tools/hypeauditor.mjs`
+- **gtrends CLI** (desplegado 11-Abr-2026) — `~/.local/bin/gtrends`. Comandos: interest, compare, related, suggestions. Usado por Radar
+- **reel-analyzer CLI** (desplegado 11-Abr-2026) — `~/.local/bin/reel-analyzer`. Comandos: download, analyze, full. Usado por Scout
+- **Chromium Playwright** (desplegado 11-Abr-2026) — `~/.cache/ms-playwright/chromium-1217/`. Para OpenClaw browser tool
 
 ### Firewall GCP
 - `allow-http` — TCP:80 (tag: https-server)
@@ -106,9 +110,9 @@
 
 ---
 
-## PILOTO ACTIVO (Primera semana de Abril 2026)
+## PILOTO + ONBOARDING AMPLIADO (Abril 2026)
 
-> **Estado**: EN CURSO. 3 personas del equipo MNL usando agentes en escenarios reales desde ~01-Abr-2026.
+> **Estado**: Piloto inicial CERRADO con retro exitosa. Onboarding equipo ampliado programado 20-Abr-2026.
 
 ### Participantes del Piloto
 | Rol | Agentes que usa | Notas |
@@ -124,14 +128,24 @@
   - V8.0: agentes sin memoria persistente, LEARNINGS vacios, thinking leak, agentes 100% reactivos
 - El piloto funciona como **shadow mode informal**: el equipo usa los agentes en paralelo a su proceso normal
 
-### Retro Programada
-- **Fecha**: 09-Abr-2026
-- **Participantes**: Los 3 usuarios piloto + Juan Jose
-- **Objetivos**:
-  1. Recoger feedback/retrospectiva de la primera semana
-  2. Entender en que fase estamos realmente
-  3. Mostrar lo que hay, lo que se planea y hacia donde aspiramos
-- **Output esperado**: Lista de fricciones, features pedidos, ajustes a agentes, decision sobre proximos pasos de adopcion
+### Retro Piloto (COMPLETADA 09-Abr-2026)
+- **Participantes**: 3 usuarios piloto + Juan Jose
+- **Resultado**: OK — feedback recogido, fase validada, ajustes a agentes consolidados en V8.0/Scout V2
+- **Docs**: `docs/2026-04-09-retro-piloto-agenda.md`, `docs/2026-04-09-resumen-proyecto-piloto.md`
+
+### Sesion Carlos + Memo (13-Abr-2026) — COMPLETADA
+- **Resultado**: Presupuesto aprobado. HypeAuditor Starter $762 autorizado (ejecutado 14-Abr). Gemini Tier 2 encuadrado (posteriormente Google subio a **Tier 3** — 19-Abr)
+- **Docs**: `docs/2026-04-13-memo-carlos.md`, `docs/2026-04-13-guion-carlos.md`, `docs/2026-04-13-talking-points-equipo.md`
+- **3 palancas validadas**: (1) propuesta diferenciada con demographics+brand safety, (2) velocidad comercial brief→propuesta en horas, (3) escalamiento sin romper al equipo
+
+### Sesion CMs de Expectativa (previa onboarding) — COMPLETADA
+- **Objetivo**: Alinear expectativas antes del onboarding formal
+- **Resultado**: OK — CMs entraron en expectativa positiva
+
+### Onboarding Equipo Ampliado (PROGRAMADO 20-Abr-2026)
+- **Objetivo**: Presentar los 7 agentes + flujos de trabajo propuestos al equipo ampliado
+- **Docs**: `docs/2026-04-16-presentacion-equipo-v3.md`, `docs/TELEGRAM-GROUPS-ONBOARDING.md`
+- **Output esperado**: Pairing equipo en bots, primeros casos de uso reales fuera del piloto
 
 ---
 
@@ -200,6 +214,25 @@
 | PM Mamba | Respaldo |
 | Admin Mamba | Respaldo |
 
+**Tier**: **Gemini API Tier 3 aprobado por Google** (19-Abr-2026). Limites superiores a Tier 2, habilita volumen de uso del equipo ampliado post-onboarding.
+
+### HypeAuditor (aprobado + activo)
+
+- **Plan**: Customer Starter Monthly + Story Tracking
+- **Precio**: $762 USD/mes
+- **Aprobado por Carlos**: 14-Abr-2026 | **API activa**: 17-Abr-2026 tarde (post soporte)
+- **Account ID**: `2705001`
+- **Credenciales VM**: `~/.openclaw/.env` (`HYPEAUDITOR_ID` + `HYPEAUDITOR_TOKEN`) — fuente de verdad
+- **Asesora comercial**: Paula (florez-estrada@hypeauditor.com)
+- **Limites mensuales**:
+  - 100 Analytical Reports + 1500 Mini Reports + 3000 Emails
+  - 5000 Discovery results + 5 AI Scout searches (API comparte creditos con web)
+  - 25 campanas activas + 500 influencers + 3000 My Network
+  - 30 exports x 300 rows
+- **API verificada (20-Abr)**: `auditor.suggester` (gratis), `auditor.report v=2` (**94 creditos restantes**), `auditor.tiktok`, `auditor.reportMedia` (post-unlock), `auditor.search` Discovery (1000 queries), **`auditor.creators`** (gratis — My Network CRM metadata), **`auditor.{instagram/tiktok/youtube/twitter/twitch/snapchat}Pdf`** (0 creditos post-unlock, async)
+- **Mini Reports NO en API**: 11 variantes de endpoint probadas (miniReport, reportMini, quickReport, liteReport, etc.) — todas `code 3 Unknown method`. Params `type=mini`/`mini=1` se ignoran. Los 1500/mes del plan son solo feature UI web.
+- **Pendiente aclarar con Paula**: contrato `auditor.tiktokMedia` (code 8), discrepancia queries_left=1000 vs factura 5000/mes, confirmar oficialmente que Mini Reports no tiene endpoint REST
+
 ### Agente 1: Orquestador (ex-Estratega)
 
 - **Rol**: Coordinador central — interpreta briefs, decide que agentes invocar, sintetiza resultados, compila entregas
@@ -245,7 +278,7 @@
 - **sessions_send a**: Research, Creative
 - **sessions_spawn a**: scout-discovery, scout-report, scout-video (workers V2)
 - **Skills**: `scouting-shortlist` (V2 — evaluacion individual cuando ya hay perfiles), `scouting-team` (V1.0 — Flujo Z completo desde brief con workers paralelos, desplegado 18-Abr), mcporter
-- **Tools**: sessions_spawn + sessions_send, Tavily (background check), gog (Sheets/Drive), `hypeauditor` CLI (search/discover/report/media/credits), `reel-analyzer` CLI
+- **Tools**: sessions_spawn + sessions_send, Tavily (background check), gog (Sheets/Drive), `hypeauditor` CLI v2 (search/discover/report/media/**network**/**pdf**/**cache**/credits — con cache local 30d), `reel-analyzer` CLI
 - **Plantilla Sheets V2**: ID `1cIcbnvb6IXqEb76p4ezgzvcBrtOL3KTwk1uDQjUjk3E` — copia por campaña, 3 tabs nuevos (ESTRATEGIA & CRITERIOS SCOUT, DISCOVERY, FINALISTAS DEEP DIVE) + los 5 tabs originales de propuesta comercial. Integrada con Campaign Strategy Index (actualiza cols I Criterios Scouting + J Shortlist al cierre).
 
 #### Workers del equipo Scout V2 (desplegados 02-Abr, reforzados 18-Abr)
@@ -524,16 +557,17 @@
 | campaign-framework.md | V1 | 9 fases del ciclo de campana |
 | campaign-process.md | V1 | Flujo operacional — pendiente actualizar con 2 flujos reales (Strategy + CM) |
 | influencer-scoring.md | V1 | Criterios cuanti/cuali — pendiente actualizar con criterios reales de encuesta |
-| modash-playbook.md | V1 | Playbook completo de Modash |
+| modash-playbook.md | V1 | Referencia historica — Modash descartado, plataforma actual es HypeAuditor |
 | strategy-workflow.pdf | Creado | Flujo Strategy team: 12 pasos, RAYO/ARCO/PRISMA/MAREA, metodologia investigacion, banco de prompts |
 | README.md | V1.1 | Indice actualizado con nuevos archivos |
 | verticals/ (5 archivos) | V1 | consumo-masivo, belleza, inmobiliario, calzado, servicios |
 | campaign-samples/ (3 archivos) | Creado | Manimoto Chocolate, Detodito Proteina (strategic thinkings), Acetaminofen MK (brief) |
-| **brands/_template.md** | **NUEVO** | Template de brand voice profile (29-Mar-2026) |
-| **brands/ejemplo-farmaceutico-otc.md** | **NUEVO** | Ejemplo: Noraver Gripa — personalidad, tono, do's/don'ts, tipo de influencer |
+| brands/_template.md | Creado 29-Mar | Template de brand voice profile |
+| brands/ejemplo-farmaceutico-otc.md | Creado 29-Mar | Ejemplo: Noraver Gripa |
 | Research/ (4 PDFs) | Referencia | Papers de IA en agencias, KPIs, agentic enterprise |
+| **Plantilla Scouting V2 (Google Sheets)** | **NUEVO 18-Abr** | ID `1cIcbnvb6IX...` — copia por campana con 3 tabs nuevos (ESTRATEGIA & CRITERIOS, DISCOVERY, FINALISTAS DEEP DIVE) + 5 tabs originales propuesta comercial |
 
-**Veredicto**: 16 archivos + 4 PDFs + 3 campaign samples. Brand voice profiles agregados (29-Mar-2026).
+**Veredicto**: 16 archivos + 4 PDFs + 3 campaign samples + 2 brand voice + plantilla scouting V2. Pendiente migrar playbook de Modash → HypeAuditor.
 
 ### Capa 3: Adopcion (`adoption/`)
 | Archivo | Estado | Notas |
@@ -561,10 +595,14 @@
 | workspaces/pm/ | 7 archivos | **AGENTS.md V3** (reportes VP + feedback videos), **SOUL.md V1.2**, USER.md, IDENTITY.md, **TOOLS.md V4**, MEMORY.md, HEARTBEAT.md |
 | workspaces/admin/ | 4 archivos | **AGENTS.md V2** (flujo de caja + memoria), SOUL.md V1.1, USER.md, **MEMORY.md** |
 | workspaces/prometeo/ | 7 archivos | AGENTS.md V1, SOUL.md, USER.md, IDENTITY.md, TOOLS.md, MEMORY.md, HEARTBEAT.md |
-| mcp-servers/modash-mcp/ | Construido | MCP server Modash (7 tools), Node.js. NO desplegado (API tiene 0 creditos) |
+| mcp-servers/modash-mcp/ | Archivado | MCP server construido pero descartado — plataforma actual es HypeAuditor |
+| **tools/hypeauditor.mjs** | **v2 — 20 Abr** | CLI con 9 comandos: search/report/media/discover/**network**/**pdf**/**cache**/credits. Cache local automatico 30d (`~/.openclaw/hypeauditor-cache/`). Relecturas 0 creditos. PDF oficial 0 creditos post-unlock. Desplegado en `/usr/local/bin/hypeauditor` |
+| **tools/gtrends.py** | **NUEVO 11-Abr** | CLI Google Trends. Desplegado en `~/.local/bin/gtrends`. Usado por Radar |
+| **tools/reel-analyzer.py** | **NUEVO 11-Abr** | CLI yt-dlp + Gemini Video. Desplegado en `~/.local/bin/reel-analyzer`. Usado por Scout |
+| **Scout V2 workers** | **NUEVO 18-Abr** | scout-discovery, scout-report, scout-video — spawneados por skill `scouting-team` |
 | n8n-workflows/README.md | Placeholder | Vacio — workflows planeados para Fase 1C |
 
-**Veredicto**: **Arquitectura V2 con 7 agentes**. Orquestador coordina via sessions_spawn. 3 workers especializados (Research, Creative, Influencer). PM V3, Admin V2, Prometeo. **memorySearch activo**. Tavily MCP activo (1,000/mes gratis). Telegram Groups con Topics configurados. Modash MCP construido, evaluando alternativas.
+**Veredicto**: **Arquitectura V2 con 7 agentes + Scout V2 con sub-workers**. Orquestador coordina via sessions_spawn. 3 workers estrategia (Research, Creative, Influencer) + 3 workers scouting (discovery/report/video). PM V3, Admin V2, Prometeo. **memorySearch activo**. Tavily MCP (1,000/mes gratis). **HypeAuditor CLI activo** con 100 reports + 5000 discovery/mes. gtrends + reel-analyzer + browser tool desplegados. Telegram Groups con Topics configurados.
 
 ### Capa 5: Medicion (`measurement/`)
 | Archivo | Estado | Notas |
@@ -622,61 +660,67 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## PENDIENTES INMEDIATOS
 
-### P0 — Piloto Activo + Multi-Agente V2 (02-Abr-2026)
-- [x] **Piloto selectivo en marcha**: 3 personas del equipo (estratega, CM, creativo/a) usando agentes desde ~01-Abr-2026
-- [x] **V7.0 y V8.0 iterados con feedback real** del piloto (no mejoras proactivas)
-- [ ] **Retro con usuarios piloto**: Programada 09-Abr-2026 — recoger feedback, definir proximos pasos
-- [ ] **Test flujo orquestado**: Probar sessions_spawn (Orquestador → Research + Creative + Influencer en paralelo)
-- [ ] **Crear grupos personales**: "Mar - Strategy Room" y "Mae - Strategy Room" con Topics
-- [ ] **Agregar user IDs**: Mar y Mae a `groupAllowFrom` en openclaw.json
-- [ ] **Expandir piloto**: Definir si se incorporan mas personas post-retro del 09-Abr
+### P0 — Onboarding equipo ampliado (20-Abr-2026)
+- [ ] **Ejecutar onboarding**: Presentacion de 7 agentes + flujos de trabajo al equipo (mañana, 20-Abr)
+- [ ] **Pairing del equipo MNL** en los 7 bots de Telegram (post-onboarding)
+- [ ] **Agregar user IDs del equipo** a `groupAllowFrom` en openclaw.json segun se vayan parehando
+- [ ] **Capturar feedback inicial** del equipo ampliado primer uso real
+
+### P0 — HypeAuditor integracion completa (en curso)
+- [x] Plan Starter $762 comprado — 14-Abr-2026
+- [x] API activa + Account ID 2705001 — 17-Abr-2026
+- [x] CLI desplegado en VM con 5 comandos (search/report/media/discover/credits)
+- [x] Discovery API desbloqueada (1000 queries iniciales)
+- [x] Scout V2 desplegado 18-Abr con skill `scouting-team` + 3 workers usando el CLI
+- [x] **CLI v2 — 20-Abr**: cache local automatico 30d + comandos `network`, `pdf`, `cache stats/prune/clear`. TOOLS.md del Scout actualizado
+- [x] **Confirmado**: Mini Reports NO tiene endpoint REST — 11 variantes probadas
+- [ ] **Aclarar con Paula**: contrato exacto `auditor.tiktokMedia` (code 8, 8 variantes probadas)
+- [ ] **Aclarar con Paula**: discrepancia queries_left=1000 vs factura "5000/mes"
+- [ ] **Aclarar con Paula**: confirmar oficialmente que Mini Reports solo vive en UI web
+- [ ] **Evaluar con CMs**: diseño de card MNL-branded (primera aprobacion cliente) — parqueado hasta hablar flujo real con CMs
+- [ ] Test E2E completo del flujo Scout V2 con campana real post-onboarding
+
+### P1 — Pendientes tecnicos
+- [ ] **Configurar cookies Instagram** (`~/.openclaw/instagram_cookies.txt`) — reel-analyzer requiere para IG (manual, exportar de Chrome local)
+- [ ] **Migrar gateway de nohup a systemd estable** (B2 — no sobrevive reboot actualmente)
+- [ ] **Configurar timezone Colombia (UTC-5)** para todos los agentes (VM en UTC)
+- [ ] **Reactivar device auth** en dashboard (actualmente `dangerouslyDisableDeviceAuth: true`)
 - [ ] **Revocar tokens de bots**: Generar nuevos tokens en VM (seguridad post-deploy)
-- [ ] **Test E2E por agente**: Verificar que cada uno de los 7 bots responde correctamente en Telegram
 
-### P0 — Transformacion IA (completado)
-- [x] **Discovery Session 1**: Encuesta Discovery + Baseline aplicada (5 respuestas) — 24-25 Mar 2026
-- [x] **Recolectar baseline**: Tiempos reales documentados — 26 Mar 2026
-- [x] **AI Maturity baseline validado**: Promedio real 1.8 — 26 Mar 2026
-- [x] **Documentos de Strategy team**: Workflow 12 pasos + 4 metodologias — 26 Mar 2026
-- [x] **Analisis consolidado**: `adoption/DISCOVERY-FINDINGS.md` — 26 Mar 2026
-- [ ] **Validar con Carlos**: Vision, Roadmap, AI Maturity Assessment (ver `strategy/`)
-- [ ] **Validar con CMs**: Perfiles por vertical y modash-playbook (ver `knowledge/verticals/`)
+### P1 — Pendientes de Carlos
+- [ ] **Google Sheet flujo de caja**: Sheet ID sigue pendiente — Admin Bot espera para conectar via gog
+- [ ] **Validar con Carlos**: Vision + Roadmap + AI Maturity Assessment (docs en `strategy/`)
+- [x] **Scouting nivel senior**: Scout V2 desplegado 18-Abr — skill scouting-team con workers
+- [x] **Reportes para VPs**: PM V3 con framework 4 bloques — desplegado 29-Mar
+- [x] **Presupuesto aprobado**: HypeAuditor $762 + Gemini Tier 3 (upgrade Google)
 
-### P0 — Tecnico
-- [x] Arquitectura V2 desplegada: 7 agentes + sessions_spawn + Telegram Groups — 02-Abr-2026
-- [x] SCP todos los workspaces a la VM + restart gateway
-- [ ] Migrar gateway de nohup a systemd estable
-- [ ] Configurar timezone Colombia (UTC-5) para todos los agentes
-
-### P1 — API de Influencers (Modash o Influencers Club)
-- [x] MNL tiene API key de Modash (confirmado 26-Mar)
-- [x] Construir MCP server para Modash — 7 tools — 29-Mar-2026
-- [ ] **BLOQUEADOR**: Modash API key tiene 0 creditos. Modash cuesta ~$16k USD/ano
-- [ ] **Evaluando alternativa**: Influencers Club (~$249/mes). Free tier no da acceso API (403). Requiere plan pago para endpoints.
-- [ ] Decision pendiente: Modash (activar creditos) vs Influencers Club (plan pago) vs otra alternativa
-- [ ] Cuando se defina: desplegar MCP a VM + registrar en mcporter + actualizar Scout TOOLS.md
-
-### P1 — Pendientes de Carlos (sesion 29-Mar-2026)
-- [ ] **Google Sheet flujo de caja**: Carlos lo esta construyendo. Pedirle Sheet ID para conectar al Admin Bot via gog
-- [x] **Scouting nivel senior**: Copy comercial con data — migrado a Scout (Influencer agent)
-- [x] **Reportes para VPs**: Prompt del PM V3 incorpora framework 4 bloques analisis senior — desplegado 29-Mar
-- [ ] **Creditos Modash**: Pedirle a Carlos/equipo que contacten soporte Modash para activar API
-
-### P1 — Alta Prioridad
-- [ ] **Workshop 1**: Onboarding equipo ampliado post-retro (depende de resultados del 09-Abr)
-- [ ] **Pairing del equipo MNL** en los 7 bots de Telegram
-- [x] Configurar HEARTBEAT.md para todos los agentes (V8.0 — checkpoints proactivos al iniciar sesion)
-- [ ] Reactivar device auth en dashboard
+### P1 — Validaciones con equipo
+- [ ] **Validar con CMs**: Perfiles por vertical y modash-playbook (despues del onboarding)
+- [ ] **Primer reporte asistido por IA**: Target Mes 3 (Mayo) — pendiente campana real con ciclo completo
 
 ### P2 — Mejoras
-- [x] Activar memorySearch en openclaw.json — provider: gemini, activo 30-Mar-2026
-- [x] Activar memoryFlush (compaction) — guarda automaticamente antes de compactar
-- [x] Crear MEMORY.md para Estratega y Admin — semillas de memoria desplegadas
-- [x] Protocolo de memoria en AGENTS.md de Estratega y Admin — instrucciones de guardar/buscar
 - [ ] Agregar variables de entorno de optimizacion al servicio
 - [ ] Implementar pipeline de aprobaciones (Funcion 3 — PM-VALUE-ANALYSIS.md)
 - [ ] Implementar scoring de salud de campana (Funcion 4 — PM-VALUE-ANALYSIS.md)
 - [ ] Evaluar Honcho (memoria por usuario) para Fase 2 cuando equipo completo use los bots
+- [ ] Primera exportacion real a Drive Sync (Capa 7 sigue con `exports/` vacio)
+
+### Completados recientes (referencia)
+- [x] Retro piloto 09-Abr — OK
+- [x] Memo + sesion Carlos 13-Abr — presupuesto aprobado
+- [x] Sesion CMs de expectativa — OK
+- [x] Gemini Tier 3 aprobado por Google — 19-Abr
+- [x] gtrends + reel-analyzer CLIs desplegados — 11-12 Abr
+- [x] OpenClaw browser tool habilitado con Playwright — 11-Abr
+- [x] V8.0 desplegado con memoria inmediata + HEARTBEAT universal — 06-07 Abr
+- [x] V7.0 desplegado con skills architecture + thinking fix — 04-Abr
+- [x] Plantilla Sheets V2 scouting con 3 tabs nuevos (BRIEF, DISCOVERY, FINALISTAS)
+- [x] Arquitectura multi-agente V2: 7 agentes + sessions_spawn + Telegram Groups — 02-Abr
+- [x] Scout V2 con skill scouting-team + 3 workers — 18-Abr
+
+### Descartados (cerrados definitivamente)
+- [~] ~~Modash~~ — descartado en favor de HypeAuditor. MCP server construido queda como referencia pero sin creditos
+- [~] ~~Influencers Club~~ — descartado por no tener demographics ni brand safety
 
 ---
 
@@ -728,7 +772,7 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 ### B1: Billing Account GCP (P2 — ya no critico)
 - **Problema**: `ia@mambanegramkt.com` no puede "Activar cuenta completa" en GCP
 - **Causa**: Solo `l.zapata@mambanegramkt.com` tiene `roles/billing.admin`
-- **Impacto**: Reducido — Gemini 3.1 Pro funciona con API keys generadas directamente en Google AI Studio
+- **Impacto**: Reducido — Gemini 3.1 Pro funciona con API keys directas (ahora Tier 3 aprobado por Google el 19-Abr-2026)
 - **Estado**: Workaround activo (API keys directas)
 
 ### B2: Gateway systemd restart loop (P1)
@@ -736,16 +780,21 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - **Workaround**: Gateway corriendo con `nohup` (funcional pero no sobrevive reboot)
 - **Fix pendiente**: Configurar `OPENCLAW_NO_RESPAWN=1` correctamente o cambiar Type=forking
 
+### B3: Sheet flujo de caja pendiente de Carlos (P2)
+- **Problema**: Admin Bot tiene seccion "Flujo de Caja Semanal" en AGENTS.md V2 pero sin Sheet ID
+- **Estado**: Carlos lo esta construyendo desde 29-Mar-2026, sin fecha de entrega
+
 ---
 
 ## NOTAS TECNICAS
 
-### LLM Configurado (actualizado 02-Abr-2026)
+### LLM Configurado (actualizado 19-Abr-2026)
 - **Orquestador, Radar, Musa, Scout**: `google/gemini-3.1-pro` (thinking: low)
 - **PM**: `google/gemini-3-flash` (thinking: off) — optimizado para velocidad y costo
 - **Admin**: `google/gemini-3-flash` — optimizado para velocidad y costo
 - **Prometeo**: `github-copilot/gemini-3.1-pro-preview`
 - **Fallbacks**: gemini-2.5-pro (default), gemini-2.5-flash (PM/Admin)
+- **Tier Gemini API**: **Tier 3 aprobado por Google** (19-Abr-2026) — limites mas altos, habilita volumen del equipo ampliado post-onboarding
 
 ### Sistema de Memoria (activado 30-Mar-2026)
 - **memorySearch**: provider "gemini" (embeddings via GEMINI_API_KEY existente, free tier)
@@ -1033,26 +1082,29 @@ Sesion enfocada en analizar Gemma 4 de Google como potencial modelo para los age
 
 ### Investigacion sobre APIs de data
 
-**HypeAuditor — estado verificado 17-Abr-2026 (tras activacion plan via email a support)**
+**HypeAuditor — estado verificado 20-Abr-2026**
 
-Client ID: **2705001** (corregido — memoria anterior tenia 2840388 mal).
+Client ID: **2705001**. Analytical Reports restantes: **94** (3 gastados en tests API 20-Abr).
 
-| Endpoint | Status | Notas |
-|---|---|---|
-| `auditor.suggester` | ✅ Gratis | Baseline de auth |
-| `auditor.report?v=2` | ✅ Funciona | 97 Analytical Reports restantes |
-| `auditor.tiktok` | ✅ Funciona | — |
-| `auditor.reportMedia` | ✅ Post-unlock | Code 15 si el perfil no fue reportado antes |
-| `auditor.search` (Discovery) | ✅ **DESBLOQUEADO** | `queries_left` arrancó en 1000. Factura dice 5000 mensual — discrepancia pendiente con Paula |
-| `auditor.searchSandbox` | ✅ Funciona | No consume creditos |
-| `auditor.tiktokMedia` | ❌ Code 8 "Invalid request" | NO es plan (todo activo), es contrato desconocido del endpoint — 8 variantes probadas, ninguna funciona. Pendiente aclaracion Paula |
+| Endpoint | Status | Costo | Notas |
+|---|---|---|---|
+| `auditor.suggester` | ✅ | Gratis | Baseline de auth |
+| `auditor.report?v=2` | ✅ | 1 cred (siempre) | Retorna 64 keys — demografia, aqs, brand_safety, blogger_rankings, audience_geography, est_post_price, etc. Cache local 30d en CLI v2 |
+| `auditor.tiktok` | ✅ | 1 cred | Param `channel` (no `username`) |
+| `auditor.reportMedia` | ✅ post-unlock | 0 post-unlock | Code 15 pre-unlock |
+| `auditor.search` (Discovery) | ✅ | 1 query/pagina | `queries_left` = 1000. Factura dice 5000 — discrepancia pendiente con Paula |
+| `auditor.searchSandbox` | ✅ | Gratis | — |
+| **`auditor.creators`** | ✅ | **Gratis** | **My Network — lista perfiles unlocked con metadata CRM (emails, phones, contract_status, network_status). Filtros: limit, cursor, report_unlocked_from/to (formato YYYY-MM-DD, no ISO)** |
+| **`auditor.{instagram/tiktok/youtube/twitter/twitch/snapchat}Pdf`** | ✅ | **0 post-unlock**, 1 pre-unlock | **PDF oficial HA async. Retorna `pdfUrl` (CDN), `retryTtl`. CLI reintenta hasta 8x. Ideal entregable cliente** |
+| `auditor.tiktokMedia` | ❌ Code 8 | — | Contrato desconocido — 8 variantes probadas. Pendiente Paula |
+| `auditor.miniReport` (+ 10 variantes) | ❌ Code 3 | — | Mini Reports **NO existe** en API REST. Solo feature UI web. Params `mini=1`/`type=mini` se ignoran silenciosamente |
 
 **Codigos de error reales (verificados contra doc oficial):**
-3=Unknown Method, 4=Invalid Token, 8=Invalid Request, 15=Access Denied, 27=No API Access. La memoria anterior interpretaba "code 4 = plan no incluye" — ERRONEO. Los codigos correctos son 27 (plan) o 15 (recurso no desbloqueado). Detalle: `memory/feedback_hypeauditor_error_codes.md`.
+3=Unknown Method, 4=Invalid Token, 8=Invalid Request, 15=Access Denied, 27=No API Access. Los codigos correctos son 27 (plan) o 15 (recurso no desbloqueado). Detalle: `memory/feedback_hypeauditor_error_codes.md`.
 
-**Bug del CLI corregido**: `hypeauditor.mjs` leia `data.result.list` con shape flat. La doc oficial retorna `data.result.search_results` con items anidados (`basic.username`, `metrics.er.value`). Parser actualizado con fallback legacy. Hubiera fallado silenciosamente al activar Discovery.
+**CLI v2 (20-Abr-2026)**: agrega cache local automatico + `network` + `pdf` + `cache`. El cache guarda el JSON completo del report en `~/.openclaw/hypeauditor-cache/<platform>-<username>.json`. Relecturas en < 30 dias cuestan 0 creditos. Flag `--cached` lee solo cache, `--force` bypass cache (1 credito). Umbral de aviso 500 MB. Proyeccion anual: ~200 MB con uso normal (100 reports/mes × 12 × ~170 KB).
 
-**Nuevo comando: `hypeauditor media <username>`**. Llama `auditor.reportMedia` — devuelve 6-10 posts cacheados con likes, comments, views, ER, er_mark, caption, type. 0 creditos adicionales si el perfil ya fue reportado. Usado en Scout V2 para validar ER reciente de finalistas.
+**Nota sobre data "tipo Modash" (rankings por categoria, ER nivel bajo/promedio/alto):** ya esta incluida en `auditor.report --raw` en los campos `blogger_categories`, `blogger_rankings`, `aqs` + `aqs_name` + `aqs_description`. No requiere endpoint extra. Pendiente diseñar card MNL-branded con CMs.
 
 **Situacion comercial**: la propuesta Custom firmada marca ✅ Discovery API incluida en Starter. La factura emitida listaba "Reports API access" — producto distinto. Email a support + Paula resolvió la activacion el 17-Abr tarde. Ver `memory/reference_hypeauditor_api.md` para el estado completo.
 
@@ -1109,3 +1161,101 @@ Detalle: `memory/reference_hypeauditor_api.md` + `memory/feedback_hypeauditor_er
 - `memory/feedback_ubuntu_chromium_snap.md`
 - `memory/feedback_hypeauditor_error_codes.md`
 - `memory/reference_hypeauditor_api.md` (actualizada con endpoints descubiertos)
+
+---
+
+## SESSION LOG (13-19 Abr 2026) — Carlos + Retro + Compra HypeAuditor + Scout V2 + Tier 3
+
+### Cronologia
+
+**09-Abr**: Retro piloto con los 3 usuarios (estratega, CM, creativo/a) — OK. Feedback recogido y consolidado en V8.0 (ya desplegado 06-07 Abr).
+
+**13-Abr**: Sesion Carlos con memo presupuestal. Presupuesto encuadrado:
+- Baseline actual: $322/mes (Modash $300 + Tavily + Notion)
+- Propuesto: HypeAuditor $762 + Gemini API $155-$210 + Tavily/Notion/VM — total ~$954-$1,019/mes
+- Delta: +$632-$697/mes (~$2.5M-$2.8M COP)
+- Carlos aprobo HypeAuditor ese dia. Gemini Tier 2 encuadrado.
+- Docs: `docs/2026-04-13-memo-carlos.md`, `docs/2026-04-13-guion-carlos.md`, `docs/2026-04-13-talking-points-equipo.md`
+
+**14-Abr**: Compra HypeAuditor Starter Monthly + Story Tracking ($762/mes) ejecutada.
+
+**16-Abr**: Presentacion equipo V3 preparada (`docs/2026-04-16-presentacion-equipo-v3.md`) + onboarding Telegram Groups documentado (`docs/TELEGRAM-GROUPS-ONBOARDING.md`).
+
+**17-Abr**: API HypeAuditor verificada. Account ID 2705001. Primeros endpoints probados. Discovery bloqueado por propuesta vs factura — email a support + Paula. Resuelto misma tarde: Discovery desbloqueada con 1000 queries iniciales. 97 Analytical Reports restantes.
+
+**17-Abr tarde**: Bug del CLI `hypeauditor.mjs` corregido (shape flat → anidada `search_results` con basic/metrics/features). Fallback legacy agregado.
+
+**18-Abr**: Scout V2 desplegado. Workers `scout-discovery`, `scout-report`, `scout-video` con guardrails. Skill `scouting-team` (Flujo Z) con 4 steps y 2 checkpoints humanos. Plantilla Sheets V2 (ID `1cIcbnvb6IX...`) con 3 tabs nuevos (ESTRATEGIA & CRITERIOS, DISCOVERY, FINALISTAS DEEP DIVE) integrada al Campaign Strategy Index.
+
+**~18-19 Abr**: Sesion de expectativa con CMs — OK. Equipo entro en expectativa positiva para onboarding.
+
+**19-Abr**: **Gemini API Tier 3 aprobado por Google** (upgrade desde Tier 1/2). Habilita volumen de uso del equipo ampliado.
+
+**20-Abr**: **HypeAuditor CLI v2**. Investigacion empirica de endpoints de Mini Report: 11 variantes probadas (miniReport, reportMini, quickReport, liteReport, previewReport, etc.) — todas retornan `code 3 Unknown method`. Parametros `type=mini` y `mini=1` se aceptan sin error pero retornan payload completo de 64 keys + cobran 1 credito normal. **Conclusion**: Mini Reports es feature exclusiva UI web, no expuesta en API REST. Descubiertos 2 endpoints nuevos gratis post-unlock: `auditor.creators` (My Network — lista perfiles desbloqueados con metadata tipo CRM: emails, phones, contract_status) y `auditor.{platform}Pdf` (6 variantes — PDF oficial de HA async, retorna URL CDN). CLI v2 desplegado con: (1) cache local automatico 30d de reports en `~/.openclaw/hypeauditor-cache/`, (2) flags `--cached` (0 creditos) y `--force` (bypass), (3) comando `network` con filtros `--since/--until` (formato YYYY-MM-DD), (4) comando `pdf` con retry 8x automatico, (5) comandos `cache stats/prune/clear`. TOOLS.md del Scout actualizado con los nuevos comandos y flujo recomendado. Tests verdes: network lista 6 creators, report westcol → cache 382 KB → `--cached` OK, pdf westcol → URL CDN con 94 creditos intactos. Proyeccion cache: ~200 MB/año con uso normal (trivial vs 4.4 GB libres en VM). Costo real de investigacion: 3 creditos (97→94). Pendiente con Paula: confirmar oficialmente que Mini Reports solo vive en UI web, contrato `auditor.tiktokMedia`, discrepancia queries_left 1000 vs factura 5000/mes. Diseño de card MNL-branded (primera aprobacion cliente) parqueado hasta hablar flujo real con CMs.
+
+### Decisiones estrategicas
+
+- **Modash descartado definitivamente** — MCP server construido queda como referencia, sin creditos. No se activara.
+- **Influencers Club descartado** — sin demographics ni brand safety, rompe la palanca 1 de diferenciacion.
+- **HypeAuditor como pilar de data** — habilita las 3 palancas: propuesta diferenciada, velocidad comercial, escalamiento.
+- **Scout V2 con workers** como blueprint de capacidad: orquestacion + checkpoints humanos + guardrails de creditos. Patron replicable a otros agentes.
+
+### Proximo hito
+
+**20-Abr-2026 — Onboarding equipo ampliado**
+- Presentacion de 7 agentes + flujos de trabajo
+- Pairing en bots de Telegram
+- Primeros casos de uso reales con equipo completo
+- Captura de feedback post-onboarding para iterar
+
+---
+
+**Estado general (19-Abr-2026)**: Proyecto en **Mes 2 de Fase 1 (Cimientos)**. Infraestructura de datos completa (HypeAuditor activo + Gemini Tier 3 + Tavily + Sheets + Notion). 7 agentes V8.0 + Scout V2 con orquestacion propia. Presupuesto aprobado y encuadrado. Piloto cerrado con retro OK. Onboarding al equipo ampliado mañana (20-Abr). **Bloqueadores residuales**: (1) systemd gateway, (2) Sheet flujo de caja de Carlos, (3) cookies IG, (4) endpoints HypeAuditor pendientes con Paula (tiktokMedia + discrepancia queries). **Proximo paso**: ejecutar onboarding → captar feedback real → iterar agentes → primer reporte asistido por IA en campana real (target Mes 3, Mayo).
+
+---
+
+## SESSION LOG (19-Abr-2026 noche) — Agent Team prep onboarding CMs
+
+### Contexto
+Previo al onboarding de CMs del 20-Abr, se ejecuto un Agent Team (`mnl-onboarding-20abr`, experimental Claude Code v2.1.32+) con 4 agentes trabajando en paralelo mientras Juan dormia. Autonomia total con checkpoint humano para el deploy en VM.
+
+### Team members
+- `team-lead` — Drive sync, NotebookLM, Slides, handoff, STATUS update
+- `content-writer` (workshop-designer) — Guia CMs + storyboard deck
+- `flow-designer` (general-purpose) — Flujo prueba Scout E2E
+- `memory-engineer` (openclaw-engineer) — Topic-registry prep + auditoria memoria multi-CM
+
+### Entregables (9 tasks)
+
+| Task | Output | Ubicacion |
+|---|---|---|
+| 1 | SKILL.md topic-registry + manifest-snapshot.sh + deploy checklist | `agents/workspaces/estratega/skills/topic-registry/`, `tools/cost-aggregator/`, `docs/2026-04-19-deploy-checklist-topic-registry.md` |
+| 2 | 34 Google Docs + 1 Google Slides a Drive Mambalabs | Capacitacion / Estrategia / Playbooks / Reportes |
+| 3 | Guia CMs Scout (19KB, 307 lineas) | `docs/2026-04-19-guia-scout-cms.md` + Drive `1OmJok5Id3cIZgN0UoRDmLHMvEhvSESYIBxSrCWfaxto` |
+| 4 | Storyboard deck 15 slides | `docs/2026-04-19-deck-scout-storyboard.md` |
+| 5 | Flujo prueba Scout E2E (31KB, 740 lineas) | `docs/2026-04-19-flujo-prueba-scout.md` + Drive `1YoG5pduAUoHk_C3ZbEHDtYh9Tin-MK4rXccdzJHAO64` |
+| 6 | Auditoria memoria multi-CM (20KB, 348 lineas) | `docs/2026-04-19-auditoria-memoria-multi-cm.md` + Drive `1pLkdBUe1sXYlir6kiC9OpwpvHS2LZHf4aMWGVGGGOjc` |
+| 7 | NotebookLM con 6 sources + briefing doc | `https://notebooklm.google.com/notebook/bde2c37a-78b4-4a70-8552-bdd96e2ef7e0` |
+| 8 | Deck Onboarding Scout (Google Slides, 15 slides) | `1gpx03TKpHgkJDN978TRtQHPup-MJ3GqyqUAoEMHz4No` |
+| 9 | Handoff consolidado | `docs/2026-04-19-handoff.md` + Drive `1ynWq0V7JnVjNL9DpMAdkkIvrRItpbBMe5_Bk0fz6I8U` |
+
+### Hallazgos criticos (auditoria memoria multi-CM — P0)
+
+1. **Sin `campaign_id` canonico en memoria diaria** — cada agente guarda `memory/YYYY-MM-DD-<tema>.md` con tema libre. Sin topic-registry + tag canonico, CMs distintos fragmentan la misma campana.
+2. **`memory_search` es global al agente** — queries devuelven hits de cualquier CM sin distinguir contexto.
+3. **Scout tiene 0 archivos en `memory/`** — pese a estar en produccion desde 16-Mar. Todo vive como Excels sueltos en root. Critico porque Scout es el protagonista del onboarding.
+4. **Admin memoria vacia** (esperado, sin Sheet de Carlos aun) y **Prometeo memoria vacia** (esperado, es tecnico/dev).
+
+### Solucion arquitectural
+La auditoria demuestra que el **topic-registry** (plan 2026-04-15) es la solucion canonica al problema multi-CM que el usuario planteo. Los patches concretos estan en la auditoria seccion 4-5: cada AGENTS.md incorpora el campaign_id como tag obligatorio al escribir memoria + filtro opcional en memory_search.
+
+### Deploy pendiente (checkpoint humano mañana)
+- Fases 0-3 del cost-attribution plan (30 min + 1h + 3h + 30 min = ~5h)
+- Patches P0 de memoria (~1h: SCP + restart + validacion)
+- Todo preparado localmente, checklist en `docs/2026-04-19-deploy-checklist-topic-registry.md`
+
+### Observaciones de proceso
+- Agent Teams funciono bien: 4 agentes paralelos entregaron 8/9 tasks en ~30 min
+- DNS issue intermitente con `slides.googleapis.com` resuelto con fallback pandoc pptx → upload Slides nativo
+- Permisos pre-configurados en `settings.local.json` evitaron bloqueos por prompts mientras Juan dormia
+- Memoria VM auditada via SSH directo (gcloud ssh tenia DNS roto, SSH a IP 34.176.239.204 funciona)

@@ -7,17 +7,25 @@
  * Uso:
  *   hypeauditor search <query>
  *   hypeauditor discover --platform ig --country co --niche "belleza" ...
- *   hypeauditor report <username> [--platform ig|tiktok|youtube] [--raw]
+ *   hypeauditor report <username> [--platform ig|tiktok|youtube] [--raw] [--cached] [--force]
+ *   hypeauditor media <username> [--limit N] [--raw]
+ *   hypeauditor network [--limit N] [--since YYYY-MM-DD]
+ *   hypeauditor pdf <username> [--platform ig|tiktok|youtube|twitter|twitch|snapchat]
+ *   hypeauditor cache stats
+ *   hypeauditor cache prune [--days 90]
+ *   hypeauditor cache clear <username> [--platform]
  *   hypeauditor credits
  */
 
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 
 // --- Config ---
 
 const API_BASE = 'https://hypeauditor.com/api/method';
+const CACHE_DIR = join(homedir(), '.openclaw', 'hypeauditor-cache');
+const CACHE_WARN_MB = 500;
 
 function loadCredentials() {
   const envPath = join(homedir(), '.openclaw', '.env');
@@ -79,6 +87,68 @@ async function apiPost(path, body, creds) {
   return data;
 }
 
+// --- Cache ---
+
+function normalizePlatform(p) {
+  const map = { ig: 'instagram', tt: 'tiktok', yt: 'youtube', tw: 'twitter' };
+  return map[p] || p || 'instagram';
+}
+
+function cachePath(platform, username) {
+  const plat = normalizePlatform(platform);
+  const safe = String(username).replace(/[^a-zA-Z0-9._-]/g, '_').toLowerCase();
+  return join(CACHE_DIR, `${plat}-${safe}.json`);
+}
+
+function cacheWrite(platform, username, result) {
+  try {
+    if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+    const payload = {
+      _cached_at: new Date().toISOString(),
+      _platform: normalizePlatform(platform),
+      _username: username,
+      result
+    };
+    writeFileSync(cachePath(platform, username), JSON.stringify(payload, null, 2), 'utf-8');
+    checkCacheSize();
+  } catch (e) {
+    console.error(`Warning: cache write fallo (${e.message}). Continuo sin cachear.`);
+  }
+}
+
+function cacheRead(platform, username) {
+  const p = cachePath(platform, username);
+  if (!existsSync(p)) return null;
+  try {
+    const payload = JSON.parse(readFileSync(p, 'utf-8'));
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function cacheListFiles() {
+  if (!existsSync(CACHE_DIR)) return [];
+  return readdirSync(CACHE_DIR)
+    .filter(f => f.endsWith('.json'))
+    .map(f => {
+      const full = join(CACHE_DIR, f);
+      const st = statSync(full);
+      return { name: f, path: full, size: st.size, mtime: st.mtime };
+    });
+}
+
+function cacheSizeMB() {
+  return cacheListFiles().reduce((sum, f) => sum + f.size, 0) / (1024 * 1024);
+}
+
+function checkCacheSize() {
+  const mb = cacheSizeMB();
+  if (mb > CACHE_WARN_MB) {
+    console.error(`\n[aviso] Cache HypeAuditor: ${mb.toFixed(1)} MB (> ${CACHE_WARN_MB} MB). Considera ejecutar: hypeauditor cache prune --days 90`);
+  }
+}
+
 // --- Formatters ---
 
 function formatSearch(data) {
@@ -128,11 +198,6 @@ function formatDiscover(data) {
 }
 
 function formatMedia(data, limit) {
-  // Shape: result.media es dict keyed por post_id, cada item tiene
-  // basic {id, code, caption, time_posted, type, preview_url, authors[]}
-  // metrics {likes_count, comments_count, video_views_count, er, er_mark}
-  // result.media_ids es nested (all/posts/reels/... x sort_order x performance window) —
-  // no lo exponemos por ruido; nos enfocamos en los items de `media`.
   const mediaDict = data.result?.media || {};
   const entries = Object.entries(mediaDict);
   if (!entries.length) { console.log('Sin media para este perfil (requiere auditor.report previo para unlockear).'); return; }
@@ -140,7 +205,6 @@ function formatMedia(data, limit) {
   entries.sort((a, b) => (b[1].basic?.time_posted || 0) - (a[1].basic?.time_posted || 0));
   const slice = limit > 0 ? entries.slice(0, limit) : entries;
 
-  // Contador por tipo
   const byType = {};
   for (const [, it] of entries) {
     const t = it.basic?.type || 'unknown';
@@ -178,7 +242,7 @@ function formatMedia(data, limit) {
   }
 }
 
-function formatReport(user) {
+function formatReport(user, cachedAt) {
   const u = user;
   const bs = u.brand_safety || {};
   const bsFlags = bs.items ? Object.entries(bs.items).filter(([, v]) => v.value).map(([k]) => k) : [];
@@ -191,6 +255,7 @@ function formatReport(user) {
   const prices = u.blogger_prices || {};
 
   console.log(`\n=== REPORTE: @${u.username} ===`);
+  if (cachedAt) console.log(`[cache] Leido localmente. Generado: ${cachedAt}`);
   console.log(`Nombre: ${u.full_name || '-'}`);
   console.log(`Seguidores: ${fmtNum(u.followers_count)} | Posts: ${u.posts_count || '-'}`);
   console.log(`ER: ${er.value || '-'}% (${er.title || '-'})`);
@@ -198,7 +263,6 @@ function formatReport(user) {
   console.log(`Ubicacion: ${u.blogger_geo?.country?.toUpperCase() || '-'} | Genero: ${u.blogger_gender || '-'}`);
   console.log(`Verificado: ${u.is_verified ? 'Si' : 'No'}`);
 
-  // Brand Safety
   console.log(`\n--- Brand Safety ---`);
   console.log(`Score: ${bs.score ?? '-'} | Mark: ${bs.mark || '-'}`);
   if (bsFlags.length) {
@@ -207,12 +271,10 @@ function formatReport(user) {
     console.log(`Sin flags (limpio en las 9 categorias)`);
   }
 
-  // Demographics
   console.log(`\n--- Audiencia: Demografia ---`);
   for (const d of demo) {
     console.log(`${d.gender === 'F' ? 'Mujeres' : 'Hombres'}: ${d.value?.toFixed(1)}%`);
   }
-  // Top age groups
   for (const g of demoByAge) {
     const gender = g.gender === 'female' ? 'Mujeres' : 'Hombres';
     const topAges = (g.by_age_group || [])
@@ -222,7 +284,6 @@ function formatReport(user) {
     if (topAges.length) console.log(`  ${gender} top: ${topAges.join(', ')}`);
   }
 
-  // Geography
   console.log(`\n--- Audiencia: Geografia ---`);
   const countries = (geo.countries || []).slice(0, 5);
   for (const c of countries) {
@@ -233,13 +294,11 @@ function formatReport(user) {
     console.log(`  Ciudades top: ${cities.map(c => `${c.name} ${c.value?.toFixed(1)}%`).join(', ')}`);
   }
 
-  // Audience Quality
   console.log(`\n--- Calidad de Audiencia ---`);
   console.log(`Real: ${at.real?.toFixed(1) || '-'}% | Suspicious: ${at.susp?.toFixed(1) || '-'}% | Mass followers: ${at.mass?.toFixed(1) || '-'}% | Influencers: ${at.infs?.toFixed(1) || '-'}%`);
   if (u.audience_reachability) console.log(`Reachability: ${u.audience_reachability.value}% (${u.audience_reachability.title})`);
   if (u.audience_authenticity) console.log(`Authenticity: ${u.audience_authenticity.value}% (${u.audience_authenticity.title})`);
 
-  // Sentiment
   console.log(`\n--- Sentiment ---`);
   const sentScore = u.audience_sentiments?.score;
   console.log(`Score: ${sentScore ?? '-'}/100`);
@@ -247,7 +306,6 @@ function formatReport(user) {
     console.log(`  ${k}: ${v.prc?.toFixed(1)}% (${v.count} comments)`);
   }
 
-  // Pricing
   console.log(`\n--- Pricing Estimado ---`);
   if (prices.post_price) {
     console.log(`Post: $${fmtNum(prices.post_price_from)}-$${fmtNum(prices.post_price_to)} USD`);
@@ -257,8 +315,32 @@ function formatReport(user) {
     console.log('No disponible');
   }
 
-  // Credits
   if (u.restTokens !== undefined) console.log(`\nCreditos restantes: ${u.restTokens}`);
+}
+
+function formatNetwork(data) {
+  const creators = data.result?.creators || [];
+  if (!creators.length) { console.log('Tu network esta vacio.'); return; }
+
+  console.log(`\n=== MY NETWORK — ${creators.length} creators ===`);
+  console.log('-'.repeat(100));
+  console.log(`${'#'.padEnd(3)} ${'Username'.padEnd(25)} ${'Nombre'.padEnd(30)} ${'Seguidores'.padEnd(12)} ${'Pais'.padEnd(6)} ${'Status'.padEnd(12)} Unlock`);
+  console.log('-'.repeat(100));
+
+  creators.forEach((c, i) => {
+    const account = (c.accounts || [])[0] || {};
+    const username = account.username || '-';
+    const name = `${c.first_name || ''} ${c.last_name || ''}`.trim() || '-';
+    const subs = fmtNum(account.subscribers_count);
+    const country = c.country?.code || '-';
+    const status = c.network_status?.name || '-';
+    const unlockDate = account.report_unlock_date ? account.report_unlock_date.slice(0, 10) : '-';
+    console.log(`${String(i + 1).padEnd(3)} @${username.padEnd(24)} ${name.slice(0, 28).padEnd(30)} ${subs.padEnd(12)} ${country.padEnd(6)} ${status.padEnd(12)} ${unlockDate}`);
+  });
+
+  if (data.result?.next_cursor) {
+    console.log(`\nHay mas. Siguiente pagina con: --cursor "${data.result.next_cursor}"`);
+  }
 }
 
 function fmtNum(n) {
@@ -318,11 +400,51 @@ async function cmdDiscover(args, creds) {
 async function cmdReport(args, creds) {
   const opts = parseFlags(args);
   const username = opts._positional[0];
-  if (!username) { console.error('Uso: hypeauditor report <username> [--platform ig|tiktok|youtube] [--raw]'); process.exit(1); }
+  if (!username) { console.error('Uso: hypeauditor report <username> [--platform ig|tiktok|youtube] [--raw] [--cached] [--force]'); process.exit(1); }
 
   const platform = opts.platform || 'ig';
   const raw = opts.raw !== undefined;
+  const cachedOnly = opts.cached !== undefined;
+  const force = opts.force !== undefined;
 
+  // Cached-only mode: read local, never hit API
+  if (cachedOnly) {
+    const cached = cacheRead(platform, username);
+    if (!cached) {
+      console.error(`Sin cache local para @${username} (${normalizePlatform(platform)}). Ejecuta sin --cached para generar.`);
+      process.exit(1);
+    }
+    if (raw) {
+      console.log(JSON.stringify(cached.result, null, 2));
+      return;
+    }
+    const user = cached.result?.user || cached.result?.report?.basic || cached.result;
+    if (!user) { console.error('Cache corrupto: no se pudo extraer usuario.'); process.exit(1); }
+    formatReport(user, cached._cached_at);
+    return;
+  }
+
+  // Check cache first unless --force
+  if (!force) {
+    const cached = cacheRead(platform, username);
+    if (cached) {
+      const ageDays = (Date.now() - new Date(cached._cached_at).getTime()) / (1000 * 60 * 60 * 24);
+      if (ageDays < 30) {
+        if (raw) {
+          console.log(JSON.stringify(cached.result, null, 2));
+          return;
+        }
+        const user = cached.result?.user || cached.result?.report?.basic || cached.result;
+        if (user) {
+          formatReport(user, cached._cached_at);
+          console.log(`\n[info] Cache de hace ${ageDays.toFixed(1)} dias. Usa --force para refrescar (1 credito).`);
+          return;
+        }
+      }
+    }
+  }
+
+  // Live API call
   let path;
   if (platform === 'tiktok') {
     path = `/auditor.tiktok/?channel=${encodeURIComponent(username)}`;
@@ -334,7 +456,6 @@ async function cmdReport(args, creds) {
 
   const data = await apiGet(path, creds);
 
-  // Handle 202 (report generating)
   if (data.result?.report_state === 'NOT_READY') {
     const ttl = data.result?.retryTtl || 30;
     console.log(`Reporte generandose... Reintenta en ${ttl} segundos.`);
@@ -342,16 +463,16 @@ async function cmdReport(args, creds) {
     return;
   }
 
+  // Cache automatico tras call exitoso
+  cacheWrite(platform, username, data.result);
+
   if (raw) {
     console.log(JSON.stringify(data.result, null, 2));
     return;
   }
 
-  // Instagram and YouTube return user at result.user, TikTok at result.report
   const user = data.result?.user || data.result?.report?.basic || data.result;
   if (!user) { console.error('No se pudo extraer datos del reporte.'); return; }
-
-  // Merge restTokens if available
   if (data.result?.restTokens !== undefined) user.restTokens = data.result.restTokens;
 
   formatReport(user);
@@ -373,9 +494,122 @@ async function cmdMedia(args, creds) {
   formatMedia(data, limit);
 }
 
+async function cmdNetwork(args, creds) {
+  const opts = parseFlags(args);
+  const limit = Number(opts.limit || 100);
+  const parts = [`limit=${Math.min(limit, 100)}`];
+  if (opts.since) parts.push(`report_unlocked_from=${encodeURIComponent(opts.since)}`);
+  if (opts.until) parts.push(`report_unlocked_to=${encodeURIComponent(opts.until)}`);
+  if (opts.cursor) parts.push(`cursor=${encodeURIComponent(opts.cursor)}`);
+
+  const path = `/auditor.creators/?${parts.join('&')}`;
+  const data = await apiGet(path, creds);
+
+  if (opts.raw !== undefined) {
+    console.log(JSON.stringify(data.result, null, 2));
+    return;
+  }
+  formatNetwork(data);
+}
+
+async function cmdPdf(args, creds) {
+  const opts = parseFlags(args);
+  const username = opts._positional[0];
+  if (!username) { console.error('Uso: hypeauditor pdf <username> [--platform ig|tiktok|youtube|twitter|twitch|snapchat]'); process.exit(1); }
+
+  const platform = normalizePlatform(opts.platform || 'ig');
+  const methodMap = {
+    instagram: 'auditor.instagramPdf',
+    tiktok: 'auditor.tiktokPdf',
+    youtube: 'auditor.youtubePdf',
+    twitter: 'auditor.twitterPdf',
+    twitch: 'auditor.twitchPdf',
+    snapchat: 'auditor.snapchatPdf'
+  };
+  const paramKey = platform === 'instagram' ? 'username' : 'channel';
+  const method = methodMap[platform];
+  if (!method) { console.error(`Platform no soportada: ${platform}`); process.exit(1); }
+
+  const maxRetries = Number(opts['max-retries'] || 8);
+  let attempt = 0;
+  console.log(`Generando PDF ${platform} para @${username}...`);
+
+  while (attempt < maxRetries) {
+    const data = await apiGet(`/${method}/?${paramKey}=${encodeURIComponent(username)}`, creds);
+    const url = data.result?.pdfUrl;
+    const ttl = data.result?.retryTtl || 60;
+    const tokens = data.result?.restTokens;
+
+    if (url) {
+      console.log(`\nPDF listo:`);
+      console.log(url);
+      if (tokens !== undefined) console.log(`Creditos restantes: ${tokens}`);
+      return;
+    }
+    attempt++;
+    if (attempt < maxRetries) {
+      console.log(`[${attempt}/${maxRetries}] Procesando... espera ${ttl}s`);
+      await new Promise(r => setTimeout(r, Math.min(ttl, 120) * 1000));
+    }
+  }
+  console.error(`Timeout: PDF no genero tras ${maxRetries} reintentos. Vuelve a ejecutar el comando.`);
+  process.exit(1);
+}
+
+function cmdCache(args) {
+  const sub = args[0];
+  const opts = parseFlags(args.slice(1));
+
+  if (sub === 'stats' || !sub) {
+    const files = cacheListFiles();
+    const totalMB = cacheSizeMB();
+    console.log(`\n=== CACHE HYPEAUDITOR ===`);
+    console.log(`Directorio: ${CACHE_DIR}`);
+    console.log(`Perfiles cacheados: ${files.length}`);
+    console.log(`Tamano total: ${totalMB.toFixed(2)} MB`);
+    if (files.length) {
+      console.log(`\nMas recientes:`);
+      files.sort((a, b) => b.mtime - a.mtime).slice(0, 10).forEach(f => {
+        console.log(`  ${f.mtime.toISOString().slice(0, 10)}  ${(f.size / 1024).toFixed(0).padStart(5)} KB  ${f.name}`);
+      });
+    }
+    return;
+  }
+
+  if (sub === 'prune') {
+    const days = Number(opts.days || 90);
+    const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+    const files = cacheListFiles();
+    const toDelete = files.filter(f => f.mtime.getTime() < cutoff);
+    if (!toDelete.length) {
+      console.log(`Sin archivos mas antiguos que ${days} dias. Nada que borrar.`);
+      return;
+    }
+    console.log(`Borrando ${toDelete.length} archivos > ${days} dias:`);
+    for (const f of toDelete) {
+      unlinkSync(f.path);
+      console.log(`  [x] ${f.name}`);
+    }
+    console.log(`Liberados: ${(toDelete.reduce((s, f) => s + f.size, 0) / 1024 / 1024).toFixed(2)} MB`);
+    return;
+  }
+
+  if (sub === 'clear') {
+    const username = opts._positional[0];
+    if (!username) { console.error('Uso: hypeauditor cache clear <username> [--platform ig|tiktok|youtube]'); process.exit(1); }
+    const platform = opts.platform || 'ig';
+    const p = cachePath(platform, username);
+    if (!existsSync(p)) { console.log(`Sin cache para @${username} (${normalizePlatform(platform)}).`); return; }
+    unlinkSync(p);
+    console.log(`Cache borrado: ${p}`);
+    return;
+  }
+
+  console.error(`Subcomando desconocido: ${sub}. Opciones: stats, prune, clear`);
+  process.exit(1);
+}
+
 async function cmdCredits(creds) {
-  // Suggester is free and returns account info in some cases
-  // Try a minimal search to check token validity
   const data = await apiGet('/auditor.suggester/?search=test', creds);
   console.log('Token valido. Conexion exitosa.');
   console.log('Nota: Para ver creditos restantes, ejecuta un report — el campo restTokens aparece en la respuesta.');
@@ -407,33 +641,53 @@ function parseFlags(args) {
 // --- Main ---
 
 const [,, cmd, ...rest] = process.argv;
-const creds = loadCredentials();
 
 switch (cmd) {
   case 'search':
-    await cmdSearch(rest, creds);
+    await cmdSearch(rest, loadCredentials());
     break;
   case 'discover':
-    await cmdDiscover(rest, creds);
+    await cmdDiscover(rest, loadCredentials());
     break;
   case 'report':
-    await cmdReport(rest, creds);
+    await cmdReport(rest, loadCredentials());
     break;
   case 'media':
-    await cmdMedia(rest, creds);
+    await cmdMedia(rest, loadCredentials());
+    break;
+  case 'network':
+    await cmdNetwork(rest, loadCredentials());
+    break;
+  case 'pdf':
+    await cmdPdf(rest, loadCredentials());
+    break;
+  case 'cache':
+    cmdCache(rest);
     break;
   case 'credits':
-    await cmdCredits(creds);
+    await cmdCredits(loadCredentials());
     break;
   default:
     console.log(`HypeAuditor CLI — Mamba Negra
 
 Uso:
-  hypeauditor search <query>                     Buscar influencer por nombre (gratis)
-  hypeauditor discover [--flags]                  Buscar por filtros (1 call/pagina)
-  hypeauditor report <username> [--platform] [--raw]  Reporte completo (1 credito)
-  hypeauditor media <username> [--limit N] [--raw]    Posts/reels cacheados (requiere report previo)
-  hypeauditor credits                             Verificar conexion
+  hypeauditor search <query>                                  Buscar por nombre (gratis)
+  hypeauditor discover [--flags]                              Buscar por filtros (1 query/pagina)
+  hypeauditor report <username> [--platform] [--raw]          Reporte completo (1 credito, cache 30d)
+  hypeauditor report <username> --cached                      Relee del cache local (0 creditos)
+  hypeauditor report <username> --force                       Fuerza llamada nueva a API (1 credito)
+  hypeauditor media <username> [--limit N] [--raw]            Posts/reels (gratis post-unlock)
+  hypeauditor network [--limit N] [--since YYYY-MM-DD]        My Network: perfiles desbloqueados (gratis)
+  hypeauditor pdf <username> [--platform]                     PDF oficial HA (0 creditos si unlocked)
+  hypeauditor cache stats                                     Resumen de cache local
+  hypeauditor cache prune [--days 90]                         Borra cache antiguo
+  hypeauditor cache clear <username> [--platform]             Borra cache de 1 perfil
+  hypeauditor credits                                         Verificar conexion
+
+Cache automatico:
+  - Cada \`report\` exitoso se guarda en ~/.openclaw/hypeauditor-cache/
+  - Reintentos del mismo perfil en < 30 dias leen del cache (0 creditos)
+  - Umbral de aviso: 500 MB. Para regenerar manual: --force
 
 Discover flags:
   --platform ig|tiktok|youtube|twitter|twitch     Plataforma (default: ig)
@@ -452,7 +706,9 @@ Discover flags:
   --order desc|asc                                Orden (default: desc)
   --page 1                                        Pagina de resultados
 
-Report flags:
-  --platform ig|tiktok|youtube                    Plataforma (default: ig)
-  --raw                                           Output JSON completo`);
+Network flags:
+  --limit N                                       Max resultados (1-100, default: 100)
+  --since YYYY-MM-DD                              Filtrar unlocks desde fecha
+  --until YYYY-MM-DD                              Filtrar unlocks hasta fecha
+  --cursor <next_cursor>                          Paginacion`);
 }

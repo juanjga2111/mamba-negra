@@ -38,6 +38,15 @@ hypeauditor discover \
 
 **Consejo**: Si los resultados tienen poco matching con el brief, refina con `--audience-country co --audience-prc 40` (audiencia al menos 40% CO) antes de subir `--followers` o bajar `--er-min`.
 
+### Network — perfiles ya desbloqueados (gratis, util pre-discovery)
+
+```bash
+hypeauditor network --limit 100
+hypeauditor network --since 2026-04-01 --limit 50
+```
+
+Lista todos los perfiles que Mamba Negra ya desbloqueo (My Network). Antes de quemar `discover` en una campana, corre `network` primero — si ya hay perfiles relevantes en tu red (mismo vertical, mismo pais), prioriza esos en el shortlist. Ahorra queries_left y creditos. Retorna: username, nombre, seguidores, pais, status (Prospect/Verified), fecha de unlock.
+
 ## Tavily (busqueda web para descubrimiento)
 
 ```bash
@@ -54,6 +63,6 @@ gog sheets get <sheetId> "Tab!A1:Z50" --json
 ## NO usar
 
 - `hypeauditor report` -- eso es del worker scout-report, NO tuyo
-- `hypeauditor discover` -- NO DISPONIBLE actualmente (code 4)
+- `hypeauditor pdf` -- solo si scout-report lo pide explicitamente
 - No busques en Notion -- no tienes acceso
 - No hagas background check -- eso es del worker scout-report

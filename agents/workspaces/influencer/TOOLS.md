@@ -128,95 +128,128 @@ Solo para preguntas puntuales. Si requiere trabajo extenso, deriva al usuario.
 
 Acceso a datos verificados de influencers: metricas, demographics, brand safety, audiencia, sentiment, pricing.
 
-**Importante**: Creditos actuales **97 Analytical Reports** (verificado 17-Abr-2026). Usa `search` (gratis) para encontrar perfiles, y `report` SOLO en perfiles finalistas que ya evaluaste cualitativamente.
+**Creditos actuales (20-Abr-2026)**: 94 Analytical Reports/mes en el pool. Cache local automatico — perfiles ya analizados se releen sin costo.
 
-**NOTA (17-Abr-2026)**: Discovery API **ACTIVO**. El campo `queries_left` arranco en 1000 (factura promete Daily/Monthly limit 5000 — discrepancia pendiente de aclarar con Paula). Cada pagina = 1 decrement = 20 resultados. Usa con moderacion hasta resolver cuota real. Mantiene `search` como baseline gratis para busqueda por nombre.
+**Discovery API ACTIVO**: 1000 queries/mes. Cada pagina = 1 decrement = 20 resultados.
 
 ### Buscar influencer por nombre (GRATIS — sin limite)
 
 ```bash
 hypeauditor search "pautips"
-hypeauditor search "luisitocomunica"
 hypeauditor search "belleza colombia"
 ```
 
-Retorna perfiles cross-platform (IG + TikTok + YT) con seguidores y ER. Usa esto para:
-- Encontrar el username exacto antes de pedir un report
-- Explorar perfiles relacionados a un nombre o nicho
-- Verificar en que plataformas esta un influencer
+Retorna perfiles cross-platform (IG + TikTok + YT) con seguidores y ER. Usa esto para encontrar el username exacto antes de pedir un report.
 
-### Report completo (1 CREDITO por perfil — usar solo en finalistas)
+### Report completo (con cache automatico)
 
-SIEMPRE usa `--raw` para obtener todos los datos en una sola llamada. El report cuesta 1 credito igual — no tiene sentido pedir el resumen primero y luego el raw (serian 2 creditos por el mismo perfil).
+Cada `report` exitoso se guarda en `~/.openclaw/hypeauditor-cache/`. Las relecturas del mismo perfil en < 30 dias leen del cache (0 creditos, instantaneo).
 
 ```bash
-# Instagram (default) — SIEMPRE con --raw
+# Primera vez (1 credito) — guarda cache
 hypeauditor report pautips --raw
+
+# Consultas posteriores (0 creditos) — lee cache
+hypeauditor report pautips --raw --cached
+
+# Forzar llamada nueva a API (1 credito, actualiza cache)
+hypeauditor report pautips --raw --force
 
 # TikTok
 hypeauditor report pautips --platform tiktok --raw
 ```
 
-El report `--raw` retorna TODO en JSON:
+SIEMPRE usa `--raw` para obtener el JSON completo. El report `--raw` retorna:
 - **Brand Safety**: 9 categorias (alcohol, politica, sexo, toxico, ofensivo, crimen, religion, pranks, sentiment negativo)
-- **Demographics**: % hombres/mujeres, edad por genero, ubicacion de audiencia (pais + ciudad)
-- **Audience Quality**: % audiencia real vs suspicious vs mass followers
+- **Demographics**: % hombres/mujeres, edad por genero, ubicacion de audiencia
+- **Audience Quality (AQS + type)**: % real vs suspicious vs mass followers
 - **Sentiment**: % positivo/neutral/negativo en comentarios
 - **Pricing**: rango estimado por post y stories, CPM
-- **ER con contexto**: comparado con cuentas de tamano similar + ER historico por periodo
-- **Rankings**: mundial, por pais, por categoria
-- **Growth anomalies**: alertas de crecimiento sospechoso
+- **ER con contexto**: comparado con cuentas de tamano similar + historico
+- **Rankings**: mundial, por pais, por categoria (blogger_rankings)
+- **Categorias recomendadas** (blogger_categories + top3_blogger_topics)
 - **Audience extras**: etnicidad, ingresos, educacion, estado civil
 - **Advertising data**: brand mentions con conteo y categoria
-- **Hashtag performance**: por periodo 30d/90d/180d
 - **Contacto**: email/telefono si disponible
 
-### Media de perfil ya reportado (0 creditos adicionales)
+### My Network — perfiles ya desbloqueados (GRATIS)
 
-Si ya corriste `report` en un perfil, podes pedir sus posts/reels cacheados sin costo extra:
+Lista todos los perfiles que ya se analizaron, sin costo. Util para auditar el inventario y re-contextualizar sin gastar creditos.
 
 ```bash
-# Default: top 10 mas recientes con likes/comments/views/ER
-hypeauditor media pautips
+# Ultimos 100 perfiles unlocked
+hypeauditor network --limit 100
 
-# Todos los posts cacheados
-hypeauditor media pautips --limit 0
+# Filtrar por fecha de unlock
+hypeauditor network --since 2026-04-01 --until 2026-04-30
 
-# JSON completo (incluye preview_url, media_ids con performance 30d/90d/180d)
-hypeauditor media pautips --raw
+# JSON crudo (incluye emails, phones, contract_status, etc)
+hypeauditor network --raw
 ```
 
-Retorna por post: fecha, tipo (reel/post/carousel/igtv), shortcode, likes_count, comments_count, video_views_count, er, er_mark (excellent/average/poor/low), caption truncado.
+Retorna por creator: username, nombre, seguidores, pais, network_status (Prospect/Verified), payment_status, contract_status, fecha de unlock. **No incluye ER ni demografia** — para eso usa `report --cached`.
 
-Limitacion: solo los posts que HA cacheo al generar el report original (~5-10 posts cubriendo varios meses), no feed completo. Para analisis de video actual usar `reel-analyzer`.
+### PDF oficial de HypeAuditor (0 creditos si unlocked)
 
-Util para: validar tarifas contra ER reciente, detectar caida de rendimiento, identificar tipo dominante, ver captions reales para brand fit.
+Genera el PDF branded de HA con todo el analisis visual. Ideal para enviar al cliente como primera aprobacion.
+
+```bash
+hypeauditor pdf margaritagomezderm --platform ig
+hypeauditor pdf westcol --platform tiktok
+```
+
+Async — el CLI reintenta hasta que el PDF este listo (hasta 8 veces, 1-2 min tipico). Retorna URL del CDN de HA. **Gratis si el perfil ya esta unlocked. Si esta locked, lo unlocka y cuenta 1 credito del pool.**
+
+### Media de perfil ya reportado (0 creditos)
+
+Posts/reels cacheados al momento del report original.
+
+```bash
+hypeauditor media pautips
+hypeauditor media pautips --limit 0           # todos
+hypeauditor media pautips --raw               # JSON completo
+```
+
+Limitacion: solo posts del snapshot del report (~5-10 posts). Para analisis de video actual usar `reel-analyzer`.
+
+### Cache management
+
+```bash
+hypeauditor cache stats                        # resumen
+hypeauditor cache prune --days 90              # borra > 90 dias
+hypeauditor cache clear <username> --platform  # borra 1 perfil
+```
+
+Cache umbral de aviso: 500 MB. Cache vive en `~/.openclaw/hypeauditor-cache/`.
 
 ### Cuando usar cada comando
 
 | Situacion | Comando | Costo |
 |-----------|---------|-------|
 | Buscar perfiles por nombre/nicho | `search` | Gratis |
-| Analisis profundo de finalista | `report --raw` | 1 credito |
-| Posts/reels cacheados de perfil ya reportado | `media` | 0 (si unlocked) |
-| Filtrar universo por metricas | `discover` | 1 query/pagina (1000/mes) |
+| Ver todo lo que ya se desbloqueo | `network` | Gratis |
+| Analisis profundo PRIMERA vez | `report --raw` | 1 credito |
+| Releer analisis ya cacheado | `report --raw --cached` | 0 creditos |
+| Refrescar datos (actualizar cache) | `report --raw --force` | 1 credito |
+| Posts/reels | `media` | 0 (si unlocked) |
+| PDF para enviar al cliente | `pdf` | 0 (si unlocked) |
+| Filtrar universo por metricas | `discover` | 1 query/pagina |
 
-### Flujo recomendado (mientras no haya Discovery API)
+### Flujo recomendado
 
-1. Entender estrategia y criterios cualitativos PRIMERO
-2. El equipo propone perfiles, o usa `search` para explorar por nombre/nicho
-3. Revisar contenido publico de candidatos (cualitativo, manual)
-4. `report --raw` SOLO en los 2-3 finalistas que ya pasaron filtro cualitativo
-5. Tavily para background check de los finalistas
-6. Copy comercial con datos reales del report
+1. Entender estrategia y criterios cualitativos
+2. `search` o `discover` para encontrar candidatos
+3. Revisar contenido publico (cualitativo con reel-analyzer)
+4. `report --raw` en finalistas (1 credito c/u, cache automatico 30d)
+5. Para consultas del mismo perfil en los siguientes 30 dias: `--cached`
+6. Para entregar al cliente: `pdf` (0 creditos si ya unlocked)
 
 ### NO hagas
 
-- **NO** gastes `report` en perfiles que no has evaluado cualitativamente primero
-- **NO** uses `report` para explorar — usa `search` (gratis) primero
-- **NO** gastes mas de 1-2 reports sin consultar con el equipo (creditos limitados ~4)
-- **NO** uses `report` sin `--raw` — siempre pide los datos completos en una sola llamada
-- **NO** intentes usar `discover` — da error en el plan actual
+- **NO** gastes `report` en perfiles no evaluados cualitativamente primero
+- **NO** uses `report --force` sin razon — cada uso = 1 credito, el cache ya tiene data fresca por 30d
+- **NO** uses `report` sin `--raw` — siempre pide datos completos
+- **NO** consultes el pool via llamadas innecesarias — `report --cached` y `network` son gratis
 
 ---
 
