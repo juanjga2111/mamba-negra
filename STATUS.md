@@ -1,6 +1,8 @@
 # STATUS — Mamba Negra
 
-**Ultima actualizacion**: 20 Abril 2026 (HypeAuditor CLI v2 desplegado: cache local automatico 30d, comandos `network` + `pdf` + `cache`, parser `--cached`/`--force`. Endpoints `auditor.creators` y `auditor.{platform}Pdf` verificados gratis post-unlock. Mini Reports confirmado NO expuesto en API — 11 variantes probadas. 94 Analytical Reports restantes. TOOLS.md del Scout actualizado)
+**Ultima actualizacion**: 20 Abril 2026 tarde (Campaign Registry V2 desplegado — modelo jerarquico brand>campaign>phase. 2 agent teams ejecutados: `mnl-memory-patches-20abr` (topic-registry + 4 patches memoria + 8/9 PASS) y `mnl-model-upgrade-20abr` (rediseño jerarquico + redeploy limpio). Google Sheet costos `1Vw6u22yl86tXzSqRLcEv3N3WvH8FcIVXZMahLBTzki8` creado. Pendiente: test Telegram humano + Fase 4 aggregator.
+
+**Actualizacion previa (20 Abr mañana)**: HypeAuditor CLI v2 desplegado: cache local automatico 30d, comandos `network` + `pdf` + `cache`, parser `--cached`/`--force`. Endpoints `auditor.creators` y `auditor.{platform}Pdf` verificados gratis post-unlock. Mini Reports confirmado NO expuesto en API — 11 variantes probadas. 94 Analytical Reports restantes. TOOLS.md del Scout actualizado.
 
 ---
 
@@ -660,11 +662,14 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 
 ## PENDIENTES INMEDIATOS
 
-### P0 — Onboarding equipo ampliado (20-Abr-2026)
-- [ ] **Ejecutar onboarding**: Presentacion de 7 agentes + flujos de trabajo al equipo (mañana, 20-Abr)
-- [ ] **Pairing del equipo MNL** en los 7 bots de Telegram (post-onboarding)
-- [ ] **Agregar user IDs del equipo** a `groupAllowFrom` en openclaw.json segun se vayan parehando
-- [ ] **Capturar feedback inicial** del equipo ampliado primer uso real
+### P0 — Arranque ritmo semanal + Auditoria razonamiento (21-22 Abr 2026)
+- [x] **Metodologia de trabajo definida** — design doc + WORKFLOW.md + SCP Prometeo — 21-Abr
+- [x] **Cost-aggregator operativo** — aggregator.py cron diario, Sheet poblado — 21-Abr
+- [ ] **Ejecutar plan auditoria razonamiento agentes** — `docs/plans/2026-04-22-audit-razonamiento-agentes.md` (Mie 22, ~2-3h via openclaw-engineer)
+- [ ] **Quick wins post-auditoria**: subir thinking "high" en Orquestador/Radar/Musa/Scout (Jue 23)
+- [ ] **Primer ritual Viernes completo** + crear pagina Notion "Control Room IA" (Vie 25)
+- [ ] **Pairing equipo MNL** en bots de Telegram — ongoing post-onboarding 20-Abr
+- [ ] **Agregar user IDs del equipo** a `groupAllowFrom` segun se vayan parehando (Laura Criales `8378143848` pendiente)
 
 ### P0 — HypeAuditor integracion completa (en curso)
 - [x] Plan Starter $762 comprado — 14-Abr-2026
@@ -706,6 +711,10 @@ Revision completa del repositorio post-reestructuracion en 7 capas.
 - [ ] Primera exportacion real a Drive Sync (Capa 7 sigue con `exports/` vacio)
 
 ### Completados recientes (referencia)
+- [x] **Metodologia de trabajo adoptada** — WORKFLOW.md commiteable + ritmo semanal 3 rituales (Lun/Mie/Vie) — 21-Abr
+- [x] **Cost-aggregator fases 2-3 deployadas** — aggregator.py corre diario 01:00 Bogota, Sheet poblado — 21-Abr
+- [x] Plan auditoria razonamiento agentes listo para ejecutar Mie 22 — 21-Abr
+- [x] Onboarding equipo ampliado (Mariana, Juan Mejia, Maca, Laura Criales+) — 20-Abr
 - [x] Retro piloto 09-Abr — OK
 - [x] Memo + sesion Carlos 13-Abr — presupuesto aprobado
 - [x] Sesion CMs de expectativa — OK
@@ -1259,3 +1268,56 @@ La auditoria demuestra que el **topic-registry** (plan 2026-04-15) es la solucio
 - DNS issue intermitente con `slides.googleapis.com` resuelto con fallback pandoc pptx → upload Slides nativo
 - Permisos pre-configurados en `settings.local.json` evitaron bloqueos por prompts mientras Juan dormia
 - Memoria VM auditada via SSH directo (gcloud ssh tenia DNS roto, SSH a IP 34.176.239.204 funciona)
+
+---
+
+## SESSION LOG (20-Abr-2026) — Campaign Registry V2 desplegado (2 teams)
+
+### Contexto
+Antes del onboarding de CMs se desplego el sistema topic-registry (plan cost-attribution 2026-04-15) + los 4 patches P0 de memoria (auditoria 2026-04-19) para que grupos por CM queden bien registrados. Durante el trabajo Juan detecto que el modelo v1 (un solo `campaignName`) fragmentaba costos por fase cuando Carlos quiere agregacion por marca — se ejecuto upgrade v2 jerarquico.
+
+### Team 1: `mnl-memory-patches-20abr` (mañana)
+- 3 teammates: deploy-engineer, patches-writer, validator
+- 6 tasks — Fases 0-3 cost-attribution + Patches 1/2/3/5 + validacion 8/9 PASS
+- Creado: `/home/juanj/.openclaw/telemetry/` con manifest.jsonl + cron horario, Google Sheet "MNL — Reporte Costos IA" (ID `1Vw6u22yl86tXzSqRLcEv3N3WvH8FcIVXZMahLBTzki8`), skills/topic-registry/SKILL.md, 7 AGENTS.md con regla campaign tag, MEMORY.md Orquestador + HEARTBEAT con audit diario 09:00 America/Bogota, Scout+Admin con memoria diaria obligatoria
+
+### Team 2: `mnl-model-upgrade-20abr` (tarde)
+- 3 teammates: architect, content-updater, deploy-engineer
+- 5 tasks — rediseño SKILL.md con modelo jerarquico + actualizar 4 patches + actualizar guia CMs/deck/flujo/checklist + redeploy limpio
+- **Nuevo modelo**: `brandName` (canonico, agrega costos) > `campaignName` (operativo, filtra memoria) > `phase` (opcional: estrategia|scouting|contenido|reporte|ejecucion)
+- Registry v1 rotado a `campaign-registry.v1.jsonl.bak`, v2 vacio listo
+- Backup V1 de 10 archivos en `/tmp/backup-v1-20abr/`
+- Gateway restart limpio, 7 providers OK, validacion automatica PASS
+
+### Archivos de evidencia (v2)
+- `docs/2026-04-20-modelo-jerarquico-registry.md` — modelo con 4 ejemplos (Fruco 2 campanas, Bata BTS 3 fases, Noraver corta, Diana decisiones permanentes a nivel marca)
+- `docs/2026-04-20-patches-v2-applied.md` — diff de los 10 archivos
+- `docs/2026-04-20-content-updates-v2.md` — cambios en guia CMs + deck + flujo prueba + deploy checklist
+- `docs/2026-04-20-redeploy-v2.md` — reporte deploy + comando rollback
+- `docs/2026-04-20-validacion-patches.md` — 8/9 PASS (del Team 1, aun valida post-v2)
+- `docs/2026-04-20-patches-applied.md` — v1 patches (historico)
+
+### Hallazgos clave
+- **Flujo real MNL**: Mar/Mae (estrategas) arrancan phase=estrategia. CMs extienden a phases posteriores. SKILL.md maneja ambos casos con logica por `role`.
+- **Topics pre-existentes**: 20 sesiones vivas sin entry en registry. Estrategia forward-only. HEARTBEAT detectara mañana 09:00 y preguntara a CMs si registrar.
+- **Workers Scout** (scout-discovery/scout-report/scout-video) heredan AGENTS.md del padre via sessions_spawn. No requieren Patch 1 individual.
+- **Memoria persistente MEMORY.md actualizada**: nuevo archivo `project_campaign_registry_v2.md` con contexto completo para sesiones futuras.
+
+### Pendientes
+- [ ] Test Telegram humano para cerrar 9/9: `@StrategyMambabot arranca la estrategia de la campaña Test Upgrade V2 de la marca Test Brand`
+- [ ] Fase 4 aggregator Python — ETA esta semana. Sin el, Sheet de costos no se pobla.
+- [ ] Compartir Sheet con Carlos (metodo por definir — su correo no es Google)
+- [ ] Purgar delivery-recovery error 400 pre-existente en cola
+- [ ] Onboarding CMs (fecha por confirmar — estaba programado hoy)
+
+### Cronologia reportes de costo
+| Fecha | Contenido esperado |
+|---|---|
+| 1-19 Abr | Sin clasificar (antes del registry) |
+| 20 Abr en adelante | Atribucion correcta con brand+campaign+phase |
+| 4-May (primer lunes mayo) | Primer reporte a Carlos — abril parcial (19 dias sin clasificar) |
+| 1-Jun (primer lunes junio) | Primer mes 100% con atribucion (mayo completo) |
+
+---
+
+**Estado general (20-Abr-2026 tarde)**: Campaign Registry V2 desplegado — modelo jerarquico brand>campaign>phase. 10 archivos workspace con 4 patches. HypeAuditor CLI v2 con cache local. Gateway OK con 7 providers. Registry listo para primer entry via test Telegram. Primer reporte de costos a Carlos: 4-May parcial / 1-Jun completo. Pendiente critico: Fase 4 aggregator Python (sin el, Sheet no se pobla).
